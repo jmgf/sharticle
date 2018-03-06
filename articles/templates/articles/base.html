@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <title>Sharticle</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <style>
+      .navbar-inverse .navbar-nav>li>a{
+        color: lightgreen;
+      }
+      span.glyphicon{
+        color:green
+      }
+    </style>
+
+    {% block styles %}
+    {% endblock %}
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="" style="color:lightgreen">
+            Sh<b style="font-size:25px;">ar<span style="color:rgb(0,180,0)">ticl</span>e</b></a>
+        </div>
+
+        <ul class="nav navbar-nav">
+          <li><a href=""><b>Home</b></a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href=""><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
+
+          <li><a href=""><span class="glyphicon glyphicon-edit" ></span> &nbsp;Register </a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - -
+    - - Definir este bloco nos restantes templates - -
+    - - - - - - - - - - - - - - - - - - - - - - - - -->
+    {% block content %}
+    {% endblock %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </body>
+</html>
