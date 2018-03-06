@@ -9,4 +9,4 @@ from django.http import HttpResponse
 # =============================================================================
 
 def register(request):
-    return HttpResponse("This is the first view!")
+    return render(request, 'articles/register.html')
