@@ -128,4 +128,54 @@
     </div>
   </div>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    var a = true;
+    var times = 6;
+
+    function blink(){
+      element = document.getElementById("different_passwords_error");
+      if (times>0){
+        if (a==true){
+          element.style.color='white';
+          a = false;
+          setTimeout(blink, 100);
+        }
+        else{
+          element.style.color='red';
+          a = true;
+          setTimeout(blink, 400);
+        }
+        times--;
+      }
+      else{
+        //document.getElementById('different_passwords_error').style.display='none';
+        times = 6;
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Alterar as chamadas ao DOM pela sintaxe do jQuery...
+    // ... ou, alternativamente, não utilizar jQuery.
+    // -------------------------------------------------------------
+    $(document).ready(function(){
+  	   var $form = $('form');
+  	   $form.submit(function(){
+
+          // -------------------------------------------------------------
+          // Adicionalmente, substituir as referências aos identificadores
+          // dos elementos HTML por referências a campos extraídos da
+          // variável "form" (de acordo com o atributo "name")
+          // -------------------------------------------------------------
+          if (document.getElementById('password1').value!=document.getElementById('password2').value){
+            document.getElementById('different_passwords_error').style.display='block';
+            blink();
+            document.getElementById('password2').value='';
+            document.getElementById('password2').focus();
+            return false;
+          }
+  	   });
+  	});
+  </script>
+
 {% endblock %}
