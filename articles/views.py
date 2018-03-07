@@ -32,3 +32,12 @@ def register(request):
 
     # Método GET
     return render(request, 'articles/register.html')
+
+
+
+# =============================================================================
+# Login view ==================================================================
+# =============================================================================
+
+def login(request):
+    return HttpResponse("This is the login view")
