@@ -40,4 +40,4 @@ def register(request):
 # =============================================================================
 
 def login(request):
-    return HttpResponse("This is the login view")
+    return render(request, 'articles/login.html')

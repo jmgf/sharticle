@@ -1,0 +1,127 @@
+
+{% extends 'articles/base.html' %}
+
+{% block styles %}
+    <style>
+      .navbar-inverse .navbar-nav>li>a{
+        color: lightgreen;
+      }
+      span.glyphicon{
+        color:green
+      }
+      button a:link {
+        text-decoration: none;
+      }
+      .form-signin
+      {
+          max-width: 330px;
+          padding: 15px;
+          margin: 0 auto;
+      }
+      .form-signin .form-signin-heading, .form-signin .checkbox
+      {
+          margin-bottom: 10px;
+      }
+      .form-signin .checkbox
+      {
+          font-weight: normal;
+      }
+      .form-signin .form-control
+      {
+          position: relative;
+          font-size: 16px;
+          height: auto;
+          padding: 10px;
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+      }
+      .form-signin .form-control:focus
+      {
+          z-index: 0;
+      }
+      .form-signin input[type="text"]
+      {
+          margin-bottom: 10px;
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+      }
+      .form-signin input[type="password"]
+      {
+          margin-bottom: 10px;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+      }
+      .account-wall
+      {
+          margin-top: 20px;
+          padding: 40px 0px 20px 0px;
+          background-color: #f7f7f7;
+          -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+          -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+          box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+      }
+      .login-title
+      {
+          color: #555;
+          font-size: 18px;
+          font-weight: 400;
+          display: block;
+      }
+      .profile-img
+      {
+          width: 96px;
+          height: 96px;
+          margin: 0 auto 10px;
+          display: block;
+          -moz-border-radius: 50%;
+          -webkit-border-radius: 50%;
+          border-radius: 50%;
+      }
+      .need-help
+      {
+          margin-top: 10px;
+      }
+      .new-account
+      {
+          display: block;
+          margin-top: 10px;
+      }
+    </style>
+{% endblock %}
+
+{% block login_active %}class="active"{% endblock %}
+
+{% block content %}
+
+  <div class="container">
+    <br><br><br>
+    <div class="row">
+      <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3">
+        <div class="account-wall">
+          <h1 class="text-center">Login</h1>
+
+          <h1 class="text-center login-title">Introduza as suas credenciais para entrar</h1>
+
+          <span class="glyphicon glyphicon-user profile-img" style="color:#5cb85c; font-size:100px;"></span>
+
+          <form class="form-signin" method="POST" action="{% url 'articles:register' %}">
+            {% csrf_token %}
+
+            <input type="text" name="username" class="form-control text-center" placeholder="Nome de utilizador" required autofocus>
+            {% if user_already_exists %}
+            <p class="text-danger" style="border-bottom:10px;">Utilizador <b>{{ username }}</b> já existe!</p>
+            {% endif %}
+
+            <input type="password" name="password"  id="password1" class="form-control text-center" placeholder="Palavra-passe" required>
+
+            <button class="btn btn-lg btn-success btn-block" type="submit">Entrar</button>
+
+            <span class="clearfix"></span>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
