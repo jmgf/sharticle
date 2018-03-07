@@ -105,15 +105,19 @@
 
           <span class="glyphicon glyphicon-user profile-img" style="color:#5cb85c; font-size:100px;"></span>
 
-          <form class="form-signin" method="POST" action="{% url 'articles:register' %}">
+          <form class="form-signin" method="POST" action="{% url 'articles:login' %}">
             {% csrf_token %}
+
+            {% if wrong_credentials %}
+            <p class="text-danger" style="border-bottom:10px;">Incorrect username or password!</p>
+            {% endif %}
 
             <input type="text" name="username" class="form-control text-center" placeholder="Nome de utilizador" required autofocus>
             {% if user_already_exists %}
             <p class="text-danger" style="border-bottom:10px;">Utilizador <b>{{ username }}</b> já existe!</p>
             {% endif %}
 
-            <input type="password" name="password"  id="password1" class="form-control text-center" placeholder="Palavra-passe" required>
+            <input type="password" name="password"  id="password" class="form-control text-center" placeholder="Palavra-passe" required>
 
             <button class="btn btn-lg btn-success btn-block" type="submit">Entrar</button>
 

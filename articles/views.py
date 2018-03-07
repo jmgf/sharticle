@@ -4,7 +4,7 @@ from django.http import HttpResponse
 
 from django.contrib.auth.models import User
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login as auth_login
 
 from django.db import IntegrityError
 
@@ -40,4 +40,20 @@ def register(request):
 # =============================================================================
 
 def login(request):
+    # Método POST
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        # Check user credentials
+        user = authenticate(request, username = username, password = password)
+        if user is not None:
+            # Log in user
+            auth_login(request, user)
+            return HttpResponse("You have been successfully logged in, " + request.user.username  + "!")
+
+        # In case the user does not exist or the password is wrong
+        else:
+            context = { 'wrong_credentials': True }
+            return render(request, 'articles/login.html', context)
+    # Método GET
     return render(request, 'articles/login.html')
