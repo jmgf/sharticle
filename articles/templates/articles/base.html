@@ -30,9 +30,9 @@
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
-          <li><a href=""><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
+          <li {% block login_active %}{% endblock %}><a href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
 
-          <li {% block register_active %}{% endblock %}><a href=""><span class="glyphicon glyphicon-edit" ></span> &nbsp;Register </a></li>
+          <li {% block register_active %}{% endblock %}><a href="{% url 'articles:register' %}"><span class="glyphicon glyphicon-edit" ></span> &nbsp;Register </a></li>
         </ul>
       </div>
     </nav>
