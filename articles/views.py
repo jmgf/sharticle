@@ -57,3 +57,13 @@ def login(request):
             return render(request, 'articles/login.html', context)
     # Método GET
     return render(request, 'articles/login.html')
+
+
+
+# =============================================================================
+# Logout view =================================================================
+# =============================================================================
+
+def logout(request):
+
+    return HttpResponse("You have been logged out!");
