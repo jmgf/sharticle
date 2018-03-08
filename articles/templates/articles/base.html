@@ -29,10 +29,20 @@
           <li><a href=""><b>Home</b></a></li>
         </ul>
 
-        <ul class="nav navbar-nav navbar-right">
-          <li {% block login_active %}{% endblock %}><a href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
 
+        <ul class="nav navbar-nav navbar-right">
+
+          {% if request.user.is_authenticated %}
+            <li class="dropdown" {% block profile_active %}{% endblock %}>
+              <a class="dropdown-toggle" data-toggle="dropdown"  href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user"></span> &nbsp; {{ request.user.username }} </a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'articles:logout' %}"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Logout</a></li>
+              </ul>
+            </li>
+          {% else %}
+          <li {% block login_active %}{% endblock %}><a href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
           <li {% block register_active %}{% endblock %}><a href="{% url 'articles:register' %}"><span class="glyphicon glyphicon-edit" ></span> &nbsp;Register </a></li>
+          {% endif %}
         </ul>
       </div>
     </nav>
