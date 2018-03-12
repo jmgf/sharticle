@@ -2,7 +2,8 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from .models import SharticleUser
 
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
@@ -22,7 +23,7 @@ def register(request):
 
         try:
             # Create a user and save it to the database
-            user = User.objects.create_user(username, username + '@domain.com', password)
+            user = SharticleUser.objects.create_user(username, username + '@domain.com', password)
             return HttpResponse("Your account has been created, " + user.username + ".")
 
         # In case the user already exists
