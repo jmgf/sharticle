@@ -68,3 +68,13 @@ def login(request):
 def logout(request):
     auth_logout(request)
     return HttpResponse("You have been logged out!");
+
+
+
+# =============================================================================
+# Profile view ================================================================
+# =============================================================================
+
+def profile(request):
+    username = request.user.username
+    return HttpResponse("This is the profile view, " + username)
