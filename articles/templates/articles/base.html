@@ -40,6 +40,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a href="{% url 'articles:profile' request.user.username %}"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;My profile</a></li>
+                <li><a href="{% url 'articles:edit_profile' %}"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Edit profile</a></li>
                 <li><a href="{% url 'articles:logout' %}"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
               </ul>
             </li>
