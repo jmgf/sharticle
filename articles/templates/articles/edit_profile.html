@@ -1,0 +1,183 @@
+
+
+{% extends "articles/base.html" %}
+
+{% block styles %}
+  <style>
+    .jumbotron {
+      background-color: lightgreen;
+    }
+    .heavy {
+      font-weight: 750;
+    }
+    h3 i{
+        font-size: 300%;
+        color: green;
+    }
+    .form-control {
+      width:auto;
+    }
+    .profile-img {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 10px;
+        -moz-border-radius: 40%;
+        -webkit-border-radius: 40%;
+        border-radius: 40%;
+        //border: 1px solid green;
+    }
+    [contenteditable="true"]:active,
+    [contenteditable="true"]:focus{
+      border: 2px solid green;
+      border-radius: 5px;
+      cursor: default;
+      outline:none;
+    }
+    .right { text-align: right; }
+    .left { text-align: left; }
+  </style>
+{% endblock %}
+
+{% block edit_profile_active %}active{% endblock %}
+
+{% block content %}
+
+<!--
+<div class="jumbotron">
+    {% if request.user.username %}
+        <h1 class="text-center">
+          <span>
+            <img src="https://cdn-images-1.medium.com/fit/c/125/125/1*RzDIGPB3879XLEkvtnwoHA.jpeg" class="profile-img"></img>
+          </span>
+        <span style="padding: 10px; cursor:pointer;">{{ request.user.username }}</span></h1>
+    {% else %}<h1 class="text-center"> Please log in, stranger.</h1>{% endif %}
+</div>
+-->
+<div class="jumbotron">
+    <h1 class="text-center">
+      <span>
+        <img src="https://cdn-images-1.medium.com/fit/c/125/125/1*RzDIGPB3879XLEkvtnwoHA.jpeg" class="profile-img"></img>
+      </span>
+      <span style="padding: 10px;"> {{ request.user.username }} </span>
+    </h1>
+    {% if request.user.resume %}
+    <div class="row"  style="width:100%;">
+      <div class="col-lg-3">
+      </div>
+      <div class="col-lg-6">
+        <h3 class="text-center" style="font-weight:500;  cursor:pointer;" contenteditable="true" data-toggle="tooltip" title="Edit resume">
+          <!--<i class="glyphicon glyphicon-option-vertical pull-left"></i><i class="glyphicon glyphicon-option-vertical pull-right" style=""></i>{{ request.user.resume }}</h3>-->
+          <!--<i class="glyphicon glyphicon-menu-left pull-left"></i><i class="glyphicon glyphicon-menu-right pull-right" style=""></i>{{ request.user.resume }}</h3>-->
+          {{ request.user.resume }}</h3>
+          <!--<i class="glyphicon glyphicon-menu-right pull-left"></i><i class="glyphicon glyphicon-menu-left pull-right" style=""></i>{{ request.user.resume }}</h3>-->
+          <br>
+      </div>
+      <div class="col-lg-3">
+      </div>
+    </div>
+    {% endif %}
+    <br>
+    <div class="row">
+      <div class="col-lg-4">
+      </div>
+      <div class="col-lg-4"  style="color:green">
+        <div class="row">
+          <div class="col-lg-4">
+            <p class="text-center"><b class="heavy">{{ request.user.number_of_articles }}</b> Articles</p>
+          </div>
+          <div class="col-lg-4 text-center">
+            <p class="text-center"><b class="heavy">{{ request.user.number_of_followers }}</b> Followers</p>
+          </div>
+          <div class="col-lg-4">
+            <p class="text-center"><b class="heavy">{{ request.user.number_of_followees }}</b> Followees</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+      </div>
+    </div>
+</div>
+
+
+{% if request.user.username %}
+<div class="container">
+
+  <form class="form-horizontal" action="{% url 'articles:edit_profile' %}" method="POST">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <div class="col-sm-2">
+      </div>
+      <div class="col-sm-10">
+        <h3>Personal information</h3>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="first_name">First name:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" value="{{ request.user.first_name }}" size="{{ request.user.first_name | length }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="last_name">Last name:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" value="{{ request.user.last_name }}" size="{{ request.user.last_name | length }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Email:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="email" name="email" placeholder="Enter e-mail" value="{{ request.user.email }}" size="{{ request.user.email | length }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Save profile</button>
+      </div>
+    </div>
+  </form>
+
+
+  <form class="form-horizontal" action="{% url 'articles:edit_profile' %}" method="POST">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <div class="col-sm-2">
+      </div>
+      <div class="col-sm-10">
+        <h3>Change password</h3>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="pwd">Password:</label>
+      <div class="col-sm-10">
+        <input type="password" class="form-control" id="pwd" placeholder="Enter password" value="1y2Kd363l" size="10" pattern="([a-zA-Z]+[0-9]+[a-zA-Z0-9]*)|[0-9]+[a-zA-Z]+[a-zA-Z0-9]*">
+        <span class="help-block">Your password should contain numbers and letters.</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Change password</button>
+      </div>
+    </div>
+  </form>
+
+  <br><br>
+
+</div>
+{% endif %}
+
+
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>
+
+{% endblock %}
