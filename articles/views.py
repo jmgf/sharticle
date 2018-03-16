@@ -78,3 +78,12 @@ def logout(request):
 def profile(request, username):
     selected_user = SharticleUser.objects.get(username = username);
     return render(request, 'articles/profile.html', context = {'selected_user' : selected_user})
+
+
+
+# =============================================================================
+# Edit profile view ===========================================================
+# =============================================================================
+
+def edit_profile(request):
+    return HttpResponse("This is the edit_profile view")
