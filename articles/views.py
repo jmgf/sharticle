@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from django.http import HttpResponse
 
@@ -75,6 +75,6 @@ def logout(request):
 # Profile view ================================================================
 # =============================================================================
 
-def profile(request):
-    username = request.user.username
-    return HttpResponse("This is the profile view, " + username)
+def profile(request, username):
+    selected_user = SharticleUser.objects.get(username = username);
+    return render(request, 'articles/profile.html', context = {'selected_user' : selected_user})
