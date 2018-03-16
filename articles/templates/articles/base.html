@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Sharticle</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <style>
@@ -18,7 +18,8 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color:rgba(0,0,0,0.8">
+    <nav class="navbar navbar-inverse" style="background-color:rgba(0,0,0,0.8); margin-bottom:0px; border-radius:0px;">
+      <div class="container">
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="" style="color:lightgreen">
@@ -33,17 +34,24 @@
         <ul class="nav navbar-nav navbar-right">
 
           {% if request.user.is_authenticated %}
-            <li class="dropdown" {% block profile_active %}{% endblock %}>
-              <a class="dropdown-toggle" data-toggle="dropdown"  href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user"></span> &nbsp; {{ request.user.username }} </a>
+            <li class="dropdown {% block edit_profile_active %}{% endblock %}">
+              <a class="dropdown-toggle" data-toggle="dropdown"  href="{% url 'articles:login' %}">
+                <span class="glyphicon glyphicon-user"></span> &nbsp; {{ request.user.username }} <span class="caret"></span>
+              </a>
               <ul class="dropdown-menu">
-                <li><a href="{% url 'articles:logout' %}"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Logout</a></li>
+                <li><a href="{% url 'articles:profile' request.user.username %}"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;My profile</a></li>
+                <li><a href="{% url 'articles:logout' %}"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
               </ul>
             </li>
           {% else %}
+          <li><button type="button" class="btn btn-success navbar-btn" onclick="window.location='{% url 'articles:login' %}'">Log in</button></li>
+          <!--
           <li {% block login_active %}{% endblock %}><a href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
+          -->
           <li {% block register_active %}{% endblock %}><a href="{% url 'articles:register' %}"><span class="glyphicon glyphicon-edit" ></span> &nbsp;Register </a></li>
           {% endif %}
         </ul>
+      </div>
       </div>
     </nav>
 
@@ -54,6 +62,11 @@
     {% endblock %}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </body>
 </html>
