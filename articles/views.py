@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 
+from django.core.cache import cache
+
 from django.http import HttpResponse
 
 # from django.contrib.auth.models import User
