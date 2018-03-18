@@ -26,8 +26,8 @@
         border-radius: 40%;
         //border: 1px solid green;
     }
-    [contenteditable="true"]:active,
-    [contenteditable="true"]:focus{
+    [contenteditable="true"]{
+      padding: 10px;
       border: 2px solid green;
       border-radius: 5px;
       cursor: default;
@@ -60,16 +60,18 @@
       </span>
       <span style="padding: 10px;"> {{ request.user.username }} </span>
     </h1>
+    
     {% if request.user.resume %}
     <div class="row"  style="width:100%;">
       <div class="col-lg-3">
       </div>
       <div class="col-lg-6">
-        <h3 class="text-center" style="font-weight:500;  cursor:pointer;" contenteditable="true" data-toggle="tooltip" title="Edit resume">
-          <!--<i class="glyphicon glyphicon-option-vertical pull-left"></i><i class="glyphicon glyphicon-option-vertical pull-right" style=""></i>{{ request.user.resume }}</h3>-->
-          <!--<i class="glyphicon glyphicon-menu-left pull-left"></i><i class="glyphicon glyphicon-menu-right pull-right" style=""></i>{{ request.user.resume }}</h3>-->
-          {{ request.user.resume }}</h3>
-          <!--<i class="glyphicon glyphicon-menu-right pull-left"></i><i class="glyphicon glyphicon-menu-left pull-right" style=""></i>{{ request.user.resume }}</h3>-->
+        <h3 id="resume_content" contenteditable="true" class="text-center"
+         style="font-weight:500;  cursor:pointer;" data-toggle="tooltip"
+         title="Edit resume">{{ request.user.resume }}</h3>
+        <!--<i class="glyphicon glyphicon-option-vertical pull-left"></i><i class="glyphicon glyphicon-option-vertical pull-right" style=""></i>{{ request.user.resume }}</h3>-->
+        <!--<i class="glyphicon glyphicon-menu-left pull-left"></i><i class="glyphicon glyphicon-menu-right pull-right" style=""></i>{{ request.user.resume }}</h3>-->
+        <!--<i class="glyphicon glyphicon-menu-right pull-left"></i><i class="glyphicon glyphicon-menu-left pull-right" style=""></i>{{ request.user.resume }}</h3>-->
           <br>
       </div>
       <div class="col-lg-3">
@@ -105,6 +107,8 @@
   <form class="form-horizontal" action="{% url 'articles:edit_profile' %}" method="POST">
     {% csrf_token %}
 
+    <input type="hidden" id="resume" name="resume" placeholder="Enter a resume" value="{{ request.user.resume }}">
+
     <div class="form-group">
       <div class="col-sm-2">
       </div>
@@ -136,7 +140,7 @@
 
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default">Save profile</button>
+        <button type="submit" class="btn btn-default" onclick="document.getElementById('resume').value = document.getElementById('resume_content').innerHTML">Save profile</button>
       </div>
     </div>
   </form>

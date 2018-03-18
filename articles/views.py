@@ -90,8 +90,8 @@ def edit_profile(request):
         if request.method == "POST":
             theUser = request.user
             # Update user's resume
-            #if request.POST['resume']:
-            #    request.user.resume = request.POST['resume']
+            if request.POST['resume']:
+                request.user.resume = request.POST['resume']
             # Update user's first name
             if request.POST['first_name']:
                 theUser.first_name = request.POST['first_name']
