@@ -1,74 +1,18 @@
-
 {% extends 'articles/base.html' %}
 
+{% load static %}
+
 {% block styles %}
-    <style>
-      button a:link {
-        text-decoration: none;
-      }
-      .form-signin
-      {
-          max-width: 330px;
-          padding: 15px;
-          margin: 0 auto;
-      }
-      .form-signin .form-signin-heading, .form-signin .checkbox
-      {
-          margin-bottom: 10px;
-      }
-      .form-signin .form-control
-      {
-          position: relative;
-          font-size: 16px;
-          height: auto;
-          padding: 10px;
-          -webkit-box-sizing: border-box;
-          -moz-box-sizing: border-box;
-          box-sizing: border-box;
-      }
-      .form-signin .form-control:focus
-      {
-          z-index: 0;
-      }
-      .form-signin input[type="text"]
-      {
-          margin-bottom: 10px;
-          border-bottom-left-radius: 0;
-          border-bottom-right-radius: 0;
-      }
-      .form-signin input[type="password"]
-      {
-          margin-bottom: 10px;
-          border-top-left-radius: 0;
-          border-top-right-radius: 0;
-      }
-      .profile-img
-      {
-          width: 96px;
-          height: 96px;
-          margin: 0 auto 10px;
-          display: block;
-          -moz-border-radius: 50%;
-          -webkit-border-radius: 50%;
-          border-radius: 50%;
-      }
-      .need-help
-      {
-          margin-top: 10px;
-      }
-      .new-account
-      {
-          display: block;
-          margin-top: 10px;
-      }
+    <style>      
     </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
 {% endblock %}
 
 {% block login_active %}class="active"{% endblock %}
 
 {% block content %}
 
-  <div class="container" style="margin-top:50px;">
+  <div class="container after-nav">
     <br><br><br>
     <div class="row">
       <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3">
@@ -84,22 +28,19 @@
           </div>
 
           <br>
-          <span class="glyphicon glyphicon-user profile-img" style="color:#5cb85c; font-size:100px;"></span>
+          <span class="glyphicon glyphicon-user auth-img"></span>
           <br>
 
           <form class="form-signin" method="POST" action="{% url 'articles:login' %}">
             {% csrf_token %}
 
             {% if wrong_credentials %}
-            <p class="text-danger" style="border-bottom:10px;">Incorrect username or password!</p>
+            <p class="text-danger">Incorrect username or password!</p>
             {% endif %}
 
-            <input type="text" name="username" class="form-control text-center" placeholder="Nome de utilizador" required autofocus>
-            {% if user_already_exists %}
-            <p class="text-danger" style="border-bottom:10px;">Utilizador <b>{{ username }}</b> já existe!</p>
-            {% endif %}
+            <input type="text" name="username" class="form-control auth-form-control text-center" placeholder="username" required autofocus>
 
-            <input type="password" name="password"  id="password" class="form-control text-center" placeholder="Palavra-passe" required>
+            <input type="password" name="password"  id="password" class="form-control auth-form-control text-center" placeholder="password" required>
 
             <button class="btn btn-lg btn-success btn-block" type="submit">Entrar</button>
 
@@ -109,5 +50,35 @@
       </div>
     </div>
   </div>
+
+  <script>
+      function doOnload() {
+          // Do the downloading awhile AFTER the onload.
+          setTimeout("downloadComponents()", 3000);
+      }
+      
+      window.onload = doOnload;
+
+      // Download external components dynamically using JavaScript.
+      function downloadComponents() {
+          downloadCSS("{% static 'articles/register_style.css' %}");
+      }
+      
+      // Download a stylesheet dynamically.
+      function downloadCSS(url) {
+          var elem = document.createElement("link");
+          elem.rel = "stylesheet";
+          elem.type = "text/css";
+          elem.href = url;
+          document.body.appendChild(elem);
+      }
+      
+      // Download a script dynamically.
+      function downloadJS(url) {
+          var elem = document.createElement("script");
+          elem.src = url;
+          document.body.appendChild(elem);
+      }
+      </script>
 
 {% endblock %}

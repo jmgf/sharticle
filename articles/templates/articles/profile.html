@@ -1,47 +1,23 @@
-
 {% extends "articles/base.html" %}
 
+{% load static %}
 
 {% block styles %}
-
   <style>
-    .jumbotron {
-      // background-color: rgb(0,180,0);
-      background-color: lightgreen;
-    }
-    .heavy {
-      font-weight: 750;
-    }
-    h3 i{
-        font-size: 300%;
-        color: green;
-    }
-    .form-control {
-      width:auto;
-    }
-    .profile-img {
-        width: 96px;
-        height: 96px;
-        margin: 0 auto 10px;
-        -moz-border-radius: 40%;
-        -webkit-border-radius: 40%;
-        border-radius: 40%;
-        //border: 1px solid green;
-    }
   </style>
-
+  <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
 {% endblock %}
 
 
 {% block content %}
 
-<div class="jumbotron" style="margin-top:50px;">
+<div class="jumbotron profile-header">
     <h1 class="text-center">
 
       {% if selected_user.profileImagePath %}
         <span><img src="{{ selected_user.profileImagePath }}" class="profile-img"></img></span>
       {% else %}
-        <span><img src="http://www.freeiconspng.com/uploads/profile-icon-9.png" class="profile-img"></img></span>
+        <span class="glyphicon glyphicon-user profile-img"></span>
       {% endif %}
       <span> {{ selected_user.username }} </span>
 
@@ -52,7 +28,7 @@
     <div class="row">
       <div class="col-lg-4">
       </div>
-      <div class="col-lg-4"  style="color:green">
+      <div class="col-lg-4 user_stats">
         <div class="row">
           <div class="col-sm-4">
             <p class="text-center"><b class="heavy">{{ selected_user.number_of_articles }}</b> Articles</p>
@@ -70,15 +46,15 @@
     </div>
 
     {% if selected_user.resume %}
-    <div class="row"  style="width:100%;">
+    <div class="row">
       <div class="col-lg-3">
       </div>
       <div class="col-lg-6">
-        <h3 class="text-center" style="font-weight: 500">
-          <!--<i class="glyphicon glyphicon-option-vertical pull-left"></i><i class="glyphicon glyphicon-option-vertical pull-right" style=""></i>{{ selected_user.resume }}</h3>-->
-          <!--<i class="glyphicon glyphicon-menu-left pull-left"></i><i class="glyphicon glyphicon-menu-right pull-right" style=""></i>{{ selected_user.resume }}</h3>-->
+        <h3 class="text-center">
+          <!--<i class="glyphicon glyphicon-option-vertical pull-left"></i><i class="glyphicon glyphicon-option-vertical pull-right"></i>{{ selected_user.resume }}</h3>-->
+          <!--<i class="glyphicon glyphicon-menu-left pull-left"></i><i class="glyphicon glyphicon-menu-right pull-right"></i>{{ selected_user.resume }}</h3>-->
           {{ selected_user.resume }}</h3>
-          <!--<i class="glyphicon glyphicon-menu-right pull-left"></i><i class="glyphicon glyphicon-menu-left pull-right" style=""></i>{{ selected_user.resume }}</h3>-->
+          <!--<i class="glyphicon glyphicon-menu-right pull-left"></i><i class="glyphicon glyphicon-menu-left pull-right"></i>{{ selected_user.resume }}</h3>-->
           <br>
       </div>
       <div class="col-lg-3">
@@ -117,7 +93,7 @@
     <div class="form-group">
       <label class="control-label col-sm-4" for="name">Name:</label>
       <div class="col-sm-8">
-        <input type="text" readonly class="form-control" id="name" placeholder="Enter name" value="{{selected_user.first_name}} {{selected_user.last_name}}">
+        <input type="text" readonly class="form-control profile-form-control" id="name" placeholder="Enter name" value="{{selected_user.first_name}} {{selected_user.last_name}}">
       </div>
     </div>
     {% endif %}
@@ -126,7 +102,7 @@
     <div class="form-group">
       <label class="control-label col-sm-4" for="email">Email:</label>
       <div class="col-sm-8">
-        <input type="text" readonly class="form-control" id="email" placeholder="Enter e-mail" value="{{selected_user.email}}" size="{{selected_user.email | length}}">
+        <input type="text" readonly class="form-control profile-form-control" id="email" placeholder="Enter e-mail" value="{{selected_user.email}}" size="{{selected_user.email | length}}">
       </div>
     </div>
     {% endif %}
@@ -134,7 +110,7 @@
     <div class="form-group">
       <label class="control-label col-sm-4" for="joined_date">Joined in:</label>
       <div class="col-sm-8">
-        <input type="date" readonly class="form-control" id="joined_date" placeholder="Enter join date" value="{{selected_user.date_joined.year}}-0{{selected_user.date_joined.month}}-{{selected_user.date_joined.day}}">
+        <input type="date" readonly class="form-control profile-form-control" id="joined_date" placeholder="Enter join date" value="{{selected_user.date_joined.year}}-0{{selected_user.date_joined.month}}-{{selected_user.date_joined.day}}">
       </div>
     </div>
 

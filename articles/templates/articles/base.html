@@ -2,23 +2,17 @@
   <head>
     <title>Sharticle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <style>
-      .navbar-inverse .navbar-nav>li>a{
-        color: lightgreen;
-      }
-      span.glyphicon{
-        color:green
-      }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     {% block styles %}
     {% endblock %}
   </head>
 
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color:rgba(5,30,20,1.0); margin-bottom:0px; border-radius:0px;">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="container-fluid">
           <div class="navbar-header">
@@ -51,7 +45,7 @@
                 </ul>
               </li>
             {% else %}
-            <li {% block login_active %}{% endblock %}><a class="btn btn-success navbar-btn" style="padding: 6px 15px 6px 15px; color:white" href="{% url 'articles:login' %}">Log in</a></li>
+            <li {% block login_active %}{% endblock %}><a id="login-btn" class="btn btn-success navbar-btn" href="{% url 'articles:login' %}">Log in</a></li>
             <!--<li><button type="button" class="btn btn-success navbar-btn" onclick="window.location.href='{% url 'articles:login' %}'">Log in</button></li>-->
             <!--
             <li ><a href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
