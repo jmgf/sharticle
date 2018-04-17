@@ -26,55 +26,69 @@
 <div class="jumbotron profile-header">
     <h1 class="text-center">
       {% if request.user.profileImagePath %}
-        <span><img src="{{ request.user.profileImagePath }}" class="profile-img"></img></span>
+        <span><img src="{{ request.user.profileImagePath }}" height="90" style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Edit image" class="profile-img"></img></span>
       {% else %}
         <span class="glyphicon glyphicon-user profile-img"></span>
       {% endif %}
-      <span> {{ request.user.username }} </span>
+      {% if request.user.first_name %}
+        <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
+      {% else %}
+        <span>{{ request.user.username }}</span>
+      {% endif %}
     </h1>
-    
-    {% if request.user.resume %}
-    <div class="row">
-      <div class="col-lg-3">
-      </div>
-      <div class="col-lg-6">
-        <h3 id="resume_content" contenteditable="true" class="text-center" data-toggle="tooltip" title="Edit resume">{{ request.user.resume }}</h3>
-        <!--<i class="glyphicon glyphicon-option-vertical pull-left"></i><i class="glyphicon glyphicon-option-vertical pull-right"></i>{{ request.user.resume }}</h3>-->
-        <!--<i class="glyphicon glyphicon-menu-left pull-left"></i><i class="glyphicon glyphicon-menu-right pull-right"></i>{{ request.user.resume }}</h3>-->
-        <!--<i class="glyphicon glyphicon-menu-right pull-left"></i><i class="glyphicon glyphicon-menu-left pull-right"></i>{{ request.user.resume }}</h3>-->
-          <br>
-      </div>
-      <div class="col-lg-3">
-      </div>
-    </div>
-    {% endif %}
+
     <br>
+
     <div class="row">
-      <div class="col-lg-4">
+      <div class="col-md-4">
       </div>
-      <div class="col-lg-4 user_stats">
+      <div class="col-md-4 user_stats">
         <div class="row">
-          <div class="col-lg-4">
+          <div class="col-sm-4">
             <p class="text-center"><b class="heavy">{{ request.user.number_of_articles }}</b> Articles</p>
           </div>
-          <div class="col-lg-4 text-center">
+          <div class="col-sm-4 text-center">
             <p class="text-center"><b class="heavy">{{ request.user.number_of_followers }}</b> Followers</p>
           </div>
-          <div class="col-lg-4">
+          <div class="col-sm-4">
             <p class="text-center"><b class="heavy">{{ request.user.number_of_followees }}</b> Followees</p>
           </div>
         </div>
       </div>
-      <div class="col-lg-4">
+      <div class="col-md-4">
       </div>
     </div>
+    
+    <div class="row">
+      <div class="col-lg-3">
+      </div>
+      <div class="col-lg-6">
+        <h3 id="resume_content" contenteditable="true" class="text-center" data-toggle="tooltip" title="Edit resume">
+            {% if request.user.resume %}
+              {{ request.user.resume }}
+            {% endif %}
+        </h3>
+        <br>
+        <!--<i class="glyphicon glyphicon-option-vertical pull-left"></i><i class="glyphicon glyphicon-option-vertical pull-right"></i>{{ request.user.resume }}</h3>-->
+        <!--<i class="glyphicon glyphicon-menu-left pull-left"></i><i class="glyphicon glyphicon-menu-right pull-right"></i>{{ request.user.resume }}</h3>-->
+        <!--<i class="glyphicon glyphicon-menu-right pull-left"></i><i class="glyphicon glyphicon-menu-left pull-right"></i>{{ request.user.resume }}</h3>-->
+      </div>
+      <div class="col-lg-3">
+      </div>
+    </div>
+    
+    <div class="text-center">
+      <button id="save_profile_button" form="profile_form" type="submit" class="btn btn-success active" onclick="document.getElementById('resume').value = document.getElementById('resume_content').innerHTML">Save profile</button>
+    </div>
+
+    
 </div>
 
 
 {% if request.user.username %}
 <div class="container">
 
-  <form class="form-horizontal" action="{% url 'articles:edit_profile' %}" method="POST">
+  <form id="profile_form" class="form-horizontal" action="{% url 'articles:edit_profile' %}" method="POST">
     {% csrf_token %}
 
     <input type="hidden" id="resume" name="resume" placeholder="Enter a resume" value="{{ request.user.resume }}">
@@ -110,13 +124,13 @@
 
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default" onclick="document.getElementById('resume').value = document.getElementById('resume_content').innerHTML">Save profile</button>
+        <button type="submit" class="btn btn-success active" onclick="document.getElementById('resume').value = document.getElementById('resume_content').innerHTML">Save profile</button>
       </div>
     </div>
   </form>
 
 
-  <form class="form-horizontal" action="{% url 'articles:edit_profile' %}" method="POST">
+  <!--<form class="form-horizontal" action="{% url 'articles:edit_profile' %}" method="POST">
     {% csrf_token %}
 
     <div class="form-group">
@@ -140,7 +154,7 @@
         <button type="submit" class="btn btn-default">Change password</button>
       </div>
     </div>
-  </form>
+  </form>-->
 
   <br><br>
 
@@ -152,6 +166,13 @@
   $(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip();
   });
+  var resume = '{{ request.user.resume }}';
+  function checkChanges(){
+    if (document.getElementById('resume_content').value != resume) 
+      document.getElementById('save_profile_button').disabled = false;
+    else
+      document.getElementById('save_profile_button').disabled = true;
+  }
 </script>
 
 {% endblock %}

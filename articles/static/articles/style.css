@@ -1,4 +1,4 @@
-/* GENERAL NAVBAR STYLES */
+/* NAVBAR STYLES */
 
 .navbar-inverse .navbar-nav>li>a{
     color: lightgreen;
@@ -16,10 +16,36 @@ span.glyphicon{
   
 
 
+
+
+/* GENERAL STYLES */
+
 .after-nav {
     margin-top: 50px;
 }
+
+.row{
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: rgba(5,30,20,0.9); 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
   
+
+
 
   
 
@@ -66,6 +92,8 @@ button a:link {
 }
 .auth-img
 {
+    color:#5cb85c;
+    font-size:100px;
     width: 96px;
     height: 96px;
     margin: 0 auto 10px;
@@ -73,6 +101,10 @@ button a:link {
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
     border-radius: 50%;
+}
+#different_passwords_error
+{
+    display: none;
 }
 
 
@@ -93,12 +125,20 @@ h3 i{
     color: green;
 }
 .profile-img {
-    width: 96px;
-    height: 96px;
+    width: auto;
+    color:#5cb85c;
+    font-size: 60px;
+    vertical-align: middle;
     margin: 0 auto 10px;
     -moz-border-radius: 40%;
     -webkit-border-radius: 40%;
     border-radius: 40%;
+}
+
+@media only screen and (max-width:767px){
+    .profile-img{
+        display: block;
+    }
 }
 .profile-form-control {
     width:auto;
@@ -107,6 +147,16 @@ h3 i{
     padding: 10px;
     border: 2px solid green;
     border-radius: 5px;
-    cursor: default;
-    outline:none;
+    cursor: pointer;
+    outline: none;
+}
+.user_stats{
+    color:green;
+}
+#resume_stuff{
+    padding: 10px;
+    border: 2px solid lightgreen;
+}
+#resume_content:focus{
+    cursor: text;
 }
