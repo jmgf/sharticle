@@ -2,6 +2,8 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 
+from djongo import models as djongo_models
+
 # Create your models here.
 
 
@@ -9,6 +11,7 @@ from django.contrib.auth.models import AbstractUser
 # Extends Django's default user implementation
 class SharticleUser(AbstractUser):
     resume = models.CharField(max_length = 512, null=True, blank=True)
+    number_of_drafts = models.IntegerField(default = 0)
     number_of_articles = models.IntegerField(default = 0)
     number_of_followers = models.IntegerField(default = 0)
     number_of_followees = models.IntegerField(default = 0)

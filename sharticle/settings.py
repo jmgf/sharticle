@@ -84,11 +84,8 @@ WSGI_APPLICATION = 'sharticle.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'djongo',
         'NAME': 'sharticle1',
-        'USER': 'joao',
-        'PASSWORD': '',
-        'HOST': 'localhost',
     }
 }
 
