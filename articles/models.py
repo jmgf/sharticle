@@ -33,8 +33,10 @@ class Article(djongo_models.Model):
     date_last_modified = djongo_models.DateTimeField(auto_now_add = True)
     number_of_comments = djongo_models.IntegerField(default = 0)
     rating = djongo_models.FloatField(default = 0)
+    content = djongo_models.CharField(max_length = 4096, default='')
+    already_published = djongo_models.BooleanField(default = False)
 
     objects = djongo_models.DjongoManager()
 
     def __str__(self):
-        return self.author + ' (' + str(self.pub_date) + ')' + ' : "' + self.title  + '"'
+        return '"' + self.title + '" - '  + self.author + ' (' + str(self.pub_date) + ')'
