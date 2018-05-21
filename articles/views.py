@@ -200,3 +200,59 @@ def edit_profile(request):
 
 
 
+# =============================================================================
+# ARTICLES view ===============================================================
+# =============================================================================
+
+def draft_articles_view(request):    
+    user = request.user
+    articles = Article.objects.filter(author = user.username, already_published = False)
+    response = render(request, 'articles/articles.html', context = {'drafts': True, 'articles': articles})
+    return response
+
+
+
+def published_articles_view(request):    
+    user = request.user
+    articles = Article.objects.filter(author = user.username, already_published = True)
+    response = render(request, 'articles/articles.html', context = {'published': True, 'articles': articles})
+    return response
+
+
+
+
+
+def json_published_articles(request):
+    # Get list of articles from db
+    user = request.user
+    articles = Article.objects.filter(author = user.username, already_published = True)  
+
+    # Serialize response in JSON format
+    json_data = { 'articles': list(articles.values()) }
+    return JsonResponse(json_data)
+
+
+
+def json_draft_articles(request):
+    # Get list of articles from db
+    user = request.user
+    articles = Article.objects.filter(author = user.username, already_published = False)
+
+    # Serialize response in JSON format
+    json_data = { 'articles': list(articles.values()) }
+    return JsonResponse(json_data)
+
+
+
+
+
+# =============================================================================
+# EDIT ARTICLE view ===========================================================
+# =============================================================================
+
+def edit_article(request, title):    
+    article = Article.objects.get(id = int(title))
+    #a = Article(title='Birds are the flying singers of Nature', description='Do you know the benefits of having birds around? Find out here!', author='jmgf', image_path='https://www.gettyimages.ie/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg')
+    #a.save()
+    response = render(request, 'articles/edit_article.html', context = {'article': article})
+    return response

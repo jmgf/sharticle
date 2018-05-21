@@ -1,0 +1,449 @@
+{% extends "articles/base.html" %}
+
+{% load static %}
+
+{% block styles %}
+<style>
+    .badge {
+        /* color: green; */
+        background-color: lightgray;
+    }
+    .article-box {
+        overflow: hidden;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .article-box:hover{
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    .article-box:hover h3{
+        text-shadow: 1px 1px 2px rgb(128,128,128);
+    }
+
+
+    .ellipsed {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        /* number of lines to show */
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+    }
+
+    .article-box-content {
+        cursor: pointer;
+    }
+
+    @media screen and (max-width: 767px){
+        .article-box-content {
+            padding: 10px 20px 10px 20px;
+            max-height: 250px;
+        }
+    }
+    @media screen and (min-width: 768px){
+        .article-box-content {
+            padding: 10px 20px 10px 20px;
+            height: 250px;
+        }
+    }
+
+    .article-box-image {
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+        width: 100%;
+        height: 100%;
+        max-height: 250px;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
+        text-align: center;
+        font-size: 30px;
+        display: table;
+    }
+
+    .article-box-controls {
+        background-color: rgba(144, 238, 144,0);
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        display: table;
+        font-size: 1px;
+    }
+
+    .article-box-controls:hover {
+        background-color: rgba(200,200,200,0.7); 
+        font-size: 40px;
+    }
+
+    .article-box-controls span:hover {
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .col-sm-6 {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .loader {
+        border: 8px solid lightgreen;
+        -webkit-animation: spin 1s linear infinite;
+        animation: spin 0.8s linear infinite;
+        border-top: 8px solid green;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+
+    /* Safari loader */
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+
+</style>
+<link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
+{% endblock %}
+
+{% block articles_active %}class="active"{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron" style="background: linear-gradient(lightgreen, white); margin-top: 50px;">
+    <h1 class="text-center">Articles</h1>
+</div>
+
+
+<div class="container">
+    <!-- |  DRAFTS  |  PUBLISHED  |  NEW_DRAFT  | -->
+    <div>
+        <div class="pull-right">
+            <button class="btn btn-primary">New draft</button>
+        </div>
+        <div>
+            <ul class="nav nav-tabs">
+                <li{% if drafts %} class="active" {% endif %}><a data-toggle="pill" href="#draft_articles" onclick="loadArticles(this, drafts = false, published = true)">Drafts <span class="badge">{{ user.number_of_drafts }}</span></a></li>
+                <li{% if not drafts %} class="active" {% endif %}><a data-toggle="pill" href="#published_articles" onclick="loadArticles(this, drafts = true, published = false)">Published <span class="badge">{{ user.number_of_articles }}</span></a></li>
+                
+                <script>
+                    function edit_article_url(id){
+                        return '/edit/' + id + '/';
+                    }
+
+                    function loadArticles(element, drafts = false, published = false){
+                        // In case the action is legit (and not a random click)
+                        if (element.parentElement.className!='active'){
+                            // Set the window location
+                            if (drafts) history.pushState(null, 'published_articles', '/articles/published/');
+                            else history.pushState(null, 'draft_articles', '/articles/drafts/');
+                            // Load the articles
+                            if (drafts) url = "{% url 'articles:json_published_articles' %}";
+                            else url = "{% url 'articles:json_draft_articles' %}";
+                            $.get(url, function(data, status){
+                                // Hide the loader circle
+                                if (drafts) document.getElementById("published_articles_loader").style.display = 'none';
+                                else document.getElementById("draft_articles_loader").style.display = 'none';
+                                if (data!=null){
+                                    var html = '';
+                                    data.articles.forEach(article => {
+                                        html += `
+                                            <div class="col-md-6">
+                                                <div class="article-box">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="article-box-image" style="background-image: url('${article.image_path }');">
+                                                                <div class="article-box-controls">
+                                                                    <p style="display: table-cell; vertical-align: middle">
+                                                                        <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
+                                                                        <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
+                                                                        <a href="${ edit_article_url(article.id) }"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6" onclick="window.location.href = '${ edit_article_url(article.id) }'">
+                                                            <div class="article-box-content">
+                                                                <div class="article-title">
+                                                                    <h3 style="margin-bottom:0px;">${ article.title }</h3>
+                                                                    <p class="ellipsed">${ article.description }</p>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
+                                                                    <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
+                                                                    <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; ${ article.pub_date }</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                        if (drafts) document.getElementById("published_articles_content").innerHTML = html;
+                                        else document.getElementById("draft_articles_content").innerHTML = html;
+                                    });
+                                }
+                            });
+                        }
+                    }
+                </script>
+                
+            </ul>
+        </div>    
+    </div>
+
+
+
+    
+    <!-- |  Articles (drafts and published)  | -->
+    <div class="tab-content">
+        <!-- |  Drafts  | -->
+        <div id="draft_articles" class="tab-pane fade in {% if drafts %} active {% endif %}">
+            <br>
+            <div class="row" id="draft_articles_content">
+                {% if drafts %}
+                    {% for article in articles %}
+                        <div class="col-md-6">
+                            <div class="article-box">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="article-box-image" style="background-image: url('{{ article.image_path }}');">
+                                            <div class="article-box-controls">
+                                                <p style="display: table-cell; vertical-align: middle">
+                                                    <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
+                                                    <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
+                                                    <a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6" onclick="window.location.href = '{% url "articles:edit_article" article.id %}'">
+                                        <div class="article-box-content">
+                                            <div class="article-title">
+                                                <h3 style="margin-bottom:0px;">{{ article.title }}</h3>
+                                                <p class="ellipsed">{{ article.description }}</p>
+                                            </div>
+                                            <div>
+                                                <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
+                                                <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
+                                                <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.pub_date }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="delete_article_modal_{{ article.id }}" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+                            
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>Do you really wish to delete the current article?</h4>
+                                    <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
+                                </div>
+                                <div class="modal-footer">
+                                    <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </div>
+                                </div>
+                            
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div id="draft_articles_loader" class="loader"></div>
+                {% endif %}
+            </div>
+
+            <!--
+            <div class="row">
+                <br>
+                <div class="col-md-6">
+                    <div class="article-box" onclick="window.location.href='/article/edit/@why-are-beaches-all-around-us/'">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="article-box-image" style="background-image: url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg');">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="article-box-content">
+                                    <h3 style="margin-bottom:0px;">Beaches are all around us!</h3>
+                                    <p>A beach user guide for people who usually go to beaches and need a guide for it.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="article-box">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="article-box-image" style="background-image: url('https://www.gettyimages.ie/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg');">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="article-box-content">
+                                    <h3 style="margin-bottom:0px;">Article title 2</h3>
+                                    <p>Some small description 2</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="article-box">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="article-box-image" style="background-image: url('https://www.autocar.co.uk/sites/autocar.co.uk/files/styles/body-image/public/mclaren-720s_0.jpg?itok=wZbSZ3FZ');">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="article-box-content">
+                                    <h3 style="margin-bottom:0px;">Article title 3</h3>
+                                    <p>Some small description 3, which shall span more than one line</p>
+                                    <br><br>
+                                    <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
+                                    <h4><a href="/profile/@jmgf/">jmgf</a></h4>
+                                    <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; 12 March 2018</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="article-box">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="article-box-image" style="background-image: url('https://robbreportedit.files.wordpress.com/2017/12/crn-86m-explorer-yacht.jpg');">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="article-box-content">
+                                    <h3 style="margin-bottom:0px;">Article title 4</h3>
+                                    <p>Some small description 4</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>       
+            -->     
+        </div>
+
+
+        
+
+        <!-- |  Published  | -->
+        <div id="published_articles" class="tab-pane fade in {% if published %} active {% endif %}">
+            <br>
+            <div class="row" id="published_articles_content">
+            {% if published %}
+                {% for article in articles %}
+                    <div class="col-md-6">
+                        <div class="article-box">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="article-box-image" style="background-image: url('{{ article.image_path }}');">
+                                        <div class="article-box-controls">
+                                            <p style="display: table-cell; vertical-align: middle">
+                                                <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
+                                                <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
+                                                <a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6" onclick="window.location.href = '{% url "articles:edit_article" article.id %}'">
+                                    <div class="article-box-content">
+                                        <div class="article-title">
+                                            <h3 style="margin-bottom:0px;">{{ article.title }}</h3>
+                                            <p class="ellipsed">{{ article.description }}</p>
+                                        </div>
+                                        <div>
+                                            <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
+                                            <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
+                                            <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.pub_date }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="delete_article_modal_{{ article.id }}" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                        
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                            </div>
+                            <div class="modal-body">
+                                <h4>Do you really wish to delete the current article?</h4>
+                                <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
+                            </div>
+                            <div class="modal-footer">
+                                <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                            </div>
+                        
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div id="published_articles_loader" class="loader"></div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+<!--
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<div class="container">
+    {% for article in articles %}
+    <div class="col-sm-4 text-center" style="margin-bottom:50px; padding: 10px;">
+        <h2>{{ article.title }}</h2>
+        <h4>By @{{ article.author }} ({{ article.pub_date }})</h4>
+        <hr>
+        <p>@{{ article.only_comment.author }}<b> : {{ article.only_comment.text }} (</b>{{ article.only_comment.date }})</p>
+    </div>
+    {% endfor %}
+    <a href="/articles/">ARTICLES</a>
+    awfjoafnwa
+    <a onclick="history.pushState({'foo':'bar'}, 'second_div', './login/');">ARTICLES</a>
+    <form>
+
+    </form>
+</div>
+-->
+{% endblock %}

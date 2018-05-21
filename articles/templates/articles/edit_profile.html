@@ -78,7 +78,7 @@
     </div>
     
     <div class="text-center">
-      <button id="save_profile_button" form="profile_form" type="submit" class="btn btn-success active" onclick="document.getElementById('resume').value = document.getElementById('resume_content').innerHTML">Save profile</button>
+      <button id="save_profile_button" form="profile_form" type="submit" class="btn btn-success active" onclick="document.getElementById('resume').value = document.getElementById('resume_content').innerHTML.replace(/^\s+|\s+$/g, '')">Save profile</button>
     </div>
 
     

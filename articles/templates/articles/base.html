@@ -28,6 +28,7 @@
           <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
               <li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>
+              <li {% block articles_active %}{% endblock %}><a class="text-center" href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-file"></span> &nbsp; <b>Articles</b></a></li>
             </ul>
 
 

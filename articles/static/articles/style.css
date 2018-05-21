@@ -115,7 +115,8 @@ button a:link {
 
 .profile-header {
     margin-top:50px;
-    background-color: lightgreen;
+    /*background-color: lightgreen;*/
+    background: linear-gradient(white,lightgreen);
 }
 .heavy {
     font-weight: 750;

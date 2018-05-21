@@ -1,0 +1,283 @@
+{% extends "articles/base.html" %}
+
+{% load static %}
+
+{% block styles %}
+
+<style>
+    body {
+        word-wrap: break-word;
+        text-overflow: elipsis;
+    }
+    .actions-menu {
+        position: fixed;
+        left: 0px;
+        top: 50px;
+        height: 100%;
+        width: 100px;
+        /* background-color: lightgreen; */
+        font-size: 200%;
+        text-align: center;
+    }
+    h2 {
+        margin-top: 60px;
+        margin-bottom: 40px;
+        padding: 0% 5% 0% 5%;
+        font-weight: 550;
+    }
+    .action-button {
+        margin: 10px 5px 0px 10px;
+        padding: 10px 10px 10px 10px;
+        border-radius: 100px;        
+        text-indent: 0px;   
+        border:2px solid green;
+        background-color: white;
+        cursor: pointer;
+        color: green;
+    }
+    .action-button:hover {
+        color: white;
+        background-color: green;
+        border-color: white;
+        text-shadow: 2px 2px 20px lightgreen;
+
+    }
+    .row {
+        margin: 0px;
+    }
+
+    /*===============================*/
+    /*============  DnD  ============*/
+    /*===============================*/
+
+    [draggable] {
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        /* Required to make elements draggable in old WebKit */
+        -khtml-user-drag: element;
+        -webkit-user-drag: element;
+    }
+
+    #columns {
+        list-style-type: none;
+    }
+
+    .column {
+        cursor: move;
+        text-indent: 5%;
+        padding: 0% 5% 0% 5%;
+    }
+    .column header {
+        height: 20px;
+        width: 150px;
+        color: black;
+        background-color: #ccc;
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+        border-radius: 10px;
+        border: 2px solid #666666;
+    }
+
+    .column.dragElem {
+        opacity: 0.4;
+    }
+    .column.over {
+        border-top: 2px solid lightgreen;
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="jumbotron" style="background-color: white; margin-bottom: 0px; margin-top: 50px;">
+    <div class="container">
+        <h1 class="text-center" style="text-shadow: 1px 1px 2px #333">{{ article.title }}</h1>
+        <!--<ul id="columns">
+            <li class="column" draggable="true"><header>A</header></li>
+            <li class="column" draggable="true"><header>B</header></li>
+            <li class="column" draggable="true"><header>C</header></li>
+            <li class="column" draggable="true"><header>D</header></li>
+            <li class="column" draggable="true"><header>E</header></li>
+        </ul>-->
+    </div>
+</div>
+
+<div class="actions-menu" 
+    onmouseenter="document.getElementById('action-buttons').style.display='block'" 
+    onmouseleave="document.getElementById('action-buttons').style.display='none'">
+    <div id="action-buttons" style="display:none; height: 10px; margin-top:10vh">
+        <span class="glyphicon glyphicon-floppy-disk action-button" title="Save" onclick="alert('Saved!')"></span>
+        <span class="glyphicon glyphicon-share action-button" title="Publish" onclick="alert('Published!')"></span>
+        <span class="glyphicon glyphicon-trash action-button" title="Delete" data-toggle="modal" data-target="#delete_article_modal"></span>
+        <span class="glyphicon glyphicon-tags action-button" title="Tag" onclick="alert('Tagged!')"></span>
+        <!--<span class="glyphicon glyphicon-bookmark action-button" title="Bookmark" onclick="alert('Bookmark saved!')"></span>
+        <a href="#comment-section"><span class="glyphicon glyphicon-comment action-button" title="Comment"></span></a>
+        <span class="glyphicon glyphicon-star action-button" title="Rate" onclick="alert('Rated!')"></span>-->
+    </div>
+</div>
+
+<!--
+    <div style="background-image: url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg'); height: 100px;">
+    </div>
+-->
+
+<img src="{{ article.image_path }}" style="max-width:100%; margin-left: auto; margin-right: auto; display:block"></img>
+
+<br><br><br><br>
+
+<div class="row">
+    <!-- Left/upper div -->
+    <div class="col-lg-2">  
+    </div>
+
+    <!-- Article content -->
+    <div id="columns" class="col-lg-8" style="font-size:1.6em">
+        <p class="column" draggable="true"><b>The most comprehensive case that has ever been made for why nearly everyone should become a polymath in a modern knowledge economy.</b></p>
+        <p class="column" draggable="true">The warning against being a generalist has persisted for hundreds of years in dozens of languages. “Equipped with knives all over, yet none is sharp,” warn people in China. In Estonia, it goes, “Nine trades, the tenth one — hunger.”</p>
+        <p class="column" draggable="true">Yet, many of the most impactful individuals , both contemporary and historical, have been generalists: Elon Musk, Steve Jobs, Richard Feynman, Ben Franklin, Thomas Edison, Leonardo Da Vinci, and Marie Curie to name just a few.</p>                    
+        <p class="column" draggable="true">What’s going on here?</p>
+        <p class="column" draggable="true">If being a generalist was the path to mediocrity, why did the most comprehensive study of the most significant scientists in all of history uncover that 15 of the 20 were polymaths? Newton. Galileo. Aristotle. Kepler. Descartes. Huygens. Laplace. Faraday. Pasteur. Ptolemy. Hooke. Leibniz. Euler. Darwin. Maxwell — all polymaths.</p>
+        <p class="column" draggable="true">If being a generalist was so ineffective, why are the founders of the five largest companies in the world — Bill Gates, Steve Jobs, Warren Buffett, Larry Page, and Jeff Bezos — all polymaths (who also follow the 5-hour rule)? Are these legends just genius anomalies? Or are they people we could and should imitate in order to be successful in a modern knowledge economy?</p>
+        <p class="column" draggable="true">If being a generalist is an ineffective career path, why do 10+ academic studies find a correlation between the number of interests/competencies someone develops and their creative impact?</p>
+
+        <h2 class="column" draggable="true">The Era of the Modern Polymath</h2>
+
+        <p class="column" draggable="true"><b>I define a modern polymath is someone who becomes competent in at least three diverse domains and integrates them into a top 1-percent skill set.</b></p>
+        <p class="column" draggable="true">In another words, they bring the best of what humanity has discovered from across fields to help them be more effective in their core field. Hence the T-shape below. Specialists, on the other hand, just focus on knowledge from their own field.</p>
+        <p class="column" draggable="true">Since Malcolm Gladwell’s book, Outliers, popularized the concept, many now believe that to become world-class in a skill, they must complete 10,000 hours of deliberate practice in order to beat the competition, going as deep as possible into one field. Modern polymaths go against the grain of this popular advice, building atypical combinations of skills and knowledge across fields and then integrating them to create breakthrough ideas and even brand new fields and industries where there is little competition.</p>
+        <p class="column" draggable="true">For example, people have studied biology and sociology for hundreds of years. But no one had ever studied them together and synthesized them into a new discipline until researcher EO Wilson pioneered the field of sociobiology in the 1970s. We also have modern tech heroes like Steve Jobs (who I write about here) who famously combined design with hardware and software.</p>
+        <p class="column" draggable="true">Elon Musk (who I write about here) has combined an understanding of physics, engineering, programming, design, manufacturing, and business to create several multibillion-dollar companies in completely different fields. He not only makes atypical combinations of skills, he also makes atypical combinations of personality traits.</p>
+        
+        <p id="last"></p>
+        <br>
+        <p style="text-align:center"><span class="glyphicon glyphicon-plus action-button" onclick="alert('NEW ELEMENT ADDED!');"></span></p>
+        <br><br><br><br>
+        
+        <!--<div id="comment-section">
+            <br><br>
+            <hr style="width: 90%; margin-bottom: 50px; border: 3px solid lightgreen; background-color: lightgreen; border-radius: 5px;">
+            <h2 style="margin-top: 0px; background-color: lightgreen; padding-top: 25px; padding-bottom: 25px; border-radius: 10px">Comments</h2>
+            <form>
+                
+            </form>
+            <br><br><br><br>
+            <br><br><br><br>
+            <br><br><br><br>
+            <br><br><br><br>
+            <br><br><br><br>
+        </div>-->
+
+    </div>
+    <script>
+        var dragSrcEl = null;
+
+        function handleDragStart(e) {
+            // Target (this) element is the source node.
+            dragSrcEl = this;
+
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+
+            this.classList.add('dragElem');
+        }
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault(); // Necessary. Allows us to drop.
+            }
+            this.classList.add('over');
+
+            e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            // this / e.target is the current hover target.
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');  // this / e.target is previous target element.
+        }
+
+        function handleDrop(e) {
+            // this/e.target is current target element.
+
+            if (e.stopPropagation) {
+                e.stopPropagation(); // Stops some browsers from redirecting.
+            }
+
+            // Don't do anything if dropping the same column we're dragging.
+            if (dragSrcEl != this) {
+                // Set the source column's HTML to the HTML of the column we dropped on.
+                //alert(this.outerHTML);
+                //dragSrcEl.innerHTML = this.innerHTML;
+                //this.innerHTML = e.dataTransfer.getData('text/html');
+                this.parentNode.removeChild(dragSrcEl);
+                var dropHTML = e.dataTransfer.getData('text/html');
+                this.insertAdjacentHTML('beforebegin',dropHTML);
+                var dropElem = this.previousSibling;
+                addDnDHandlers(dropElem);
+                
+            }
+            this.classList.remove('over');
+            return false;   
+        }
+
+        function handleDragEnd(e) {
+            // this/e.target is the source node.
+            this.classList.remove('over');
+
+            /*[].forEach.call(cols, function (col) {
+                col.classList.remove('over');
+            });*/
+        }
+
+        function addDnDHandlers(elem) {
+            elem.addEventListener('dragstart', handleDragStart, false);
+            elem.addEventListener('dragenter', handleDragEnter, false)
+            elem.addEventListener('dragover', handleDragOver, false);
+            elem.addEventListener('dragleave', handleDragLeave, false);
+            elem.addEventListener('drop', handleDrop, false);
+            elem.addEventListener('dragend', handleDragEnd, false);
+        }
+
+        var cols = document.querySelectorAll('#columns .column');
+        [].forEach.call(cols, addDnDHandlers);
+    </script>
+    <!-- Right/lower div -->
+    <div class="col-lg-2">   
+    </div>
+</div>
+
+<div id="delete_article_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+    
+        <!-- Modal content-->
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+        </div>
+        <div class="modal-body">
+            <h4>Do you really wish to delete the current article?</h4>
+            <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
+        </div>
+        <div class="modal-footer">
+            <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+        </div>
+    
+    </div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}
