@@ -17,6 +17,8 @@ from django.views.decorators.http import last_modified
 
 from datetime import datetime
 
+import json
+
 import time
 
 
@@ -228,7 +230,8 @@ def json_published_articles(request):
     articles = Article.objects.filter(author = user.username, already_published = True)  
 
     # Serialize response in JSON format
-    json_data = { 'articles': list(articles.values()) }
+    json_data = { 'articles': list(articles.values()), 
+                  'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
     return JsonResponse(json_data)
 
 
@@ -239,8 +242,30 @@ def json_draft_articles(request):
     articles = Article.objects.filter(author = user.username, already_published = False)
 
     # Serialize response in JSON format
-    json_data = { 'articles': list(articles.values()) }
+    json_data = { 'articles': list(articles.values()), 
+                  'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
     return JsonResponse(json_data)
+
+
+
+
+
+# =============================================================================
+# CREATE NEW ARTICLE view =====================================================
+# =============================================================================
+
+def create_article(request):    
+    # If the method is POST
+    if request.method == "POST":
+        # Retrieve POST data
+        title = request.POST["title"]
+        description = request.POST["description"]        
+        # Create new article and save it to the db
+        article = Article(author = request.user.username, title = title, description = description, content='', image_path = '')
+        article.save()
+        # Return article editing view
+        response = render(request, 'articles/edit_article.html', context = {'article': article})
+        return response
 
 
 
