@@ -18,10 +18,10 @@ urlpatterns = [
     # OWN ARTICLES
     path('articles/', views.draft_articles_view, name="articles_view"),
     path('articles/drafts/', views.draft_articles_view, name="draft_articles_view"),
-    path('articles/published/', views.published_articles_view, name="published_articles_view"),
-    path('edit/<title>/', views.edit_article, name="edit_article"),
-    path('articles/published/json/', views.json_published_articles, name="json_published_articles"),
     path('articles/drafts/json/', views.json_draft_articles, name="json_draft_articles"),
+    path('articles/published/', views.published_articles_view, name="published_articles_view"),
+    path('articles/published/json/', views.json_published_articles, name="json_published_articles"),
+    path('articles/edit/<title>/', views.edit_article, name="edit_article"),
     # GENERAL ARTICLES
     #path('@<author>/<title>/', views.read_article, name="read_article"),
 ]

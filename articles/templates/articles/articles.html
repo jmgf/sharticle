@@ -18,7 +18,7 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
     .article-box:hover h3{
-        text-shadow: 1px 1px 2px rgb(128,128,128);
+        text-shadow: 1px 1px 1px rgb(128,128,128);
     }
 
 
@@ -33,6 +33,15 @@
 
     .article-box-content {
         cursor: pointer;
+    }
+
+    .article-author {
+        border: 1px dotted gray;
+        border-radius: 5px;
+    }
+
+    .article-author:hover {
+        border: 1px solid gray;
     }
 
     @media screen and (max-width: 767px){
@@ -64,7 +73,6 @@
     }
 
     .article-box-controls {
-        background-color: rgba(144, 238, 144,0);
         border-bottom-left-radius: 5px;
         border-top-left-radius: 5px;
         width: 100%;
@@ -140,7 +148,7 @@
                 
                 <script>
                     function edit_article_url(id){
-                        return '/edit/' + id + '/';
+                        return '/articles/edit/' + id + '/';
                     }
 
                     function loadArticles(element, drafts = false, published = false){
@@ -156,15 +164,19 @@
                                 // Hide the loader circle
                                 if (drafts) document.getElementById("published_articles_loader").style.display = 'none';
                                 else document.getElementById("draft_articles_loader").style.display = 'none';
+                                // Process data
                                 if (data!=null){
+                                    var user = data.author;
                                     var html = '';
                                     data.articles.forEach(article => {
+                                        if (user.profileImagePath) user_image_html = '<img src="' + user.profileImagePath + '" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>';
+                                        else user_image_html = '<span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>';
                                         html += `
                                             <div class="col-md-6">
                                                 <div class="article-box">
                                                     <div class="row">
                                                         <div class="col-sm-6">
-                                                            <div class="article-box-image" style="background-image: url('${article.image_path }');">
+                                                            <div class="article-box-image" style="background-image: url('${article.image_path != "" ? article.image_path : "https://www.freeiconspng.com/uploads/no-image-icon-6.png"}');">
                                                                 <div class="article-box-controls">
                                                                     <p style="display: table-cell; vertical-align: middle">
                                                                         <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
@@ -180,9 +192,10 @@
                                                                     <h3 style="margin-bottom:0px;">${ article.title }</h3>
                                                                     <p class="ellipsed">${ article.description }</p>
                                                                 </div>
-                                                                <div>
-                                                                    <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
+                                                                <div class="article-author">
+                                                                    ${user_image_html}
                                                                     <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
+                                                                    <!--<p>${ user.resume }</p>-->
                                                                     <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; ${ article.pub_date }</p>
                                                                 </div>
                                                             </div>
@@ -190,10 +203,31 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div id="delete_article_modal_${ article.id }" class="modal fade" role="dialog">
+                                            <div class="modal-dialog">
+                                            
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h4>Do you really wish to delete the current article?</h4>
+                                                    <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">${ article.title }</span> will be permanently deleted!</h4>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                </div>
+                                                </div>
+                                            
+                                            </div>
+                                        </div>
                                         `;
-                                        if (drafts) document.getElementById("published_articles_content").innerHTML = html;
-                                        else document.getElementById("draft_articles_content").innerHTML = html;
                                     });
+                                    if (drafts) document.getElementById("published_articles_content").innerHTML = html;
+                                    else document.getElementById("draft_articles_content").innerHTML = html;
                                 }
                             });
                         }
@@ -219,7 +253,11 @@
                             <div class="article-box">
                                 <div class="row">
                                     <div class="col-sm-6">
+                                        {% if article.image_path != "" %}
                                         <div class="article-box-image" style="background-image: url('{{ article.image_path }}');">
+                                        {% else %}
+                                        <div class="article-box-image" style="background-image: url('https://www.freeiconspng.com/uploads/no-image-icon-6.png');">
+                                        {% endif %}
                                             <div class="article-box-controls">
                                                 <p style="display: table-cell; vertical-align: middle">
                                                     <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
@@ -235,8 +273,12 @@
                                                 <h3 style="margin-bottom:0px;">{{ article.title }}</h3>
                                                 <p class="ellipsed">{{ article.description }}</p>
                                             </div>
-                                            <div>
-                                                <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
+                                            <div class="article-author">
+                                                {% if request.user.profileImagePath %}
+                                                <img src="{{ request.user.profileImagePath }}" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>
+                                                {% else %}
+                                                <span class="glyphicon glyphicon-user pull-left" style="font-size:65px; margin-right: 20px;"></span>
+                                                {% endif %}
                                                 <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
                                                 <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.pub_date }}</p>
                                             </div>
@@ -363,7 +405,11 @@
                         <div class="article-box">
                             <div class="row">
                                 <div class="col-sm-6">
+                                    {% if article.image_path != "" %}
                                     <div class="article-box-image" style="background-image: url('{{ article.image_path }}');">
+                                    {% else %}
+                                    <div class="article-box-image" style="background-image: url('https://www.freeiconspng.com/uploads/no-image-icon-6.png');">
+                                    {% endif %}                                    
                                         <div class="article-box-controls">
                                             <p style="display: table-cell; vertical-align: middle">
                                                 <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
@@ -379,8 +425,12 @@
                                             <h3 style="margin-bottom:0px;">{{ article.title }}</h3>
                                             <p class="ellipsed">{{ article.description }}</p>
                                         </div>
-                                        <div>
-                                            <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
+                                        <div class="article-author">
+                                            {% if request.user.profileImagePath %}
+                                            <img src="{{ request.user.profileImagePath }}" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>
+                                            {% else %}
+                                            <span class="glyphicon glyphicon-user pull-left" style="font-size:65px; margin-right: 20px;"></span>
+                                            {% endif %}
                                             <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
                                             <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.pub_date }}</p>
                                         </div>
