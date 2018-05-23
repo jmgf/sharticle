@@ -79,7 +79,7 @@
         height: 100%;
         text-align: center;
         display: table;
-        font-size: 1px;
+        font-size: 0px;
     }
 
     .article-box-controls:hover {
@@ -153,7 +153,7 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                 <label for="new_article_title">Title: </label>
-                                <input type="text" class="form-control" id="new_article_title" name="title">
+                                <input type="text" class="form-control" id="new_article_title" name="title" autofocus>
                                 </div>
                                 <div class="form-group">
                                     <label for="new_article_description">Description: </label>
@@ -179,85 +179,127 @@
                         return '/articles/edit/' + id + '/';
                     }
 
+                    function delete_article_url(id){
+                        return '/articles/delete/' + id + '/';
+                    }
+
+
+                    var already_loaded = false;
+                    var csrftok = "{% csrf_token %}";
+
+                    function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = jQuery.trim(cookies[i]);
+                                // Does this cookie string begin with the name we want?
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+
+                    function deleteArticle(id, draft){
+                        // Attach a submit handler to the form
+                        //$.post(delete_article_url(id), {'csrfmiddlewaretoken' :  $("[name=csrfmiddlewaretoken]").val()}, function(data, status){
+                        $.post(delete_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken')}, function(data, status){
+                            article_box = document.getElementById("article_box_" + id);
+                            document.getElementById(draft ? "draft_articles_content" : "published_articles_content").removeChild(article_box);
+                            //alert(data.success);
+                        });
+                    }
+
+
+
                     function loadArticles(element, drafts = false, published = false){
                         // In case the action is legit (and not a random click)
                         if (element.parentElement.className!='active'){
                             // Set the window location
                             if (drafts) history.pushState(null, 'published_articles', '/articles/published/');
                             else history.pushState(null, 'draft_articles', '/articles/drafts/');
-                            // Load the articles
-                            if (drafts) url = "{% url 'articles:json_published_articles' %}";
-                            else url = "{% url 'articles:json_draft_articles' %}";
-                            $.get(url, function(data, status){
-                                // Hide the loader circle
-                                if (drafts) document.getElementById("published_articles_loader").style.display = 'none';
-                                else document.getElementById("draft_articles_loader").style.display = 'none';
-                                // Process data
-                                if (data!=null){
-                                    var user = data.author;
-                                    var html = '';
-                                    data.articles.forEach(article => {
-                                        if (user.profileImagePath) user_image_html = '<img src="' + user.profileImagePath + '" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>';
-                                        else user_image_html = '<span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>';
-                                        html += `
-                                            <div class="col-md-6">
-                                                <div class="article-box">
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <div class="article-box-image" style="background-image: url('${article.image_path != "" ? article.image_path : "https://www.freeiconspng.com/uploads/no-image-icon-6.png"}');">
-                                                                <div class="article-box-controls">
-                                                                    <p style="display: table-cell; vertical-align: middle">
-                                                                        <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
-                                                                        <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
-                                                                        <a href="${ edit_article_url(article.id) }"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
-                                                                    </p>
+
+                            
+                            if (!already_loaded){
+                                // Load the articles
+                                if (drafts) url = "{% url 'articles:json_published_articles' %}";
+                                else url = "{% url 'articles:json_draft_articles' %}";
+                                $.get(url, function(data, status){
+                                    already_loaded = true;
+                                    // Hide the loader circle
+                                    if (drafts) document.getElementById("published_articles_loader").style.display = 'none';
+                                    else document.getElementById("draft_articles_loader").style.display = 'none';
+                                    // Process data
+                                    if (data!=null){
+                                        var user = data.author;
+                                        var html = '';
+                                        data.articles.forEach(article => {
+                                            if (user.profileImagePath) user_image_html = '<img src="' + user.profileImagePath + '" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>';
+                                            else user_image_html = '<span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>';
+                                            html += `
+                                                <div class="col-md-6">
+                                                    <div class="article-box" id="article_box_${ article.id }">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <div class="article-box-image" style="background-image: url('${article.image_path != "" ? article.image_path : "https://www.freeiconspng.com/uploads/no-image-icon-6.png"}');">
+                                                                    <div class="article-box-controls">
+                                                                        <p style="display: table-cell; vertical-align: middle">
+                                                                            <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
+                                                                            <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
+                                                                            <a href="${ edit_article_url(article.id) }"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-sm-6" onclick="window.location.href = '${ edit_article_url(article.id) }'">
-                                                            <div class="article-box-content">
-                                                                <div class="article-title">
-                                                                    <h3 style="margin-bottom:0px;">${ article.title }</h3>
-                                                                    <p class="ellipsed">${ article.description }</p>
-                                                                </div>
-                                                                <div class="article-author">
-                                                                    ${user_image_html}
-                                                                    <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
-                                                                    <!--<p>${ user.resume }</p>-->
-                                                                    <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; ${ article.pub_date }</p>
+                                                            <div class="col-sm-6" onclick="window.location.href = '${ edit_article_url(article.id) }'">
+                                                                <div class="article-box-content">
+                                                                    <div class="article-title">
+                                                                        <h3 style="margin-bottom:0px;">${ article.title }</h3>
+                                                                        <p class="ellipsed">${ article.description }</p>
+                                                                    </div>
+                                                                    <div class="article-author">
+                                                                        ${user_image_html}
+                                                                        <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
+                                                                        <!--<p>${ user.resume }</p>-->
+                                                                        <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; ${ article.pub_date }</p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div id="delete_article_modal_${ article.id }" class="modal fade" role="dialog">
+                                                <div class="modal-dialog">
+                                                    <form class="deleteForm" method="POST" action="/articles/delete/${ article.id }">
+                                                        ${ csrftok }
+                                                        <!-- Modal content-->
+                                                        <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                            <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h4>Do you really wish to delete the selected article?</h4>
+                                                            <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">${ article.title }</span> will be permanently deleted!</h4>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button class="btn btn-danger" data-dismiss="modal" onclick="deleteArticle(${ article.id }, draft=${drafts ? 'true' : 'false'})">Delete</a>
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                        </div>
+                                                    </form>                                                
+                                                </div>
                                             </div>
-                                            <div id="delete_article_modal_${ article.id }" class="modal fade" role="dialog">
-                                            <div class="modal-dialog">
-                                            
-                                                <!-- Modal content-->
-                                                <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                    <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <h4>Do you really wish to delete the current article?</h4>
-                                                    <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">${ article.title }</span> will be permanently deleted!</h4>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                                </div>
-                                                </div>
-                                            
-                                            </div>
-                                        </div>
-                                        `;
-                                    });
-                                    if (drafts) document.getElementById("published_articles_content").innerHTML = html;
-                                    else document.getElementById("draft_articles_content").innerHTML = html;
-                                }
-                            });
+                                            `;
+                                        });
+                                        if (drafts) document.getElementById("published_articles_content").innerHTML = html;
+                                        else document.getElementById("draft_articles_content").innerHTML = html;
+                                    }
+                                });
+                            }
                         }
                     }
                 </script>
@@ -277,7 +319,7 @@
             <div class="row" id="draft_articles_content">
                 {% if drafts %}
                     {% for article in articles %}
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="article_box_{{ article.id }}">
                             <div class="article-box">
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -318,23 +360,21 @@
 
                         <div id="delete_article_modal_{{ article.id }}" class="modal fade" role="dialog">
                             <div class="modal-dialog">
-                            
-                                <!-- Modal content-->
-                                <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
-                                </div>
-                                <div class="modal-body">
-                                    <h4>Do you really wish to delete the current article?</h4>
-                                    <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
-                                </div>
-                                <div class="modal-footer">
-                                    <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                </div>
-                                </div>
-                            
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Do you really wish to delete the selected article?</h4>
+                                        <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-danger" data-dismiss="modal" onclick="deleteArticle({{ article.id }}, draft=true)">Delete</a>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                    </div>
                             </div>
                         </div>
                     {% endfor %}
@@ -429,7 +469,7 @@
             <div class="row" id="published_articles_content">
             {% if published %}
                 {% for article in articles %}
-                    <div class="col-md-6">
+                    <div class="col-md-6" id="article_box_{{ article.id }}">
                         <div class="article-box">
                             <div class="row">
                                 <div class="col-sm-6">
@@ -470,23 +510,21 @@
 
                     <div id="delete_article_modal_{{ article.id }}" class="modal fade" role="dialog">
                         <div class="modal-dialog">
-                        
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
-                            </div>
-                            <div class="modal-body">
-                                <h4>Do you really wish to delete the current article?</h4>
-                                <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
-                            </div>
-                            <div class="modal-footer">
-                                <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            </div>
-                            </div>
-                        
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>Do you really wish to delete the selected article?</h4>
+                                    <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-danger" data-dismiss="modal" onclick="deleteArticle({{ article.id }}, draft=false)">Delete</a>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </div>
+                                </div>
                         </div>
                     </div>
                 {% endfor %}

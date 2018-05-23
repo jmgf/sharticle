@@ -275,9 +275,31 @@ def create_article(request):
 # EDIT ARTICLE view ===========================================================
 # =============================================================================
 
-def edit_article(request, title):    
-    article = Article.objects.get(id = int(title))
+def edit_article(request, id):    
+    article = Article.objects.get(id = id)
     #a = Article(title='Birds are the flying singers of Nature', description='Do you know the benefits of having birds around? Find out here!', author='jmgf', image_path='https://www.gettyimages.ie/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg')
     #a.save()
     response = render(request, 'articles/edit_article.html', context = {'article': article})
     return response
+
+
+
+
+
+# =============================================================================
+# DELETE ARTICLE view =========================================================
+# =============================================================================
+
+def delete_article(request, id):    
+    # Delete article from db
+    try:
+        number_of_deletions = Article.objects.get(id = id, author = request.user.username).delete()[0]
+        if number_of_deletions == 1:
+            # Return successful JSON encoded response
+            return JsonResponse({'success' : True})
+    
+    # In case the article does not exist
+    except Article.DoesNotExist:
+        # Return unsuccessful response
+        return JsonResponse({'success' : False})
+
