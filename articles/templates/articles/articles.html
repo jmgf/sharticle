@@ -208,7 +208,8 @@
                         //$.post(delete_article_url(id), {'csrfmiddlewaretoken' :  $("[name=csrfmiddlewaretoken]").val()}, function(data, status){
                         $.post(delete_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken')}, function(data, status){
                             article_box = document.getElementById("article_box_" + id);
-                            document.getElementById(draft ? "draft_articles_content" : "published_articles_content").removeChild(article_box);
+                            article_box.parentElement.removeChild(article_box);
+                            //document.getElementById(draft ? "draft_articles_content" : "published_articles_content").removeChild(article_box);
                             //alert(data.success);
                         });
                     }
@@ -240,8 +241,8 @@
                                             if (user.profileImagePath) user_image_html = '<img src="' + user.profileImagePath + '" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>';
                                             else user_image_html = '<span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>';
                                             html += `
-                                                <div class="col-md-6">
-                                                    <div class="article-box" id="article_box_${ article.id }">
+                                                <div class="col-md-6" id="article_box_${ article.id }">
+                                                    <div class="article-box">
                                                         <div class="row">
                                                             <div class="col-sm-6">
                                                                 <div class="article-box-image" style="background-image: url('${article.image_path != "" ? article.image_path : "https://www.freeiconspng.com/uploads/no-image-icon-6.png"}');">
@@ -272,27 +273,27 @@
                                                     </div>
                                                 </div>
                                                 <div id="delete_article_modal_${ article.id }" class="modal fade" role="dialog">
-                                                <div class="modal-dialog">
-                                                    <form class="deleteForm" method="POST" action="/articles/delete/${ article.id }">
-                                                        ${ csrftok }
-                                                        <!-- Modal content-->
-                                                        <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                            <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <h4>Do you really wish to delete the selected article?</h4>
-                                                            <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">${ article.title }</span> will be permanently deleted!</h4>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button class="btn btn-danger" data-dismiss="modal" onclick="deleteArticle(${ article.id }, draft=${drafts ? 'true' : 'false'})">Delete</a>
-                                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                                        </div>
-                                                        </div>
-                                                    </form>                                                
+                                                    <div class="modal-dialog">
+                                                        <form class="deleteForm" method="POST" action="/articles/delete/${ article.id }">
+                                                            ${ csrftok }
+                                                            <!-- Modal content-->
+                                                            <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <h4>Do you really wish to delete the selected article?</h4>
+                                                                <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">${ article.title }</span> will be permanently deleted!</h4>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-danger" data-dismiss="modal" onclick="deleteArticle(${ article.id }, draft=${drafts ? 'true' : 'false'})">Delete</a>
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                            </div>
+                                                            </div>
+                                                        </form>                                                
+                                                    </div>
                                                 </div>
-                                            </div>
                                             `;
                                         });
                                         if (drafts) document.getElementById("published_articles_content").innerHTML = html;
