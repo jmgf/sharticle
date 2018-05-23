@@ -257,23 +257,24 @@
 
 <div id="delete_article_modal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-    
-        <!-- Modal content-->
-        <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
-        </div>
-        <div class="modal-body">
-            <h4>Do you really wish to delete the current article?</h4>
-            <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
-        </div>
-        <div class="modal-footer">
-            <a class="btn btn-danger" href="http://www.youtube.com">Delete</a>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        </div>
-        </div>
-    
+        <form method="POST" action="{% url "articles:delete_article" article.id %}">
+            {% csrf_token %}
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete draft</h3>
+                </div>
+                <div class="modal-body">
+                    <h4>Do you really wish to delete the current article?</h4>
+                    <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">{{ article.title }}</span> will be permanently deleted!</h4>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="submit">Delete</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
