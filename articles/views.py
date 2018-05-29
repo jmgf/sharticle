@@ -307,19 +307,21 @@ def create_article(request):
 # EDIT ARTICLE view ===========================================================
 # =============================================================================
 
-def edit_article(request, id):    
+def edit_article(request, id):   
     user = request.user
+    
+    # Check user authentication status
     if user.is_authenticated:
 
         # Retrieve article from the database
         article = Article.objects.get(id = id)
 
-        if user.username == article.author:
-            response = render(request, 'articles/edit_article.html', context = {'article': article})          
-        # In case the user is not the article's author
+        # Check if user is the author and the article is a draft
+        if user.username == article.author and not article.already_published:
+            response = render(request, 'articles/edit_article.html', context = {'article': article})    
+        # In case the user is not the article's author or the article is not a draft
         else:
-            response = HttpResponse("You do not own this article")
-        
+            response = HttpResponse("You can not edit this article!")
         return response
     
     # In case the user is not authenticated, redirect to login page
@@ -342,7 +344,7 @@ def delete_article(request, id):
         if number_of_deletions == 1:
 
             # Decrement user's ???_DRAFT/PUBLISHED_??? articles count
-            user.number_of_drafts = user.number_of_drafts + 1
+            user.number_of_drafts = user.number_of_drafts - 1
             user.save()
 
             # Return successful JSON encoded response
@@ -367,6 +369,9 @@ def save_article(request, id):
         article = Article.objects.get(id = id, author = request.user.username)
         article.content = article.content + new_content
         article.save()
+
+        # Update article's last modified date (used for HTTP caching)
+
         
         # Return successful JSON encoded response
         return JsonResponse({'success' : True})

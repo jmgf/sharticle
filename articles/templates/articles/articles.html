@@ -175,8 +175,8 @@
         </div>
         <div>
             <ul class="nav nav-tabs">
-                <li{% if drafts %} class="active" {% endif %}><a data-toggle="pill" href="#draft_articles" onclick="loadArticles(this, drafts = false, published = true)">Drafts <span class="badge">{{ user.number_of_drafts }}</span></a></li>
-                <li{% if not drafts %} class="active" {% endif %}><a data-toggle="pill" href="#published_articles" onclick="loadArticles(this, drafts = true, published = false)">Published <span class="badge">{{ user.number_of_articles }}</span></a></li>
+                <li{% if drafts %} class="active" {% endif %}><a data-toggle="pill" href="#draft_articles" onclick="loadArticles(this, drafts = false, published = true)">Drafts <span class="badge" id="number_of_drafts">{{ user.number_of_drafts }}</span></a></li>
+                <li{% if not drafts %} class="active" {% endif %}><a data-toggle="pill" href="#published_articles" onclick="loadArticles(this, drafts = true, published = false)">Published <span class="badge" id="number_of_published">{{ user.number_of_articles }}</span></a></li>
                 
                 <script>
                     function edit_article_url(id){
@@ -186,7 +186,6 @@
                     function delete_article_url(id){
                         return '/articles/delete/' + id + '/';
                     }
-
 
                     var already_loaded = false;
                     var csrftok = "{% csrf_token %}";
@@ -213,12 +212,13 @@
                         $.post(delete_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken')}, function(data, status){
                             article_box = document.getElementById("article_box_" + id);
                             article_box.parentElement.removeChild(article_box);
+
+                            var number_of_articles_badge = document.getElementById(draft ? "number_of_drafts" : "number_of_published");
+                            number_of_articles_badge.innerHTML = parseInt(number_of_articles_badge.innerHTML) - 1;
                             //document.getElementById(draft ? "draft_articles_content" : "published_articles_content").removeChild(article_box);
                             //alert(data.success);
                         });
                     }
-
-
 
                     function loadArticles(element, drafts = false, published = false){
                         // In case the action is legit (and not a random click)
@@ -226,7 +226,6 @@
                             // Set the window location
                             if (drafts) history.pushState(null, 'published_articles', '/articles/published/');
                             else history.pushState(null, 'draft_articles', '/articles/drafts/');
-
                             
                             if (!already_loaded){
                                 // Load the articles
@@ -255,12 +254,13 @@
                                                                         <p style="display: table-cell; vertical-align: middle">
                                                                             <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
                                                                             <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
-                                                                            <a href="${ edit_article_url(article.id) }"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
+                                                                            ${published ? '<a href="' + edit_article_url(article.id) + '"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>' : ''}
+                                                                            <!--<a href="${ edit_article_url(article.id) }"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
                                                                         </p>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-sm-6" onclick="window.location.href = '${ edit_article_url(article.id) }'">
+                                                            <div class="col-sm-6" ${published ? 'onclick="window.location.href = \'' + edit_article_url(article.id) + '\'\"' : ''}>
                                                                 <div class="article-box-content">
                                                                     <div class="article-title">
                                                                         <h3 style="margin-bottom:0px;">${ article.title }</h3>
@@ -488,12 +488,13 @@
                                             <p style="display: table-cell; vertical-align: middle">
                                                 <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
                                                 <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
-                                                <a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
+                                                <!--<a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6" onclick="window.location.href = '{% url "articles:edit_article" article.id %}'">
+                                <!--<div class="col-sm-6" onclick="window.location.href = '{% url "articles:edit_article" article.id %}'">-->
+                                <div class="col-sm-6">
                                     <div class="article-box-content">
                                         <div class="article-title">
                                             <h3 style="margin-bottom:0px;">{{ article.title }}</h3>

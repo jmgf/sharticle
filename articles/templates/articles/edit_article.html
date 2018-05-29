@@ -219,7 +219,7 @@
         var texties = document.getElementsByTagName("textarea");
         var i;
         for (i = 0; i < texties.length; i++){
-            content += '<p class="column">' + texties[i].value + '</p>';
+            content += '<p class="column" draggable="true">' + texties[i].value + '</p>';
         }
         alert(content);
         $.post(save_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken'), 'content' : content}, function(data, status){
