@@ -292,7 +292,7 @@
                                                                 <h4 class="text-danger"><span class="glyphicon glyphicon-warning-sign" style="color:#a94442"></span> &nbsp;The draft <span class="label label-danger">${ article.title }</span> will be permanently deleted!</h4>
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <button class="btn btn-danger" data-dismiss="modal" onclick="deleteArticle(${ article.id }, draft=${drafts ? 'true' : 'false'})">Delete</a>
+                                                                <button class="btn btn-danger" data-dismiss="modal" onclick="deleteArticle(${ article.id }, draft=${drafts ? 'false' : 'true'})">Delete</a>
                                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                                             </div>
                                                             </div>

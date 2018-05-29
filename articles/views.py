@@ -340,16 +340,33 @@ def delete_article(request, id):
     user = request.user
     # Delete article from db
     try:
-        number_of_deletions = Article.objects.get(id = id, author = user.username).delete()[0]
+        article = Article.objects.get(id = id, author = user.username)
+        if not article.already_published:
+            draft = True
+        else:
+            draft = False
+
+        number_of_deletions = article.delete()[0]
         if number_of_deletions == 1:
 
             # Decrement user's ???_DRAFT/PUBLISHED_??? articles count
-            user.number_of_drafts = user.number_of_drafts - 1
+            if draft:
+                user.number_of_drafts = user.number_of_drafts - 1
+            else:
+                user.number_of_articles = user.number_of_articles - 1
             user.save()
+
+            # Update article's last modified date (used for HTTP caching)
+            # ...
 
             # Return successful JSON encoded response
             return JsonResponse({'success' : True})
-    
+
+        else: 
+            # Return unsuccessful response
+            return JsonResponse({'success' : False})
+
+
     # In case the article does not exist
     except Article.DoesNotExist:
         # Return unsuccessful response
@@ -371,6 +388,31 @@ def save_article(request, id):
         article.save()
 
         # Update article's last modified date (used for HTTP caching)
+        # ...
+        
+        # Return successful JSON encoded response
+        return JsonResponse({'success' : True})
+    
+    # In case the article does not exist
+    except Article.DoesNotExist:
+        # Return unsuccessful response
+        return JsonResponse({'success' : False})
+
+
+
+
+# =============================================================================
+# PUBLISH ARTICLE view ========================================================
+# =============================================================================
+
+def publish_article(request, id):    
+    try:
+        new_content = request.POST["content"]
+        article = Article.objects.get(id = id, author = request.user.username)
+        article.content = article.content + new_content
+        article.save()
+
+        # Update user article list's last modified date (used for HTTP caching)
 
         
         # Return successful JSON encoded response
