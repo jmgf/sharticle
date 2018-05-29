@@ -21,6 +21,8 @@ import json
 
 import time
 
+import uuid
+
 
 
 
@@ -41,6 +43,9 @@ def register(request):
         try:
             # Create a user and save it to the database
             user = SharticleUser.objects.create_user(username, username + '@domain.com', password)
+
+            # Insert user object in the cache !!!
+            # cache.set(username, user, None)
             
             #return HttpResponse("Your account has been created, " + user.username + ".")
             return redirect('articles:login')
@@ -102,7 +107,8 @@ def logout(request):
     end = time.time()
     print(1000*(end - start))
     
-    return HttpResponse("You have been logged out!")
+    #return HttpResponse("You have been logged out!")
+    return redirect('articles:login')
 
 
 
@@ -255,14 +261,40 @@ def json_draft_articles(request):
 # =============================================================================
 
 def create_article(request):    
+    user = request.user
+
     # If the method is POST
     if request.method == "POST":
+
         # Retrieve POST data
         title = request.POST["title"]
-        description = request.POST["description"]        
+        description = request.POST["description"]     
+        
+        # In case of successful image upload  
+        if request.FILES:
+            image = request.FILES["file"]     
+            image_extension = image.name.split(".")[-1]        
+            static_url = 'C:\\Users\\joao\\Desktop\\sharticle\\articles\\static\\articles\\'
+            image_name = 'article_' + str(uuid.uuid4()) + '.' + image_extension
+            dir = static_url + image_name
+
+            # Write image to disk
+            with open(dir, 'wb+') as destination:
+                for chunk in image.chunks():
+                    destination.write(chunk)
+
+        # In case no image was uploaded
+        else:
+            image_name = ''
+                
         # Create new article and save it to the db
-        article = Article(author = request.user.username, title = title, description = description, content='', image_path = '')
+        article = Article(author = user.username, title = title, description = description, content='', image_path = image_name)
         article.save()
+
+        # Increment user's draft articles count
+        user.number_of_drafts = user.number_of_drafts + 1
+        user.save()
+
         # Return article editing view
         response = render(request, 'articles/edit_article.html', context = {'article': article})
         return response
@@ -276,11 +308,23 @@ def create_article(request):
 # =============================================================================
 
 def edit_article(request, id):    
-    article = Article.objects.get(id = id)
-    #a = Article(title='Birds are the flying singers of Nature', description='Do you know the benefits of having birds around? Find out here!', author='jmgf', image_path='https://www.gettyimages.ie/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg')
-    #a.save()
-    response = render(request, 'articles/edit_article.html', context = {'article': article})
-    return response
+    user = request.user
+    if user.is_authenticated:
+
+        # Retrieve article from the database
+        article = Article.objects.get(id = id)
+
+        if user.username == article.author:
+            response = render(request, 'articles/edit_article.html', context = {'article': article})          
+        # In case the user is not the article's author
+        else:
+            response = HttpResponse("You do not own this article")
+        
+        return response
+    
+    # In case the user is not authenticated, redirect to login page
+    else:
+        return redirect('articles:login')
 
 
 
@@ -291,10 +335,16 @@ def edit_article(request, id):
 # =============================================================================
 
 def delete_article(request, id):    
+    user = request.user
     # Delete article from db
     try:
-        number_of_deletions = Article.objects.get(id = id, author = request.user.username).delete()[0]
+        number_of_deletions = Article.objects.get(id = id, author = user.username).delete()[0]
         if number_of_deletions == 1:
+
+            # Decrement user's ???_DRAFT/PUBLISHED_??? articles count
+            user.number_of_drafts = user.number_of_drafts + 1
+            user.save()
+
             # Return successful JSON encoded response
             return JsonResponse({'success' : True})
     
