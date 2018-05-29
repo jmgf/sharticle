@@ -143,7 +143,7 @@
             <div id="new_draft_modal" class="modal fade" role="dialog">
                 <div class="modal-dialog">                
                     <!-- Modal content-->
-                    <form method="POST" action="{% url "articles:create_article"  %}">
+                    <form method="POST" action="{% url "articles:create_article"  %}"  enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="modal-content">
                             <div class="modal-header">
@@ -158,6 +158,10 @@
                                 <div class="form-group">
                                     <label for="new_article_description">Description: </label>
                                     <textarea rows="3" class="form-control" id="new_article_description" name="description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new_article_image">Image: </label>
+                                    <input name="file" type="file" accept="image/png,image/jpg,image/jpeg">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -240,12 +244,13 @@
                                         data.articles.forEach(article => {
                                             if (user.profileImagePath) user_image_html = '<img src="' + user.profileImagePath + '" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>';
                                             else user_image_html = '<span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>';
+                                            var article_image_url = (article.image_path != "" ? ('/static/articles/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
                                             html += `
                                                 <div class="col-md-6" id="article_box_${ article.id }">
                                                     <div class="article-box">
                                                         <div class="row">
                                                             <div class="col-sm-6">
-                                                                <div class="article-box-image" style="background-image: url('${article.image_path != "" ? article.image_path : "https://www.freeiconspng.com/uploads/no-image-icon-6.png"}');">
+                                                                <div class="article-box-image" style="background-image: url('${article_image_url}');">
                                                                     <div class="article-box-controls">
                                                                         <p style="display: table-cell; vertical-align: middle">
                                                                             <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
@@ -325,7 +330,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         {% if article.image_path != "" %}
-                                        <div class="article-box-image" style="background-image: url('{{ article.image_path }}');">
+                                        <div class="article-box-image" style="background-image: url('/static/articles/{{ article.image_path }}');">
                                         {% else %}
                                         <div class="article-box-image" style="background-image: url('https://www.freeiconspng.com/uploads/no-image-icon-6.png');">
                                         {% endif %}
@@ -475,7 +480,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     {% if article.image_path != "" %}
-                                    <div class="article-box-image" style="background-image: url('{{ article.image_path }}');">
+                                    <div class="article-box-image" style="background-image: url('/static/articles/{{ article.image_path }}');">
                                     {% else %}
                                     <div class="article-box-image" style="background-image: url('https://www.freeiconspng.com/uploads/no-image-icon-6.png');">
                                     {% endif %}                                    

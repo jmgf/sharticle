@@ -303,3 +303,28 @@ def delete_article(request, id):
         # Return unsuccessful response
         return JsonResponse({'success' : False})
 
+
+
+
+
+# =============================================================================
+# SAVE ARTICLE view ===========================================================
+# =============================================================================
+
+def save_article(request, id):    
+    try:
+        new_content = request.POST["content"]
+        article = Article.objects.get(id = id, author = request.user.username)
+        article.content = article.content + new_content
+        article.save()
+        
+        # Return successful JSON encoded response
+        return JsonResponse({'success' : True})
+    
+    # In case the article does not exist
+    except Article.DoesNotExist:
+        # Return unsuccessful response
+        return JsonResponse({'success' : False})
+
+
+
