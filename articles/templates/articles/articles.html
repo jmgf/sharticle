@@ -183,6 +183,10 @@
                         return '/articles/edit/' + id + '/';
                     }
 
+                    function publish_article_url(id){
+                        return '/articles/publish/' + id + '/';
+                    }
+                    
                     function delete_article_url(id){
                         return '/articles/delete/' + id + '/';
                     }
@@ -206,6 +210,26 @@
                         return cookieValue;
                     }
 
+                    function publishArticle(id){
+                        // Contact server with POST method
+                        $.post(publish_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken')}, function(data, status){
+                            //article_box = document.getElementById("article_box_" + id);
+                            //document.getElementById("draft_articles_content").appendChild(article_box);
+                            //article_box.parentElement.removeChild(article_box);
+                            
+                            // Increment number of published articles
+                            var number_of_published_badge = document.getElementById("number_of_published");
+                            number_of_published_badge.innerHTML = parseInt(number_of_published_badge.innerHTML) + 1;
+                            
+                            // Decrement number of draft articles
+                            var number_of_drafts_badge = document.getElementById("number_of_drafts");
+                            number_of_drafts_badge.innerHTML = parseInt(number_of_drafts_badge.innerHTML) - 1;
+                            
+                            //document.getElementById(draft ? "draft_articles_content" : "published_articles_content").removeChild(article_box);
+                            //alert(data.success);
+                        });
+                    }
+                    
                     function deleteArticle(id, draft){
                         // Attach a submit handler to the form
                         //$.post(delete_article_url(id), {'csrfmiddlewaretoken' :  $("[name=csrfmiddlewaretoken]").val()}, function(data, status){
@@ -253,7 +277,7 @@
                                                                     <div class="article-box-controls">
                                                                         <p style="display: table-cell; vertical-align: middle">
                                                                             <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
-                                                                            <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
+                                                                            <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="publishArticle(${ article.id });"></span>
                                                                             ${published ? '<a href="' + edit_article_url(article.id) + '"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>' : ''}
                                                                             <!--<a href="${ edit_article_url(article.id) }"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
                                                                         </p>
@@ -337,7 +361,7 @@
                                             <div class="article-box-controls">
                                                 <p style="display: table-cell; vertical-align: middle">
                                                     <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
-                                                    <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
+                                                    <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="publishArticle({{ article.id }});"></span>
                                                     <a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>
                                                 </p>
                                             </div>
@@ -487,7 +511,7 @@
                                         <div class="article-box-controls">
                                             <p style="display: table-cell; vertical-align: middle">
                                                 <span class="glyphicon glyphicon-trash" title="Delete" style="color: #f45642" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
-                                                <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="alert('PUBLISHED!');"></span>
+                                                <span class="glyphicon glyphicon-share" title="Publish" style="color: #3a42e8" onclick="publishArticle({{ article.id }});"></span>
                                                 <!--<a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
                                             </p>
                                         </div>

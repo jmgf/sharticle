@@ -407,13 +407,16 @@ def save_article(request, id):
 
 def publish_article(request, id):    
     try:
-        new_content = request.POST["content"]
-        article = Article.objects.get(id = id, author = request.user.username)
-        article.content = article.content + new_content
-        article.save()
+        user = request.user
+        Article.objects.filter(id = id, author = user.username).update(already_published = True)
 
         # Update user article list's last modified date (used for HTTP caching)
-
+        # ...
+        
+        # Update user's number of articles
+        user.number_of_drafts = user.number_of_drafts - 1
+        user.number_of_articles = user.number_of_articles + 1
+        user.save()
         
         # Return successful JSON encoded response
         return JsonResponse({'success' : True})
