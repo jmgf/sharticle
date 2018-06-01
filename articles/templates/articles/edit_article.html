@@ -11,6 +11,7 @@
     }
 
     textarea {
+        width: 100%;
         border: 0px;
     }
 
@@ -51,6 +52,22 @@
         margin: 0px;
     }
 
+
+
+    /*
+    [contenteditable="true"]{
+        border: 2px solid white;
+    }
+
+    [contenteditable="true"]:focus {
+        padding: 10px;
+        border: 2px solid green;
+        border-radius: 5px;
+        cursor: pointer;
+        outline: none;
+    }
+    */
+
     /*===============================*/
     /*============  DnD  ============*/
     /*===============================*/
@@ -87,10 +104,10 @@
         border: 2px solid #666666;
     }
 
-    .column.dragElem {
+    .dragElem {
         opacity: 0.4;
     }
-    .column.over {
+    .over {
         border-top: 2px solid lightgreen;
     }
 </style>
@@ -119,7 +136,7 @@
     onmouseenter="document.getElementById('action-buttons').style.display='block'" 
     onmouseleave="document.getElementById('action-buttons').style.display='none'">
     <div id="action-buttons" style="display:none; height: 10px; margin-top:10vh">
-        <span class="glyphicon glyphicon-floppy-disk action-button" title="Save" onclick="saveDraft({{ article.id }});"></span>
+        <span class="glyphicon glyphicon-floppy-disk action-button" title="Save" onclick="saveArticle({{ article.id }});"></span>
         <span class="glyphicon glyphicon-share action-button" title="Publish" onclick="alert('Published!')"></span>
         <span class="glyphicon glyphicon-trash action-button" title="Delete" data-toggle="modal" data-target="#delete_article_modal"></span>
         <span class="glyphicon glyphicon-tags action-button" title="Tag" onclick="alert('Tagged!')"></span>
@@ -154,7 +171,7 @@
             {{ article.content | safe }}
         </div>    
         <br><br>
-        <p style="text-align:center"><span class="glyphicon glyphicon-plus action-button" onclick="addElement();"></span></p>
+        <p style="text-align:center"><span class="glyphicon glyphicon-plus action-button" onclick="addElement(null);"></span></p>
         <br><br><br><br>
     </div>
 
@@ -211,15 +228,19 @@
         }
         return cookieValue;
     }
+
     function save_article_url(id){
         return '/articles/save/' + id + '/';
     }
-    function saveDraft(id){
+    
+    function saveArticle(id){
         var content = '';
-        var texties = document.getElementsByTagName("textarea");
+        var texties = document.getElementById("columns").getElementsByTagName("p");
         var i;
         for (i = 0; i < texties.length; i++){
-            content += '<p class="column" draggable="true">' + texties[i].value + '</p>';
+            //content += '<p class="column" draggable="true">' + texties[i].value + '</p>';
+            //new_content = texties[i].value.replace(/\n/g, '<br/>');
+            content += '<p contenteditable="true" draggable="true">' + texties[i].innerHTML + '</p>';
         }
         alert(content);
         $.post(save_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken'), 'content' : content}, function(data, status){
@@ -231,16 +252,42 @@
 
     var dragSrcEl = null;
     var counter = 0;
-    function addElement(){
-        var new_element = document.createElement("textarea");
-        new_element.value = "Newly created paragraph " + counter++;
-        new_element.style.width = "100%";
-        new_element.style.resize = "vertical";
+    function addElement(srcElement){
+        var new_element = document.createElement("p");
+        new_element.contentEditable = "true";
+        //new_element.value = "Newly created paragraph " + counter++;
+        // new_element.style.width = "100%";
+        //new_element.style.resize = "vertical";
         new_element.style.minHeight = "3rem";
-        new_element.rows = "1";
-        document.getElementById("columns").appendChild(new_element);
+
+        if (srcElement == null) document.getElementById("columns").appendChild(new_element);   
+        else srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling);     
+        
+        new_element.focus();
         window.scrollTo(0, document.body.scrollHeight);
     }
+
+    document.onkeydown = function (e) {
+        // Check if some paragraph is selected
+        if (event.srcElement!=document.body && 
+           (event.which == 13 || event.keyCode == 13 || event.which == 46 || event.keyCode == 46)){
+            // ADD NEW PARAGRAPH
+            if (event.which == 13 || event.keyCode == 13) {     
+                event.preventDefault();
+                addElement(e.srcElement);
+            }
+            // DELETE SELECTED PARAGRAPH
+            else if (event.which == 46 || event.keyCode == 46) {
+                event.preventDefault();
+                var nextSibling = event.srcElement.nextSibling;
+                // Remove the element
+                event.srcElement.parentElement.removeChild(event.srcElement);
+                // Does not work for the last element. It throws an error!
+                nextSibling.focus();
+            }
+        }
+    };
+
     function handleDragStart(e) {
         // Target (this) element is the source node.
         dragSrcEl = this;
@@ -279,6 +326,8 @@
             var dropElem = this.previousSibling;
             addDnDHandlers(dropElem);                
         }
+        // THIS FIXES A BUG
+        else this.classList.remove('dragElem');
         this.classList.remove('over');
         return false;   
     }
@@ -297,7 +346,7 @@
         elem.addEventListener('drop', handleDrop, false);
         elem.addEventListener('dragend', handleDragEnd, false);
     }
-    var cols = document.querySelectorAll('#columns .column');
+    var cols = document.querySelectorAll('#columns p');
     [].forEach.call(cols, addDnDHandlers);
 </script>
 

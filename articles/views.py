@@ -384,7 +384,7 @@ def save_article(request, id):
     try:
         new_content = request.POST["content"]
         article = Article.objects.get(id = id, author = request.user.username)
-        article.content = article.content + new_content
+        article.content = new_content
         article.save()
 
         # Update article's last modified date (used for HTTP caching)
