@@ -137,7 +137,7 @@
     onmouseleave="document.getElementById('action-buttons').style.display='none'">
     <div id="action-buttons" style="display:none; height: 10px; margin-top:10vh">
         <span class="glyphicon glyphicon-floppy-disk action-button" title="Save" onclick="saveArticle({{ article.id }});"></span>
-        <span class="glyphicon glyphicon-share action-button" title="Publish" onclick="alert('Published!')"></span>
+        <span class="glyphicon glyphicon-share action-button" title="Publish" data-toggle="modal" data-target="#publish_article_modal"></span>
         <span class="glyphicon glyphicon-trash action-button" title="Delete" data-toggle="modal" data-target="#delete_article_modal"></span>
         <span class="glyphicon glyphicon-tags action-button" title="Tag" onclick="alert('Tagged!')"></span>
         <!--<span class="glyphicon glyphicon-bookmark action-button" title="Bookmark" onclick="alert('Bookmark saved!')"></span>
@@ -150,6 +150,17 @@
     <div style="background-image: url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg'); height: 100px;">
     </div>
 -->
+
+
+<div class="text-center">
+    {% if article.tags %}
+        {% for tag in article.tags %}
+            <span class="badge">{{ tag.tag }}</span>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<br><br>
 
 {% if article.image_path != "" %}
 <img src="/static/articles/{{article.image_path}}" style="max-width:60%; margin-left: auto; margin-right: auto; display:block"></img>
@@ -203,6 +214,41 @@
     </div>
 </div>
 
+<div id="publish_article_modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url "articles:publish_article" article.id %}" onsubmit="getSelectValues();">
+            {% csrf_token %}
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-share"></span> &nbsp;Publish article</h3>
+                </div>
+                <div class="modal-body">
+                    <h4>Pick some tags for your article.</h4>
+                    <hr>
+                    <h4 class="text-primary"><span class="glyphicon glyphicon-tag" style="color:#337ab7"></span> &nbsp;The article <span class="label label-primary">{{ article.title }}</span> will contain the following tags:</h4>
+                    <select id="select1" multiple size="7" onselect="alert(this.option);" style="width: 100%; text-align:center; font-size: 120%;">
+                        <option value="Web apps">Web apps</option>
+                        <option value="Desktop apps">Desktop apps</option>
+                        <option value="Databases">Databases</option>
+                        <option value="Back-end">Back-end</option>
+                        <option value="Front-end">Front-end</option>
+                        <option value="Javascript">Javascript</option>
+                        <option value="Python">Python</option>
+                        <option value="Software Engineering">Software Engineering</option>
+                    </select>
+                    <input id="tags" name="tags" type="hidden">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Publish</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <!--<form action="/articles/save/{{article.id}}/" method="POST" class="text-center" enctype="multipart/form-data">
     {% csrf_token %}
@@ -213,6 +259,22 @@
 
 
 <script>
+    function getSelectValues() {
+        var select = document.getElementById('select1'); 
+        var result = [];
+        var options = select && select.options;
+        var opt;
+
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+            result.push(opt.value || opt.text);
+            }
+        }
+        document.getElementById('tags').value = result;
+        alert(result);
+    }
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -240,9 +302,10 @@
         for (i = 0; i < texties.length; i++){
             //content += '<p class="column" draggable="true">' + texties[i].value + '</p>';
             //new_content = texties[i].value.replace(/\n/g, '<br/>');
-            content += '<p contenteditable="true" draggable="true">' + texties[i].innerHTML + '</p>';
+            if(texties[i].innerHTML!='')
+                content += '<p contenteditable="true" draggable="true">' + texties[i].innerHTML + '</p>';
         }
-        alert(content);
+        //alert(content);
         $.post(save_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken'), 'content' : content}, function(data, status){
             if (data.success == true)
                 alert('Article saved!');
@@ -260,11 +323,13 @@
         //new_element.style.resize = "vertical";
         new_element.style.minHeight = "3rem";
 
-        if (srcElement == null) document.getElementById("columns").appendChild(new_element);   
+        if (srcElement == null) {
+            document.getElementById("columns").appendChild(new_element);
+            window.scrollTo(0, document.body.scrollHeight);
+        }   
         else srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling);     
         
         new_element.focus();
-        window.scrollTo(0, document.body.scrollHeight);
     }
 
     document.onkeydown = function (e) {

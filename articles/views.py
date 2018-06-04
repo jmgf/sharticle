@@ -410,7 +410,12 @@ def save_article(request, id):
 def publish_article(request, id):    
     try:
         user = request.user
-        Article.objects.filter(id = id, author = user.username).update(already_published = True)
+        new_tags = []
+        
+        for tag in request.POST["tags"].split(","):
+            new_tags.append(Tag(tag = tag))
+            
+        Article.objects.filter(id = id, author = user.username).update(already_published = True, tags = new_tags)
 
         # Update user article list's last modified date (used for HTTP caching)
         # ...
