@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser
 
 from djongo import models as djongo_models
 
+from django.forms import ModelForm
+
 # Create your models here.
 
 
@@ -22,6 +24,17 @@ class SharticleUser(AbstractUser):
         db_table = 'sharticle_user'
 
 
+class Tag(djongo_models.Model):
+    tag = models.CharField(max_length = 64)
+
+    objects = djongo_models.DjongoManager()
+
+class TagForm(ModelForm):
+    class Meta:
+        model = Tag
+        fields = ['tag']
+
+
 
 
 class Article(djongo_models.Model):
@@ -35,6 +48,11 @@ class Article(djongo_models.Model):
     rating = djongo_models.FloatField(default = 0)
     content = djongo_models.CharField(max_length = 4096, default='')
     already_published = djongo_models.BooleanField(default = False)
+    tags = djongo_models.ArrayModelField(
+        model_container = Tag,
+        model_form_class = TagForm,
+        null = True,
+    )
 
     objects = djongo_models.DjongoManager()
 

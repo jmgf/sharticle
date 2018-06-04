@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.http import HttpResponse, JsonResponse
 
 # from django.contrib.auth.models import User
-from .models import SharticleUser, Article
+from .models import SharticleUser, Article, Tag
 
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
@@ -22,6 +22,7 @@ import json
 import time
 
 import uuid
+
 
 
 
@@ -236,7 +237,7 @@ def json_published_articles(request):
     articles = Article.objects.filter(author = user.username, already_published = True)  
 
     # Serialize response in JSON format
-    json_data = { 'articles': list(articles.values()), 
+    json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
                   'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
     return JsonResponse(json_data)
 
@@ -248,8 +249,9 @@ def json_draft_articles(request):
     articles = Article.objects.filter(author = user.username, already_published = False)
 
     # Serialize response in JSON format
-    json_data = { 'articles': list(articles.values()), 
+    json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
                   'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
+
     return JsonResponse(json_data)
 
 
@@ -288,7 +290,7 @@ def create_article(request):
             image_name = ''
                 
         # Create new article and save it to the db
-        article = Article(author = user.username, title = title, description = description, content='', image_path = image_name)
+        article = Article(author = user.username, title = title, description = description, content='', image_path = image_name, tags=[])
         article.save()
 
         # Increment user's draft articles count
