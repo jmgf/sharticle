@@ -1,27 +1,27 @@
+
+# EXTERNAL LIBRARIES
+from datetime import datetime
+import time
+import json
+import uuid
+
+# DJANGO MODULES
 from django.shortcuts import render, redirect
-
-from django.core.cache import cache
-
 from django.http import HttpResponse, JsonResponse
-
+from django.views.decorators.http import last_modified
+from django.views.decorators.cache import cache_page, cache_control
+from django.core.cache import cache
 # from django.contrib.auth.models import User
-from .models import SharticleUser, Article, Tag
-
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
-from django.views.decorators.cache import cache_page, cache_control
+# APPLICATION CODE
+from .models import SharticleUser, Article, Tag
 
-from django.views.decorators.http import last_modified
 
-from datetime import datetime
 
-import json
 
-import time
-
-import uuid
 
 
 
@@ -36,7 +36,7 @@ import uuid
 #@cache_page(60*60)
 
 def register(request):
-    # Método POST
+    # If the method is POST
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password1"]
@@ -51,12 +51,12 @@ def register(request):
             #return HttpResponse("Your account has been created, " + user.username + ".")
             return redirect('articles:login')
 
-        # In case the user already exists
+        # If the user already exists
         except IntegrityError:
             context = { 'user_already_exists': True, 'username': username }
             return render(request, 'articles/register.html', context)
 
-    # Método GET
+    # If the method is GET
     return render(request, 'articles/register.html')
 
 
@@ -71,10 +71,11 @@ def register(request):
 #@cache_page(60*60)
 
 def login(request):
-    # Método POST
+    # If the method is POST
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
+
         # Check user credentials
         user = authenticate(request, username = username, password = password)
         if user is not None:
@@ -85,12 +86,18 @@ def login(request):
             return redirect('articles:edit_profile')
             # return HttpResponse("You have been successfully logged in, " + request.user.username  + "!")
 
-        # In case the user does not exist or the password is wrong
+        # If the user does not exist or the password is wrong
         else:
             context = { 'wrong_credentials': True }
             return render(request, 'articles/login.html', context)
-    # Método GET
+    
+    # If the method is GET
     return render(request, 'articles/login.html')
+
+
+
+
+
 
 
 
@@ -103,13 +110,19 @@ def login(request):
 def logout(request):
     start = time.time()
 
+    # Update user status
     auth_logout(request)
     
     end = time.time()
     print(1000*(end - start))
     
-    #return HttpResponse("You have been logged out!")
+    # Redirect to login page
     return redirect('articles:login')
+
+
+
+
+
 
 
 
@@ -121,22 +134,35 @@ def logout(request):
 
 
 def last_modified_func(request, username):
-    start = time.time()
-    selected_user = SharticleUser.objects.get(username = username)
-    end = time.time()
-    print("SELECT user FROM DATABASE:" + str(1000*(end - start)))
-    return selected_user.date_last_modified
+    try:
+        start = time.time()
+        selected_user = SharticleUser.objects.get(username = username)
+        end = time.time()
+        print("SELECT user FROM DATABASE:" + str(1000*(end - start)))
+        return selected_user.date_last_modified
+        
+    # If the user does not exist
+    except SharticleUser.DoesNotExist:
+        return datetime(2019,1,1)
+
+
 
 @last_modified(last_modified_func)
+
 def profile(request, username):
     try:
         selected_user = SharticleUser.objects.get(username = username)
         response = render(request, 'articles/profile.html', context = {'selected_user' : selected_user})
         response['Cache-Control'] = 'no-cache'
         return response
-    # In case the user does not exist
+    # If the user does not exist
     except SharticleUser.DoesNotExist:
         return HttpResponse("User does not exist!")
+
+
+
+
+
 
 
 
@@ -155,10 +181,15 @@ def some_func(request):
         # Redirect to login page (user is not logged in)
         return datetime(2018,1,1)
 
+
+
 @last_modified(some_func)
 
 def edit_profile(request):
+    # If the user is authenticated
     if request.user.is_authenticated:
+
+        # If the method is POST
         if request.method == "POST":
             theUser = request.user
 
@@ -179,10 +210,12 @@ def edit_profile(request):
             
             # Update user's profile last modified date
             theUser.date_last_modified = datetime.now()
+
             # Save user object to the database
             theUser.save()
             return render(request, 'articles/edit_profile.html')
-
+        
+        # If the method is GET
         else:
             start = time.time()
             t = render(request, 'articles/edit_profile.html')
@@ -201,9 +234,16 @@ def edit_profile(request):
                 print ("YEAH!!")
 
             return t
-    # In case the user is not authenticated, redirect to login page
+
+    # If the user is not authenticated
     else:
+        # Redirect to login page
         return redirect('articles:login')
+
+
+
+
+
 
 
 
@@ -213,46 +253,99 @@ def edit_profile(request):
 # ARTICLES view ===============================================================
 # =============================================================================
 
-def draft_articles_view(request):    
-    user = request.user
-    articles = Article.objects.filter(author = user.username, already_published = False)
-    response = render(request, 'articles/articles.html', context = {'drafts': True, 'articles': articles})
-    return response
+def draft_articles_view(request):  
+    # If the user is authenticated
+    if request.user.is_authenticated:  
+        user = request.user
+        
+        # Retrieve articles from the db
+        articles = Article.objects.filter(author = user.username, already_published = False)
+        # Store articles in cache
+        cache.set(request.user.username + 'articles', articles, None)
+        # Retrieve articles from cache
+        articles = cache.get(request.user.username + 'articles')
+        # Construct response
+        response = render(request, 'articles/articles.html', context = {'drafts': True, 'articles': articles})
+     
+
+        # PLAYING AROUND WITH THE CACHE
+        article1 = Article(author = 'author', title = 'title', description = 'description', content = 'content', image_path = 'image_name', tags=[])
+        cache.set('article', article1, None)
+        article2 = cache.get('article')
+        print(article2.image_path)
+        # END_OF_PLAY
+        
+        return response
+    
+    # If the user is not authenticated
+    else:
+        # Redirect to login page
+        return redirect('articles:login')
+
+
 
 
 
 def published_articles_view(request):    
-    user = request.user
-    articles = Article.objects.filter(author = user.username, already_published = True)
-    response = render(request, 'articles/articles.html', context = {'published': True, 'articles': articles})
-    return response
+    # If the user is authenticated
+    if request.user.is_authenticated:  
+        user = request.user
+        articles = Article.objects.filter(author = user.username, already_published = True)
+        response = render(request, 'articles/articles.html', context = {'published': True, 'articles': articles})
+        return response
+    
+    # If the user is not authenticated
+    else:
+        # Redirect to login page
+        return redirect('articles:login')
 
 
 
 
 
 def json_published_articles(request):
-    # Get list of articles from db
-    user = request.user
-    articles = Article.objects.filter(author = user.username, already_published = True)  
+    # If the user is authenticated
+    if request.user.is_authenticated:  
+        # Get list of articles from db
+        user = request.user
+        articles = Article.objects.filter(author = user.username, already_published = True)  
 
-    # Serialize response in JSON format
-    json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
-                  'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
-    return JsonResponse(json_data)
+        # Serialize response in JSON format
+        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
+                    'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
+        return JsonResponse(json_data)
+    
+    # If the user is not authenticated
+    else:
+        # Return unsuccessful response
+        return JsonResponse({'success' : False})
+    
+
 
 
 
 def json_draft_articles(request):
-    # Get list of articles from db
-    user = request.user
-    articles = Article.objects.filter(author = user.username, already_published = False)
+    # If the user is authenticated
+    if request.user.is_authenticated:  
+        # Get list of articles from db
+        user = request.user
+        articles = Article.objects.filter(author = user.username, already_published = False)
 
-    # Serialize response in JSON format
-    json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
-                  'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
+        # Serialize response in JSON format
+        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
+                    'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
 
-    return JsonResponse(json_data)
+        return JsonResponse(json_data)
+    
+    # If the user is not authenticated
+    else:
+        # Return unsuccessful response
+        return JsonResponse({'success' : False})
+
+
+
+
+
 
 
 
@@ -269,8 +362,10 @@ def create_article(request):
     if request.method == "POST":
 
         # Retrieve POST data
-        title = request.POST["title"]
-        description = request.POST["description"]     
+        if request.POST["title"]:
+            title = request.POST["title"]
+        if request.POST["description"]:
+            description = request.POST["description"]     
         
         # In case of successful image upload  
         if request.FILES:
@@ -285,7 +380,7 @@ def create_article(request):
                 for chunk in image.chunks():
                     destination.write(chunk)
 
-        # In case no image was uploaded
+        # If no image was uploaded
         else:
             image_name = ''
                 
@@ -305,6 +400,11 @@ def create_article(request):
 
 
 
+
+
+
+
+
 # =============================================================================
 # EDIT ARTICLE view ===========================================================
 # =============================================================================
@@ -315,20 +415,31 @@ def edit_article(request, id):
     # Check user authentication status
     if user.is_authenticated:
 
-        # Retrieve article from the database
-        article = Article.objects.get(id = id)
+        try:
+            # Retrieve article from db
+            article = Article.objects.get(id = id)
 
-        # Check if user is the author and the article is a draft
-        if user.username == article.author and not article.already_published:
-            response = render(request, 'articles/edit_article.html', context = {'article': article})    
-        # In case the user is not the article's author or the article is not a draft
-        else:
-            response = HttpResponse("You can not edit this article!")
-        return response
+            # Check if user is the author and the article is a draft
+            if user.username == article.author and not article.already_published:
+                response = render(request, 'articles/edit_article.html', context = {'article': article})    
+            
+            # If the user is not the article's author or the article is not a draft
+            else:
+                response = HttpResponse("You can not edit this article!")
+            return response
+
+        # If the article does not exist
+        except Article.DoesNotExist:
+            return HttpResponse("There is no article with id " + id + "!")
     
-    # In case the user is not authenticated, redirect to login page
+    # If the user is not authenticated, redirect to login page
     else:
         return redirect('articles:login')
+
+
+
+
+
 
 
 
@@ -338,41 +449,54 @@ def edit_article(request, id):
 # DELETE ARTICLE view =========================================================
 # =============================================================================
 
-def delete_article(request, id):    
-    user = request.user
-    # Delete article from db
-    try:
-        article = Article.objects.get(id = id, author = user.username)
-        if not article.already_published:
-            draft = True
-        else:
-            draft = False
+def delete_article(request, id):  
+    # If the method is POST
+    if request.method == "POST":  
+        user = request.user
+        
+        try:
+            article = Article.objects.get(id = id)
+            
+            # Check if user is the author
+            if user.username == article.author:
+                if not article.already_published:
+                    draft = True
+                else:
+                    draft = False
 
-        number_of_deletions = article.delete()[0]
-        if number_of_deletions == 1:
+                # Remove article from db
+                article.delete()
 
-            # Decrement user's ???_DRAFT/PUBLISHED_??? articles count
-            if draft:
-                user.number_of_drafts = user.number_of_drafts - 1
+                # Decrement user's draft/published articles count
+                if draft:
+                    user.number_of_drafts = user.number_of_drafts - 1
+                else:
+                    user.number_of_articles = user.number_of_articles - 1
+                user.save()
+
+                # Update user article list's last modified date (used for HTTP caching)
+                # ...
+        
+                # Update article's last modified date (used for HTTP caching)
+                # ...
+
+                # Return successful JSON encoded response
+                return JsonResponse({'success' : True})
+
+            # If the user is not the article's author
             else:
-                user.number_of_articles = user.number_of_articles - 1
-            user.save()
+                # Return unsuccessful response
+                return JsonResponse({'success' : False, 'error_message' : "You can not delete this article!"})
 
-            # Update article's last modified date (used for HTTP caching)
-            # ...
-
-            # Return successful JSON encoded response
-            return JsonResponse({'success' : True})
-
-        else: 
+        # If the article does not exist
+        except Article.DoesNotExist:
             # Return unsuccessful response
-            return JsonResponse({'success' : False})
+            return JsonResponse({'success' : False, 'error_message' : "There is no article with id " + id + "!"})
 
 
-    # In case the article does not exist
-    except Article.DoesNotExist:
-        # Return unsuccessful response
-        return JsonResponse({'success' : False})
+
+
+
 
 
 
@@ -383,22 +507,41 @@ def delete_article(request, id):
 # =============================================================================
 
 def save_article(request, id):    
-    try:
-        new_content = request.POST["content"]
-        article = Article.objects.get(id = id, author = request.user.username)
-        article.content = new_content
-        article.save()
-
-        # Update article's last modified date (used for HTTP caching)
-        # ...
+    # If the method is POST
+    if request.method == "POST":
         
-        # Return successful JSON encoded response
-        return JsonResponse({'success' : True})
-    
-    # In case the article does not exist
-    except Article.DoesNotExist:
-        # Return unsuccessful response
-        return JsonResponse({'success' : False})
+        if request.POST["content"]:
+            user = request.user
+            new_content = request.POST["content"]
+
+            # ===========================================================================================
+            # article = Article.objects.filter(id = id)
+            # if user.username == article.author and not article.already_published:
+            #     article.update(content = new_content))
+            #     ...
+            # ===========================================================================================
+
+            # Update article in db      
+            number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(content = new_content)
+            
+            # Check if user is the author and the article is a draft
+            if number_of_updates == 1:                    
+                # Update article's last modified date (used for HTTP caching)
+                # ...
+                
+                # Return successful JSON encoded response
+                return JsonResponse({'success' : True})
+            
+            # If user is not the article's author or the article is not a draft or does not exist
+            else:
+                # Return unsuccessful response
+                return JsonResponse({'success' : False, 'error_message' : "You can not save this article!"})
+
+
+
+
+
+
 
 
 
@@ -407,31 +550,60 @@ def save_article(request, id):
 # PUBLISH ARTICLE view ========================================================
 # =============================================================================
 
-def publish_article(request, id):    
-    try:
+def publish_article(request, id):  
+    # If the method is POST
+    if request.method == "POST":          
+
         user = request.user
         new_tags = []
         
-        for tag in request.POST["tags"].split(","):
-            new_tags.append(Tag(tag = tag))
+        if request.POST["tags"]:
+            for tag in request.POST["tags"].split(","):
+                new_tags.append(Tag(tag = tag))
+
+        # ===========================================================================================
+        # article = Article.objects.filter(id = id)
+        # if user.username == article.author and not article.already_published:
+        #     article.update(already_published = True, tags = new_tags))
+        #     ...
+        # ===========================================================================================
+
+        # Update article in db      
+        number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(already_published = True, tags = new_tags)
+        
+        # Check if user is the author and the article is a draft
+        if number_of_updates == 1:
+        
+            # Update user article list's last modified date (used for HTTP caching)
+            # ...
+
+            # Update article's last modified date (used for HTTP caching)
+            # ...
             
-        Article.objects.filter(id = id, author = user.username).update(already_published = True, tags = new_tags)
+            # Update user's number of articles
+            user.number_of_drafts = user.number_of_drafts - 1
+            user.number_of_articles = user.number_of_articles + 1
+            user.save()
+            
+            # Return successful JSON encoded response
+            return JsonResponse({'success' : True})
 
-        # Update user article list's last modified date (used for HTTP caching)
-        # ...
+        # If user is not the article's author or the article is not a draft or does not exist
+        else:
+            # Return unsuccessful response
+            return JsonResponse({'success' : False, 'error_message' : "You can not publish this article!"})
         
-        # Update user's number of articles
-        user.number_of_drafts = user.number_of_drafts - 1
-        user.number_of_articles = user.number_of_articles + 1
-        user.save()
-        
-        # Return successful JSON encoded response
-        return JsonResponse({'success' : True})
-    
-    # In case the article does not exist
-    except Article.DoesNotExist:
-        # Return unsuccessful response
-        return JsonResponse({'success' : False})
 
 
+
+
+
+
+
+
+
+
+# =============================================================================
+# ... view ====================================================================
+# =============================================================================
 
