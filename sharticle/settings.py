@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'sharticle.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'sharticle1',
+        'NAME': 'sharticle_db',
     }
 }
 

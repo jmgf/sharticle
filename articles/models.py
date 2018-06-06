@@ -18,7 +18,9 @@ class SharticleUser(AbstractUser):
     number_of_followers = models.IntegerField(default = 0)
     number_of_followees = models.IntegerField(default = 0)
     profileImagePath = models.CharField(max_length = 512, null = True, blank = True)
-    date_last_modified = models.DateTimeField(auto_now_add = True)
+    profile_last_modified_date = models.DateTimeField(auto_now_add = True)
+    drafts_last_modified_date = models.DateTimeField(auto_now_add = True)
+    articles_last_modified_date = models.DateTimeField(auto_now_add = True)
 
     class Meta:
         db_table = 'sharticle_user'
@@ -41,9 +43,9 @@ class Article(djongo_models.Model):
     title = djongo_models.CharField(max_length = 128)
     description = djongo_models.CharField(max_length = 512)
     author = djongo_models.CharField(max_length = 512)
-    pub_date = djongo_models.DateField(auto_now_add = True)
+    pub_date = djongo_models.DateTimeField(null = True, blank = True)    
     image_path = models.CharField(max_length = 512, null = True, blank = True)
-    date_last_modified = djongo_models.DateTimeField(auto_now_add = True)
+    last_modified_date = djongo_models.DateTimeField(auto_now_add = True)
     number_of_comments = djongo_models.IntegerField(default = 0)
     rating = djongo_models.FloatField(default = 0)
     content = djongo_models.CharField(max_length = 4096, default='')

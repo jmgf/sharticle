@@ -139,7 +139,7 @@ def last_modified_func(request, username):
         selected_user = SharticleUser.objects.get(username = username)
         end = time.time()
         print("SELECT user FROM DATABASE:" + str(1000*(end - start)))
-        return selected_user.date_last_modified
+        return selected_user.profile_last_modified_date
         
     # If the user does not exist
     except SharticleUser.DoesNotExist:
@@ -176,7 +176,7 @@ def some_func(request):
     user = request.user
     if user.is_authenticated:
         # Return user's profile last modified date
-        return user.date_last_modified
+        return user.profile_last_modified_date
     else:
         # Redirect to login page (user is not logged in)
         return datetime(2018,1,1)
@@ -209,7 +209,7 @@ def edit_profile(request):
                 theUser.email = request.POST['email']
             
             # Update user's profile last modified date
-            theUser.date_last_modified = datetime.now()
+            theUser.profile_last_modified_date = datetime.now()
 
             # Save user object to the database
             theUser.save()
@@ -311,7 +311,7 @@ def json_published_articles(request):
         articles = Article.objects.filter(author = user.username, already_published = True)  
 
         # Serialize response in JSON format
-        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
+        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date')),
                     'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
         return JsonResponse(json_data)
     
@@ -332,7 +332,7 @@ def json_draft_articles(request):
         articles = Article.objects.filter(author = user.username, already_published = False)
 
         # Serialize response in JSON format
-        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'pub_date', 'image_path')),
+        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date')),
                     'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
 
         return JsonResponse(json_data)
@@ -390,6 +390,10 @@ def create_article(request):
 
         # Increment user's draft articles count
         user.number_of_drafts = user.number_of_drafts + 1
+
+        # Update user draft articles' last modified date (used for HTTP caching)
+        current_date = datetime.now()
+        user.drafts_last_modified_date = current_date
         user.save()
 
         # Return article editing view
@@ -467,18 +471,29 @@ def delete_article(request, id):
                 # Remove article from db
                 article.delete()
 
-                # Decrement user's draft/published articles count
+                current_date = datetime.now()
+                
                 if draft:
+                     # Decrement user's draft articles count
                     user.number_of_drafts = user.number_of_drafts - 1
-                else:
-                    user.number_of_articles = user.number_of_articles - 1
-                user.save()
 
-                # Update user article list's last modified date (used for HTTP caching)
-                # ...
+                    # Update user draft articles' last modified date (used for HTTP caching)
+                    # ( No need to update user.profile_last_modified_date, 
+                    #   since the profile view does not change )
+                    user.drafts_last_modified_date = current_date
+
+                else:
+                    # Decrement user's published articles count
+                    user.number_of_articles = user.number_of_articles - 1
+
+                    # Update user profile + published articles' last modified date (used for HTTP caching)
+                    user.profile_last_modified_date = current_date
+                    user.articles_last_modified_date = current_date
+                    
+                user.save()
         
-                # Update article's last modified date (used for HTTP caching)
-                # ...
+                # ??? Update article's last modified date (used for HTTP caching) ???
+                # ??? ... ???
 
                 # Return successful JSON encoded response
                 return JsonResponse({'success' : True})
@@ -521,13 +536,13 @@ def save_article(request, id):
             #     ...
             # ===========================================================================================
 
+            current_date = datetime.now()
+
             # Update article in db      
-            number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(content = new_content)
+            number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(content = new_content, last_modified_date = current_date)
             
             # Check if user is the author and the article is a draft
             if number_of_updates == 1:                    
-                # Update article's last modified date (used for HTTP caching)
-                # ...
                 
                 # Return successful JSON encoded response
                 return JsonResponse({'success' : True})
@@ -568,22 +583,23 @@ def publish_article(request, id):
         #     ...
         # ===========================================================================================
 
+        current_date = datetime.now()
+
         # Update article in db      
-        number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(already_published = True, tags = new_tags)
+        number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(already_published = True, tags = new_tags, last_modified_date = current_date, pub_date = current_date)
         
         # Check if user is the author and the article is a draft
         if number_of_updates == 1:
-        
-            # Update user article list's last modified date (used for HTTP caching)
-            # ...
-
-            # Update article's last modified date (used for HTTP caching)
-            # ...
-            
-            # Update user's number of articles
+                    
+            # Update user's number of draft + published articles
             user.number_of_drafts = user.number_of_drafts - 1
             user.number_of_articles = user.number_of_articles + 1
-            user.save()
+
+            # Update user profile + draft + published articles' last modified date (used for HTTP caching)
+            user.profile_last_modified_date = current_date
+            user.drafts_last_modified_date = current_date
+            user.articles_last_modified_date = current_date
+            user.save()                
             
             # Return successful JSON encoded response
             return JsonResponse({'success' : True})

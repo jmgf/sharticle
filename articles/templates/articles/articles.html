@@ -266,7 +266,7 @@
                                         var html = '';
                                         data.articles.forEach(article => {
                                             if (user.profileImagePath) user_image_html = '<img src="' + user.profileImagePath + '" class="pull-left" style="margin-right: 20px;  border-radius: 5px;" height="68"></img>';
-                                            else user_image_html = '<span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>';
+                                            else user_image_html = '<span class="glyphicon glyphicon-user pull-left" style="font-size:65px; margin-right: 20px;"></span>';
                                             var article_image_url = (article.image_path != "" ? ('/static/articles/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
                                             html += `
                                                 <div class="col-md-6" id="article_box_${ article.id }">
@@ -294,7 +294,9 @@
                                                                         ${user_image_html}
                                                                         <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
                                                                         <!--<p>${ user.resume }</p>-->
-                                                                        <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; ${ article.pub_date }</p>
+                                                                        <p>
+                                                                            <span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp;
+                                                                            ${ article.last_modified_date.split('T')[0] }</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -380,7 +382,7 @@
                                                 <span class="glyphicon glyphicon-user pull-left" style="font-size:65px; margin-right: 20px;"></span>
                                                 {% endif %}
                                                 <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
-                                                <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.pub_date }}</p>
+                                                <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.last_modified_date | date:"Y-m-d" }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -531,7 +533,7 @@
                                             <span class="glyphicon glyphicon-user pull-left" style="font-size:65px; margin-right: 20px;"></span>
                                             {% endif %}
                                             <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
-                                            <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.pub_date }}</p>
+                                            <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; {{ article.last_modified_date | date:"Y-m-d" }}</p>
                                         </div>
                                     </div>
                                 </div>
