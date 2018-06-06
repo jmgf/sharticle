@@ -253,28 +253,37 @@ def edit_profile(request):
 # ARTICLES view ===============================================================
 # =============================================================================
 
+def drafts_last_modified_func(request):
+    user = request.user
+    return user.drafts_last_modified_date
+
+
+@last_modified(drafts_last_modified_func)
+
 def draft_articles_view(request):  
     # If the user is authenticated
     if request.user.is_authenticated:  
-        user = request.user
+        user = request.user 
+
         
+        # PLAYING AROUND WITH THE CACHE
+        # article1 = Article(author = 'author', title = 'title', description = 'description', content = 'content', image_path = 'image_name', tags=[])
+        # cache.set('article', article1, None)
+        # article2 = cache.get('article')
+        # print(article2.image_path)
+        
+        # Store articles in cache
+        # cache.set(request.user.username + 'articles', articles, None)
+        # Retrieve articles from cache
+        # articles = cache.get(request.user.username + 'articles')
+        # END_OF_PLAY
+
+
         # Retrieve articles from the db
         articles = Article.objects.filter(author = user.username, already_published = False)
-        # Store articles in cache
-        cache.set(request.user.username + 'articles', articles, None)
-        # Retrieve articles from cache
-        articles = cache.get(request.user.username + 'articles')
         # Construct response
         response = render(request, 'articles/articles.html', context = {'drafts': True, 'articles': articles})
-     
-
-        # PLAYING AROUND WITH THE CACHE
-        article1 = Article(author = 'author', title = 'title', description = 'description', content = 'content', image_path = 'image_name', tags=[])
-        cache.set('article', article1, None)
-        article2 = cache.get('article')
-        print(article2.image_path)
-        # END_OF_PLAY
-        
+        response['Cache-Control'] = 'no-cache'
         return response
     
     # If the user is not authenticated
@@ -285,13 +294,25 @@ def draft_articles_view(request):
 
 
 
+
+def articles_last_modified_func(request):
+    user = request.user
+    return user.articles_last_modified_date
+
+
+@last_modified(articles_last_modified_func)
 
 def published_articles_view(request):    
     # If the user is authenticated
     if request.user.is_authenticated:  
         user = request.user
+
+        # Retrieve articles from the db
         articles = Article.objects.filter(author = user.username, already_published = True)
+        
+        # Construct response
         response = render(request, 'articles/articles.html', context = {'published': True, 'articles': articles})
+        response['Cache-Control'] = 'no-cache'
         return response
     
     # If the user is not authenticated
@@ -302,6 +323,8 @@ def published_articles_view(request):
 
 
 
+
+@last_modified(articles_last_modified_func)
 
 def json_published_articles(request):
     # If the user is authenticated
@@ -313,7 +336,10 @@ def json_published_articles(request):
         # Serialize response in JSON format
         json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date')),
                     'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
-        return JsonResponse(json_data)
+        
+        response = JsonResponse(json_data)
+        response['Cache-Control'] = 'no-cache'
+        return response
     
     # If the user is not authenticated
     else:
@@ -323,6 +349,8 @@ def json_published_articles(request):
 
 
 
+
+@last_modified(drafts_last_modified_func)
 
 def json_draft_articles(request):
     # If the user is authenticated
@@ -335,7 +363,9 @@ def json_draft_articles(request):
         json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date')),
                     'author': { 'username' : user.username, 'resume' : user.resume, 'profileImagePath' : user.profileImagePath } }
 
-        return JsonResponse(json_data)
+        response = JsonResponse(json_data)
+        response['Cache-Control'] = 'no-cache'
+        return response
     
     # If the user is not authenticated
     else:
