@@ -443,6 +443,16 @@ def create_article(request):
 # EDIT ARTICLE view ===========================================================
 # =============================================================================
 
+def article_last_modified_func(request, id):
+    try:
+        return Article.objects.get(id = id).last_modified_date
+    # If the requested article does not exist
+    except Article.DoesNotExist:
+        return datetime(2018,1,1)
+
+
+@last_modified(article_last_modified_func)
+
 def edit_article(request, id):   
     user = request.user
     
@@ -460,6 +470,8 @@ def edit_article(request, id):
             # If the user is not the article's author or the article is not a draft
             else:
                 response = HttpResponse("You can not edit this article!")
+
+            response['Cache-Control'] = 'no-cache'
             return response
 
         # If the article does not exist
