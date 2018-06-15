@@ -665,3 +665,43 @@ def publish_article(request, id):
 # ... view ====================================================================
 # =============================================================================
 
+def unvariable_view(request):
+    response = render(request, 'articles/unvariable.html', context = {'current_date' : datetime.now().second })
+    response["Cache-control"] = "max-age=30"
+    return response
+
+
+
+
+
+
+
+def upload_article_image(request):
+    user = request.user
+
+    # If the method is POST
+    if request.method == "POST":
+
+        # Retrieve POST data
+        if request.POST["article_id"]:
+            id = request.POST["article_id"]
+        
+        # In case of successful image upload  
+        if request.FILES:
+            image = request.FILES["uploaded_image"]     
+            image_extension = image.name.split(".")[-1]        
+            static_url = 'C:\\Users\\joao\\Desktop\\sharticle\\articles\\static\\articles\\'
+            image_name = 'article_' + id + "_" + str(uuid.uuid4()) + '.' + image_extension
+            dir = static_url + image_name
+
+            # Write image to disk
+            with open(dir, 'wb+') as destination:
+                for chunk in image.chunks():
+                    destination.write(chunk)
+
+        # If no image was uploaded
+        else:
+            image_name = ''
+         
+
+        return JsonResponse({'success' : True, 'imageSrc' : image_name})

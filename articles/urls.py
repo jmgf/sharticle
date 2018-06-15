@@ -26,6 +26,8 @@ urlpatterns = [
     path('articles/delete/<id>/', views.delete_article, name="delete_article"),
     path('articles/save/<id>/', views.save_article, name="save_article"),
     path('articles/publish/<id>/', views.publish_article, name="publish_article"),
+    path('articles/uploads/images/', views.upload_article_image, name="upload_article_image"),
+    path('unvariable/', views.unvariable_view, name="unvariable_view"),
     # GENERAL ARTICLES
     #path('@<author>/<title>/', views.read_article, name="read_article"),
 ]
