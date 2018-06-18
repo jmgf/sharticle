@@ -255,7 +255,11 @@ def edit_profile(request):
 
 def drafts_last_modified_func(request):
     user = request.user
-    return user.drafts_last_modified_date
+    if request.user.is_authenticated:
+        return user.drafts_last_modified_date
+    else:
+        return datetime(2018,1,1)
+
 
 
 @last_modified(drafts_last_modified_func)
@@ -297,7 +301,10 @@ def draft_articles_view(request):
 
 def articles_last_modified_func(request):
     user = request.user
-    return user.articles_last_modified_date
+    if request.user.is_authenticated:
+        return user.articles_last_modified_date
+    else:
+        return datetime(2018,1,1)
 
 
 @last_modified(articles_last_modified_func)
