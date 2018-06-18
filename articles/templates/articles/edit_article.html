@@ -72,6 +72,12 @@
         margin: 0px;
     }
 
+    #article_content ul {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        margin-left: 10%;
+    }
+
 
 
     /*
@@ -201,7 +207,7 @@
         <span class="glyphicon glyphicon-floppy-disk action-button" title="Save" onclick="saveArticle({{ article.id }});"></span>
         <span class="glyphicon glyphicon-share action-button" title="Publish" data-toggle="modal" data-target="#publish_article_modal"></span>
         <span class="glyphicon glyphicon-trash action-button" title="Delete" data-toggle="modal" data-target="#delete_article_modal"></span>
-        <span class="glyphicon glyphicon-tags action-button" title="Tag" onclick="alert('Tagged!')"></span>
+        <!--<span class="glyphicon glyphicon-tags action-button" title="Tag" onclick="alert('Tagged!')"></span>-->
         <!--<span class="glyphicon glyphicon-bookmark action-button" title="Bookmark" onclick="alert('Bookmark saved!')"></span>
         <a href="#comment-section"><span class="glyphicon glyphicon-comment action-button" title="Comment"></span></a>
         <span class="glyphicon glyphicon-star action-button" title="Rate" onclick="alert('Rated!')"></span>-->
@@ -245,7 +251,8 @@
         <br><br>
         <p style="text-align:center">
             <span class="glyphicon glyphicon-plus action-button" title="Insert paragraph" onclick="addElement(null);"></span>
-            <span class="glyphicon glyphicon-list action-button" title="Insert title" onclick="addTitle(null);"></span>
+            <span class="glyphicon glyphicon-header action-button" title="Insert title" onclick="addTitle(null);"></span>
+            <span class="glyphicon glyphicon-list action-button" title="Insert list" onclick="addList(null);"></span>
             <span class="glyphicon glyphicon-camera action-button" title="Insert image" data-toggle="modal" data-target="#upload_image_modal"></span>
 
             <!--<span class="glyphicon glyphicon-bold action-button" onmousepress="addBold();"></span>
@@ -424,22 +431,50 @@
 
     var dragSrcEl = null;
     var counter = 0;
+
     function addElement(srcElement){
-        var new_element = document.createElement("p");
-        new_element.contentEditable = "true";
-        //new_element.value = "Newly created paragraph " + counter++;
-        // new_element.style.width = "100%";
-        //new_element.style.resize = "vertical";
-        new_element.style.minHeight = "3rem";
+        var new_element;
+        if (srcElement == null){
+            new_element = document.createElement("p");
+            new_element.contentEditable = "true"; 
+            document.getElementById("columns").appendChild(new_element);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+        else {
+            if (srcElement.tagName == 'P' || srcElement.tagName == 'H2' || srcElement.tagName == 'UL' ){
+                new_element = document.createElement("p");
+            }
+            else {
+                new_element = document.createElement("li");         
+            }   
+            new_element.contentEditable = "true";  
+            srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling);        
+        } 
+        new_element.focus();
+    }
+
+
+
+    function addList(srcElement){
+        var new_element = document.createElement("ul");
+        var new_list_element = document.createElement("li");
+        //new_element.contentEditable = "true";
+        new_list_element.contentEditable = "true";
 
         if (srcElement == null) {
             document.getElementById("columns").appendChild(new_element);
+            new_element.appendChild(new_list_element);
             window.scrollTo(0, document.body.scrollHeight);
         }   
-        else srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling);     
+        else {
+            srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling); 
+            new_element.appendChild(new_list_element);
+        }    
         
-        new_element.focus();
+        new_list_element.focus();
     }
+
+
 
     function addTitle(srcElement){
         var new_element = document.createElement("h2");
@@ -458,6 +493,8 @@
         new_element.focus();
     }
 
+
+
     function addImage(imageSrc){
         var new_image = document.createElement("img");
         var IMAGE_PREFIX = '/static/articles/';
@@ -465,6 +502,7 @@
         new_image.contentEditable = 'true';
 
         var new_image_caption = document.createElement("p");
+        new_image_caption.contentEditable = 'true';
         new_image_caption.innerHTML = 'Image caption';
         new_image_caption.className = 'image-caption';
 
@@ -490,7 +528,8 @@
             if (event.which == 13 || event.keyCode == 13) {     
                 event.preventDefault();
                 if (e.srcElement.innerHTML==''){
-                    addTitle(e.srcElement);                    
+                    if (e.srcElement.tagName == 'P') addTitle(e.srcElement);  
+                    else addElement(e.srcElement.parentNode);                  
                     e.srcElement.parentNode.removeChild(e.srcElement);
                 }
                 else addElement(e.srcElement);
