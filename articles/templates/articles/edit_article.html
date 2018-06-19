@@ -136,6 +136,15 @@
     .over {
         border-top: 2px solid lightgreen;
     }
+
+    .label {
+        font-size: 100%;
+        margin-right: 5px;
+    }
+
+    .label-info {        
+        cursor: pointer;
+    }
 </style>
 <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
 
@@ -223,7 +232,7 @@
 <div class="text-center">
     {% if article.tags %}
         {% for tag in article.tags %}
-            <span class="badge">{{ tag.tag }}</span>
+            <span class="label label-success">{{ tag.tag }}</span>
         {% endfor %}
     {% endif %}
 </div>
@@ -324,7 +333,7 @@
 
 <div id="publish_article_modal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-        <form method="POST" action="{% url "articles:publish_article" article.id %}" onsubmit="getSelectValues();">
+        <form method="POST" action="{% url "articles:publish_article" article.id %}" onsubmit="getTags();">
             {% csrf_token %}
             <!-- Modal content-->
             <div class="modal-content">
@@ -333,10 +342,10 @@
                     <h3 class="modal-title" style="vertical-align: baseline"><span class="glyphicon glyphicon-share"></span> &nbsp;Publish article</h3>
                 </div>
                 <div class="modal-body">
-                    <h4>Pick some tags for your article.</h4>
+                    <h4>Pick some tags for the article <span class="label label-primary">{{ article.title }}</span></h4>
                     <hr>
-                    <h4 class="text-primary"><span class="glyphicon glyphicon-tag" style="color:#337ab7"></span> &nbsp;The article <span class="label label-primary">{{ article.title }}</span> will contain the following tags:</h4>
-                    <select id="select1" multiple size="7" onselect="alert(this.option);" style="width: 100%; text-align:center; font-size: 120%;">
+                    <h4 class="text-primary"><span class="glyphicon glyphicon-tag" style="color:#337ab7"></span> &nbsp;Choose some tags from the list:</h4>
+                    <select id="select1" multiple size="7" onselect="alert(this.option);" style="width: 100%; text-align:center; font-size: 120%;" class="form-control" >
                         <option value="Web apps">Web apps</option>
                         <option value="Desktop apps">Desktop apps</option>
                         <option value="Databases">Databases</option>
@@ -346,7 +355,12 @@
                         <option value="Python">Python</option>
                         <option value="Software Engineering">Software Engineering</option>
                     </select>
-                    <input id="tags" name="tags" type="hidden">
+                    <br>
+                    <h4 class="text-primary"><span class="glyphicon glyphicon-tag" style="color:#337ab7"></span> &nbsp;Write your own custom tags:</h4>
+                    <input id="custom_tags" type="text" class="form-control" >
+                    <br>
+                    <div id="selected_tags"></div>
+                    <input id="tags" name="tags" type="hidden" required value="">
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Publish</button>
@@ -367,7 +381,7 @@
 
 
 <script>
-    function getSelectValues() {
+    function getTags() {
         var select = document.getElementById('select1'); 
         var result = [];
         var options = select && select.options;
@@ -380,6 +394,13 @@
             result.push(opt.value || opt.text);
             }
         }
+
+        var custom_tags = document.getElementById("selected_tags");
+        var children = custom_tags.children;
+        for (var i=0; i<children.length; i++) {
+            result.push(children[i].innerHTML);
+        }
+
         document.getElementById('tags').value = result;
         alert(result);
     }
@@ -517,43 +538,62 @@
     document.onkeydown = function (e) {
         /* map[e.keyCode] = e.type == 'keydown'; */
         // Check if some paragraph is selected
-        if (event.srcElement!=document.body && 
-           (event.which == 13 || event.keyCode == 13 || 
-            event.which == 46 || event.keyCode == 46 ||
-            event.which == 8 || event.keyCode == 8 ||
-            event.which == 38 || event.keyCode == 38 ||
-            event.which == 40 || event.keyCode == 40 /*||
-            (map[17] && map[66])*/)){
-            // ADD NEW PARAGRAPH
-            if (event.which == 13 || event.keyCode == 13) {     
-                event.preventDefault();
-                if (e.srcElement.innerHTML==''){
-                    if (e.srcElement.tagName == 'P') addTitle(e.srcElement);  
-                    else addElement(e.srcElement.parentNode);                  
-                    e.srcElement.parentNode.removeChild(e.srcElement);
-                }
-                else addElement(e.srcElement);
-            }
-            // DELETE SELECTED PARAGRAPH
-            else if (event.which == 46 || event.keyCode == 46) {
-                if (event.srcElement.innerHTML==''){
+
+        if (event.srcElement.tagName != 'SELECT' &&
+            event.srcElement.tagName != 'OPTION' &&
+            event.srcElement.tagName != 'INPUT'){
+            if (event.srcElement!=document.body && 
+            (event.which == 13 || event.keyCode == 13 || 
+                event.which == 46 || event.keyCode == 46 ||
+                event.which == 8 || event.keyCode == 8 ||
+                event.which == 38 || event.keyCode == 38 ||
+                event.which == 40 || event.keyCode == 40 /*||
+                (map[17] && map[66])*/)){
+                // ADD NEW PARAGRAPH
+                if (event.which == 13 || event.keyCode == 13) {     
                     event.preventDefault();
-                    var nextSibling = event.srcElement.nextSibling;
-                    // Remove the element
-                    event.srcElement.parentElement.removeChild(event.srcElement);
-                    // Does not work for the last element. It throws an error!
-                    nextSibling.focus();
+                    if (e.srcElement.innerHTML==''){
+                        if (e.srcElement.tagName == 'P') addTitle(e.srcElement);  
+                        else addElement(e.srcElement.parentNode);                  
+                        e.srcElement.parentNode.removeChild(e.srcElement);
+                    }
+                    else addElement(e.srcElement);
                 }
-            }
-            // DELETE SELECTED PARAGRAPH
-            else if (event.which == 8 || event.keyCode == 8) {
-                //alert(window.getSelection().toString());
-                if (event.srcElement.innerHTML==''){
+                // DELETE SELECTED PARAGRAPH
+                else if (event.which == 46 || event.keyCode == 46) {
+                    if (event.srcElement.innerHTML==''){
+                        event.preventDefault();
+                        var nextSibling = event.srcElement.nextSibling;
+                        // Remove the element
+                        event.srcElement.parentElement.removeChild(event.srcElement);
+                        // Does not work for the last element. It throws an error!
+                        nextSibling.focus();
+                    }
+                }
+                // DELETE SELECTED PARAGRAPH
+                else if (event.which == 8 || event.keyCode == 8) {
+                    //alert(window.getSelection().toString());
+                    if (event.srcElement.innerHTML==''){
+                        event.preventDefault();
+                        var previousSibling = event.srcElement.previousSibling;
+                        // Remove the element
+                        event.srcElement.parentElement.removeChild(event.srcElement);
+                        // Does not work for the last element. It throws an error!
+                        var range = document.createRange();
+                        var sel = window.getSelection();
+                        var position = previousSibling.innerHTML.length;
+                        if (position != 0){
+                            range.setStart(previousSibling.childNodes[0], position);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        }
+                        previousSibling.focus();
+                    }
+                }
+                else if (event.which == 38 || event.keyCode == 38) {            
                     event.preventDefault();
                     var previousSibling = event.srcElement.previousSibling;
-                    // Remove the element
-                    event.srcElement.parentElement.removeChild(event.srcElement);
-                    // Does not work for the last element. It throws an error!
                     var range = document.createRange();
                     var sel = window.getSelection();
                     var position = previousSibling.innerHTML.length;
@@ -565,40 +605,42 @@
                     }
                     previousSibling.focus();
                 }
-            }
-            else if (event.which == 38 || event.keyCode == 38) {            
-                event.preventDefault();
-                var previousSibling = event.srcElement.previousSibling;
-                var range = document.createRange();
-                var sel = window.getSelection();
-                var position = previousSibling.innerHTML.length;
-                if (position != 0){
-                    range.setStart(previousSibling.childNodes[0], position);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                else if (event.which == 40 || event.keyCode == 40) {            
+                    event.preventDefault();
+                    var nextSibling = event.srcElement.nextSibling;
+                    var range = document.createRange();
+                    var sel = window.getSelection();
+                    var position = nextSibling.innerHTML.length;
+                    if (position != 0){
+                        range.setStart(nextSibling.childNodes[0], position);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    }
+                    nextSibling.focus();
                 }
-                previousSibling.focus();
+                /*else if (map[16] && map[66]) {            
+                    event.preventDefault();
+                    document.execCommand('underline');
+                    map = {};
+                }*/
             }
-            else if (event.which == 40 || event.keyCode == 40) {            
-                event.preventDefault();
-                var nextSibling = event.srcElement.nextSibling;
-                var range = document.createRange();
-                var sel = window.getSelection();
-                var position = nextSibling.innerHTML.length;
-                if (position != 0){
-                    range.setStart(nextSibling.childNodes[0], position);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-                nextSibling.focus();
+        }
+    };
+
+    document.getElementById("custom_tags").onkeypress = function (e) {
+        if (event.which == 44 || event.keyCode == 44 ||
+            event.which == 13 || event.keyCode == 13 ||
+            event.which == 59 || event.keyCode == 59) {     
+            event.preventDefault();
+            var new_tag = document.createElement("span");
+            new_tag.className="label label-info";
+            new_tag.innerHTML = e.srcElement.value;
+            new_tag.onclick = function(e){
+                this.parentElement.removeChild(this);
             }
-            /*else if (map[16] && map[66]) {            
-                event.preventDefault();
-                document.execCommand('underline');
-                map = {};
-            }*/
+            document.getElementById("selected_tags").appendChild(new_tag);
+            e.srcElement.value = '';
         }
     };
 
