@@ -26,9 +26,9 @@
 <div class="jumbotron profile-header">
     <h1 class="text-center">
       {% if request.user.profileImagePath %}
-        <span><img src="{{ request.user.profileImagePath }}" height="90" style="cursor:pointer" data-toggle="tooltip" data-placement="top" title="Edit image" class="profile-img"></img></span>
+        <span><img src="{{ request.user.profileImagePath }}" height="90" data-toggle="tooltip" data-placement="top" title="Edit image" class="profile-img profile-edit-img"></img></span>
       {% else %}
-        <span class="glyphicon glyphicon-user profile-img"></span>
+        <span class="glyphicon glyphicon-user profile-img profile-edit-img"></span>
       {% endif %}
       {% if request.user.first_name %}
         <span>{{ request.user.first_name }} {{ request.user.last_name }}</span>
