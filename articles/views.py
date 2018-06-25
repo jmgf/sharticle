@@ -408,7 +408,7 @@ def create_article(request):
         if request.FILES:
             image = request.FILES["file"]     
             image_extension = image.name.split(".")[-1]        
-            static_url = 'C:\\Users\\joao\\Desktop\\sharticle\\articles\\static\\articles\\'
+            static_url = '/home/joao/Desktop/sharticle/articles/static/articles/'
             image_name = 'article_' + str(uuid.uuid4()) + '.' + image_extension
             dir = static_url + image_name
 
@@ -697,7 +697,7 @@ def upload_article_image(request):
         if request.FILES:
             image = request.FILES["uploaded_image"]     
             image_extension = image.name.split(".")[-1]        
-            static_url = 'C:\\Users\\joao\\Desktop\\sharticle\\articles\\static\\articles\\'
+            static_url = '/home/joao/Desktop/sharticle/articles/static/articles/'
             image_name = 'article_' + id + "_" + str(uuid.uuid4()) + '.' + image_extension
             dir = static_url + image_name
 
