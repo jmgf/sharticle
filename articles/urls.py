@@ -28,6 +28,9 @@ urlpatterns = [
     path('articles/publish/<id>/', views.publish_article, name="publish_article"),
     path('articles/uploads/images/', views.upload_article_image, name="upload_article_image"),
     path('unvariable/', views.unvariable_view, name="unvariable_view"),
+    # TESTING
+    path('test/', views.test_view),
+
     # GENERAL ARTICLES
     #path('@<author>/<title>/', views.read_article, name="read_article"),
 ]

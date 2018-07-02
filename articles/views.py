@@ -219,6 +219,7 @@ def edit_profile(request):
         else:
             start = time.time()
             t = render(request, 'articles/edit_profile.html')
+            # cache.set('edit_profile_page', t)
             end = time.time()
             print(1000*(end - start))
 
@@ -712,3 +713,35 @@ def upload_article_image(request):
          
 
         return JsonResponse({'success' : True, 'imageSrc' : image_name})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+# TEST view ===================================================================
+# =============================================================================
+
+def test_view(request):
+    from .tests import nosql_testing
+    nosql_testing()
+    return HttpResponse("Done")
+
+
+
+
