@@ -19,6 +19,7 @@ from django.db import IntegrityError
 
 # APPLICATION CODE
 from .models import SharticleUser, Article, Tag
+from articles import tasks
 
 
 

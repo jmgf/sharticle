@@ -2,3 +2,4 @@
 *.jpg
 *.jpeg
 __pycache__
+celerybeat-schedule
