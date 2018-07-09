@@ -1,0 +1,749 @@
+{% extends "articles/base.html" %}
+
+{% load static %}
+
+{% block styles %}
+
+<style>
+    body {
+        word-wrap: break-word;
+        text-overflow: elipsis;
+    }
+    
+    img {
+        max-width:60%;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        margin-top: 80px;
+        margin-bottom: 20px;
+    }
+
+    #cover-image {
+        margin-top: 0px;
+        margin-bottom: 100px;
+    }
+
+    #action-buttons {
+        display: none;
+        height: 10px;
+        margin-top: 20vh;
+    }
+
+    #select1 {
+        width: 100%;
+        font-size: 110%;
+    }
+
+    .image-caption{
+        text-align: center;
+        font-size: 80%;
+        margin-bottom: 80px;
+    }
+
+    textarea {
+        width: 100%;
+        border: 0px;
+    }
+
+    .actions-menu {
+        position: fixed;
+        left: 0px;
+        top: 50px;
+        height: 100%;
+        width: 100px;
+        /* background-color: lightgreen; */
+        font-size: 200%;
+        text-align: center;
+    }
+    h2 {
+        margin-top: 60px;
+        margin-bottom: 40px;
+        padding: 0% 5% 0% 5%;
+        font-weight: 550;
+    }
+    .action-button {
+        margin: 10px 5px 0px 10px;
+        padding: 10px 10px 10px 10px;
+        border-radius: 100px;        
+        text-indent: 0px;   
+        border:2px solid green;
+        background-color: white;
+        cursor: pointer;
+        color: green;
+    }
+    .action-button:hover {
+        color: white;
+        background-color: green;
+        border-color: white;
+        text-shadow: 2px 2px 20px lightgreen;
+
+    }
+    .row {
+        margin: 0px;
+    }
+
+    #article_content {
+        font-size: 1.6em;
+    }
+
+    #article_content ul {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        margin-left: 10%;
+    }
+
+    .article-title {
+        text-shadow: 1px 1px 2px #333;
+    }
+
+
+    /*
+    [contenteditable="true"]{
+        border: 2px solid white;
+    }
+
+    [contenteditable="true"]:focus {
+        padding: 10px;
+        border: 2px solid green;
+        border-radius: 5px;
+        cursor: pointer;
+        outline: none;
+    }
+    */
+
+    /*===============================*/
+    /*============  DnD  ============*/
+    /*===============================*/
+
+    [draggable] {
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        user-select: none;
+        /* Required to make elements draggable in old WebKit */
+        -khtml-user-drag: element;
+        -webkit-user-drag: element;
+    }
+
+    #columns {
+        list-style-type: none;
+    }
+
+    #columns p, textarea {
+        cursor: move;
+        text-indent: 5%;
+        padding: 0% 5% 0% 5%;
+        /* margin-bottom: 10px; */
+    }
+
+    .column header {
+        height: 20px;
+        width: 150px;
+        color: black;
+        background-color: #ccc;
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+        border-radius: 10px;
+        border: 2px solid #666666;
+    }
+
+    .dragElem {
+        opacity: 0.4;
+    }
+    .over {
+        border-top: 2px solid lightgreen;
+    }
+
+    .label {
+        font-size: 100%;
+        margin-right: 5px;
+    }
+
+    .label-info {        
+        cursor: pointer;
+    }
+
+    .jumbotron {
+        background: linear-gradient(to bottom,
+             lightgreen 0px,
+             lightgreen 50px,
+             white 100%);
+        text-align: center;
+    }
+    
+    .jumbotron h1 {
+        padding-top: 50px;
+    }
+
+
+</style>
+
+<style>
+    .article-page-author-info {
+        border-radius: 1px;
+        border-radius: 10px;
+        padding: 30px 20px 30px 20px;
+        cursor: pointer;
+    }
+
+    .article-page-author-info:hover {
+        border: 1px dotted lightgreen;
+        background: rgb(240, 255, 240);
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="article-title">{{ article.title }}</h1>
+        <h3>{{ article.description }}</h3>
+        <!--<ul id="columns">
+            <li class="column" draggable="true"><header>A</header></li>
+            <li class="column" draggable="true"><header>B</header></li>
+            <li class="column" draggable="true"><header>C</header></li>
+            <li class="column" draggable="true"><header>D</header></li>
+            <li class="column" draggable="true"><header>E</header></li>
+        </ul>-->
+        <!--<form method="POST" action="{% url "articles:create_article"  %}"  enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title"><span class="glyphicon glyphicon-pencil"></span> &nbsp;Create new draft</h3>
+                </div>  
+                <div class="modal-body">
+                    <div class="form-group">
+                    <label for="new_article_title">Title: </label>
+                    <input type="text" class="form-control" id="new_article_title" name="title" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_article_description">Description: </label>
+                        <textarea rows="3" class="form-control" id="new_article_description" name="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="new_article_image">Image: </label>
+                        <input name="file" type="file" accept="image/png,image/jpg,image/jpeg">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" type="submit">Create</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>  
+        <script>
+            function verify1() {
+                jQuery.ajax({
+                    type: 'POST',
+                    url:"functions.php",
+                    data: new FormData($("#infoForm1")[0]),
+                    processData: false, 
+                    contentType: false, 
+                    success: function(returnval) {
+                        $("#show1").html(returnval);
+                        $('#show1').show();
+                    }
+                });
+            }
+        </script>-->
+    </div>
+</div>
+
+<div class="actions-menu" 
+    onmouseenter="document.getElementById('action-buttons').style.display='block'" 
+    onmouseleave="document.getElementById('action-buttons').style.display='none'">
+    <div id="action-buttons">
+        <span class="glyphicon glyphicon-floppy-disk action-button" title="Save" onclick="saveArticle({{ article.id }});"></span>
+        <span class="glyphicon glyphicon-share action-button" title="Publish" data-toggle="modal" data-target="#publish_article_modal"></span>
+        <span class="glyphicon glyphicon-trash action-button" title="Delete" data-toggle="modal" data-target="#delete_article_modal"></span>
+        <!--<span class="glyphicon glyphicon-tags action-button" title="Tag" onclick="alert('Tagged!')"></span>-->
+        <!--<span class="glyphicon glyphicon-bookmark action-button" title="Bookmark" onclick="alert('Bookmark saved!')"></span>
+        <a href="#comment-section"><span class="glyphicon glyphicon-comment action-button" title="Comment"></span></a>
+        <span class="glyphicon glyphicon-star action-button" title="Rate" onclick="alert('Rated!')"></span>-->
+    </div>
+</div>
+
+<!--
+    <div style="background-image: url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg'); height: 100px;">
+    </div>
+-->
+
+
+
+
+<!-- AUTHOR INFO -->
+<div class="text-center">
+    <h1 class="text-center">    
+        <span class="article-page-author-info" onclick="window.location.href='/profile/@{{ author }}'">
+            <span class="glyphicon glyphicon-user profile-img"></span>
+            <span>{{ author.username }}</span>                
+        </span>                        
+    </h1>    
+</div>
+    
+<br><br>
+
+
+{% if article.image_path != "" %}
+<img id="cover-image" src="/static/articles/{{article.image_path}}"></img>
+{% else %}
+<img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png"></img>
+{% endif %}  
+
+
+
+
+<div class="row">
+    <!-- Left/upper div -->
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-2">  
+        <br>
+    </div>
+
+    <!-- Article content -->
+    <div class="col-xs-10 col-sm-10 col-md-10 col-lg-8" >
+        <div id="article_content">
+            <div id="columns">
+                {{ article.content | safe }}
+            </div>    
+            
+            <!-- CONTROLS
+            <p class="text-center">
+                <span class="glyphicon glyphicon-plus action-button" title="Insert paragraph" onclick="addElement(null);"></span>
+                <span class="glyphicon glyphicon-header action-button" title="Insert title" onclick="addTitle(null);"></span>
+                <span class="glyphicon glyphicon-list action-button" title="Insert list" onclick="addList(null);"></span>
+                <span class="glyphicon glyphicon-camera action-button" title="Insert image" data-toggle="modal" data-target="#upload_image_modal"></span>
+            </p>
+            -->
+        </div>
+
+        <br><br>
+
+        <hr>
+        <!-- TAGS -->
+        <div class="text-center">
+            {% if article.tags %}
+                {% for tag in article.tags %}
+                    <span class="label label-success">{{ tag.tag }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <hr>
+
+        <br><br>
+
+        <!-- AUTHOR INFO -->
+        <div class="text-center article-page-author-info" onclick="window.location.href='/profile/@{{ author }}'">
+            <h1 class="text-center">                            
+                <span class="glyphicon glyphicon-user profile-img"></span>
+                <span>{{ author.username }}</span>                
+            </h1>              
+            
+            <div class="row">
+                <div class="col-lg-3">
+                </div>
+                <div class="col-lg-6">  
+                <h3 id="resume_stuff" class="text-center">{{ author.resume }}</h3>
+                    <br>
+                </div>
+                <div class="col-lg-3">
+                </div>
+            </div>    
+
+            <div class="row">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4 user_stats">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <p class="text-center"><b class="heavy">{{ author.number_of_articles }}</b><br> Articles</p>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <p class="text-center"><b class="heavy">{{ author.number_of_followers }}</b><br> Followers</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <p class="text-center"><b class="heavy">{{ author.number_of_followees }}</b><br> Followees</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>      
+        </div>
+            
+        <br><br>
+
+
+    </div>
+
+    <!-- Right/lower div -->
+    <div class="col-xs-1 col-sm-10 col-md-1 col-lg-2">   
+        <br>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function getTags() {
+        var select = document.getElementById('select1'); 
+        var result = [];
+        var options = select && select.options;
+        var opt;
+
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+
+            if (opt.selected) {
+            result.push(opt.value || opt.text);
+            }
+        }
+
+        var custom_tags = document.getElementById("selected_tags");
+        var children = custom_tags.children;
+        for (var i=0; i<children.length; i++) {
+            result.push(children[i].innerHTML);
+        }
+
+        document.getElementById('tags').value = result;
+        alert(result);
+    }
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function save_article_url(id){
+        return '/articles/save/' + id + '/';
+    }
+
+    /*function addBold(){
+        alert(window.getSelection().toString());
+        document.execCommand('bold');
+    }*/
+    
+    function saveArticle(id){
+        var content = '';
+        var texties = document.getElementById("columns").getElementsByTagName("*");
+        var i;
+        for (i = 0; i < texties.length; i++){
+            //content += '<p class="column" draggable="true">' + texties[i].value + '</p>';
+            //new_content = texties[i].value.replace(/\n/g, '<br/>');
+            if(texties[i].innerHTML!=''){
+                var tagName = texties[i].tagName;
+                content += '<' + tagName + ' contenteditable="true" draggable="true">' + texties[i].innerHTML + '</' + tagName + '>';
+            }
+        }
+        content = document.getElementById("columns").innerHTML;
+        //alert(content);
+        $.post(save_article_url(id), {'csrfmiddlewaretoken' :  getCookie('csrftoken'), 'content' : content}, function(data, status){
+            if (data.success == true)
+                alert('Article saved!');
+            else alert('Some error has occurred!');
+        });
+    }
+
+    var dragSrcEl = null;
+    var counter = 0;
+
+    function addElement(srcElement){
+        var new_element;
+        if (srcElement == null){
+            new_element = document.createElement("p");
+            new_element.contentEditable = "true"; 
+            document.getElementById("columns").appendChild(new_element);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+        else {
+            if (srcElement.tagName == 'P' || srcElement.tagName == 'H2' || srcElement.tagName == 'UL' ){
+                new_element = document.createElement("p");
+            }
+            else {
+                new_element = document.createElement("li");         
+            }   
+            new_element.contentEditable = "true";  
+            srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling);        
+        } 
+        new_element.focus();
+    }
+
+
+
+    function addList(srcElement){
+        var new_element = document.createElement("ul");
+        var new_list_element = document.createElement("li");
+        //new_element.contentEditable = "true";
+        new_list_element.contentEditable = "true";
+
+        if (srcElement == null) {
+            document.getElementById("columns").appendChild(new_element);
+            new_element.appendChild(new_list_element);
+            window.scrollTo(0, document.body.scrollHeight);
+        }   
+        else {
+            srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling); 
+            new_element.appendChild(new_list_element);
+        }    
+        
+        new_list_element.focus();
+    }
+
+
+
+    function addTitle(srcElement){
+        var new_element = document.createElement("h2");
+        new_element.contentEditable = "true";
+        //new_element.value = "Newly created paragraph " + counter++;
+        // new_element.style.width = "100%";
+        //new_element.style.resize = "vertical";
+        new_element.style.minHeight = "3rem";
+
+        if (srcElement == null) {
+            document.getElementById("columns").appendChild(new_element);
+            window.scrollTo(0, document.body.scrollHeight);
+        }   
+        else srcElement.parentNode.insertBefore(new_element, srcElement.nextSibling);     
+        
+        new_element.focus();
+    }
+
+
+
+    function addImage(imageSrc){
+        var new_image = document.createElement("img");
+        var IMAGE_PREFIX = '/static/articles/';
+        new_image.src = IMAGE_PREFIX + imageSrc;
+        new_image.contentEditable = 'true';
+
+        var new_image_caption = document.createElement("p");
+        new_image_caption.contentEditable = 'true';
+        new_image_caption.innerHTML = 'Image caption';
+        new_image_caption.className = 'image-caption';
+
+        document.getElementById("columns").appendChild(new_image);
+        document.getElementById("columns").appendChild(new_image_caption);
+
+        window.scrollTo(0, document.body.scrollHeight);   
+        new_image_caption.focus();
+    }
+
+    var map = {};
+    document.onkeydown = function (e) {
+        /* map[e.keyCode] = e.type == 'keydown'; */
+        // Check if some paragraph is selected
+
+        if (event.srcElement.tagName != 'SELECT' &&
+            event.srcElement.tagName != 'OPTION' &&
+            event.srcElement.tagName != 'INPUT'){
+            if (event.srcElement!=document.body && 
+            (event.which == 13 || event.keyCode == 13 || 
+                event.which == 46 || event.keyCode == 46 ||
+                event.which == 8 || event.keyCode == 8 ||
+                event.which == 38 || event.keyCode == 38 ||
+                event.which == 40 || event.keyCode == 40 /*||
+                (map[17] && map[66])*/)){
+                // ADD NEW PARAGRAPH
+                if (event.which == 13 || event.keyCode == 13) {     
+                    event.preventDefault();
+                    if (e.srcElement.innerHTML==''){
+                        if (e.srcElement.tagName == 'P') addTitle(e.srcElement);  
+                        else addElement(e.srcElement.parentNode);                  
+                        e.srcElement.parentNode.removeChild(e.srcElement);
+                    }
+                    else addElement(e.srcElement);
+                }
+                // DELETE SELECTED PARAGRAPH
+                else if (event.which == 46 || event.keyCode == 46) {
+                    if (event.srcElement.innerHTML==''){
+                        event.preventDefault();
+                        var nextSibling = event.srcElement.nextSibling;
+                        // Remove the element
+                        event.srcElement.parentElement.removeChild(event.srcElement);
+                        // Does not work for the last element. It throws an error!
+                        nextSibling.focus();
+                    }
+                }
+                // DELETE SELECTED PARAGRAPH
+                else if (event.which == 8 || event.keyCode == 8) {
+                    //alert(window.getSelection().toString());
+                    if (event.srcElement.innerHTML==''){
+                        event.preventDefault();
+                        var previousSibling = event.srcElement.previousSibling;
+                        // Remove the element
+                        event.srcElement.parentElement.removeChild(event.srcElement);
+                        // Does not work for the last element. It throws an error!
+                        var range = document.createRange();
+                        var sel = window.getSelection();
+                        var position = previousSibling.innerHTML.length;
+                        if (position != 0){
+                            range.setStart(previousSibling.childNodes[0], position);
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        }
+                        previousSibling.focus();
+                    }
+                }
+                else if (event.which == 38 || event.keyCode == 38) {            
+                    event.preventDefault();
+                    var previousSibling = event.srcElement.previousSibling;
+                    var range = document.createRange();
+                    var sel = window.getSelection();
+                    var position = previousSibling.innerHTML.length;
+                    if (position != 0){
+                        range.setStart(previousSibling.childNodes[0], position);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    }
+                    previousSibling.focus();
+                }
+                else if (event.which == 40 || event.keyCode == 40) {            
+                    event.preventDefault();
+                    var nextSibling = event.srcElement.nextSibling;
+                    var range = document.createRange();
+                    var sel = window.getSelection();
+                    var position = nextSibling.innerHTML.length;
+                    if (position != 0){
+                        range.setStart(nextSibling.childNodes[0], position);
+                        range.collapse(true);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    }
+                    nextSibling.focus();
+                }
+                /*else if (map[16] && map[66]) {            
+                    event.preventDefault();
+                    document.execCommand('underline');
+                    map = {};
+                }*/
+            }
+        }
+    };
+
+    document.getElementById("custom_tags").onkeypress = function (e) {
+        if (event.which == 44 || event.keyCode == 44 ||
+            event.which == 13 || event.keyCode == 13 ||
+            event.which == 59 || event.keyCode == 59) {     
+            event.preventDefault();
+            var new_tag = document.createElement("span");
+            new_tag.className="label label-info";
+            new_tag.innerHTML = e.srcElement.value;
+            new_tag.onclick = function(e){
+                this.parentElement.removeChild(this);
+            }
+            document.getElementById("selected_tags").appendChild(new_tag);
+            e.srcElement.value = '';
+        }
+    };
+
+    function handleDragStart(e) {
+        // Target (this) element is the source node.
+        dragSrcEl = this;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.outerHTML);
+        this.classList.add('dragElem');
+    }
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault(); // Necessary. Allows us to drop.
+        }
+        this.classList.add('over');
+        e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+        return false;
+    }
+    function handleDragEnter(e) {
+        // this / e.target is the current hover target.
+    }
+    function handleDragLeave(e) {
+        this.classList.remove('over');  // this / e.target is previous target element.
+    }
+    function handleDrop(e) {
+        // this/e.target is current target element.
+        if (e.stopPropagation) {
+            e.stopPropagation(); // Stops some browsers from redirecting.
+        }
+        // Don't do anything if dropping the same column we're dragging.
+        if (dragSrcEl != this) {
+            // Set the source column's HTML to the HTML of the column we dropped on.
+            //alert(this.outerHTML);
+            //dragSrcEl.innerHTML = this.innerHTML;
+            //this.innerHTML = e.dataTransfer.getData('text/html');
+            this.parentNode.removeChild(dragSrcEl);
+            var dropHTML = e.dataTransfer.getData('text/html');
+            this.insertAdjacentHTML('beforebegin',dropHTML);
+            var dropElem = this.previousSibling;
+            addDnDHandlers(dropElem);                
+        }
+        // THIS FIXES A BUG
+        else this.classList.remove('dragElem');
+        this.classList.remove('over');
+        return false;   
+    }
+    function handleDragEnd(e) {
+        // this/e.target is the source node.
+        this.classList.remove('over');
+        /*[].forEach.call(cols, function (col) {
+            col.classList.remove('over');
+        });*/
+    }
+    function addDnDHandlers(elem) {
+        elem.addEventListener('dragstart', handleDragStart, false);
+        elem.addEventListener('dragenter', handleDragEnter, false)
+        elem.addEventListener('dragover', handleDragOver, false);
+        elem.addEventListener('dragleave', handleDragLeave, false);
+        elem.addEventListener('drop', handleDrop, false);
+        elem.addEventListener('dragend', handleDragEnd, false);
+    }
+    var cols = document.querySelectorAll('#columns p');
+    [].forEach.call(cols, addDnDHandlers);
+</script>
+
+{% endblock %}
+
+
+
+
+{% block scripts %}
+    <script>
+        $("#upload_image_form").submit(function(e) {
+            e.preventDefault();    
+            var formData = new FormData(this);
+            
+            $("#upload_image_modal").modal('hide');
+
+            $.ajax({
+                url: '{% url "articles:upload_article_image"  %}',
+                type: 'POST',
+                data: formData,
+                success: function (data) {
+                    if (data.success) alert("Your image has been successfully uploaded!");
+                    document.getElementById("upload_image_form").reset();
+                    addImage(data.imageSrc);                    
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        });
+    </script>
+{% endblock %}

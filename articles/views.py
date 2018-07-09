@@ -747,3 +747,31 @@ def test_view(request):
 
 
 
+
+
+
+
+
+
+# =============================================================================
+# READ ARTICLE view ===========================================================
+# =============================================================================
+
+
+def read_article(request, id):   
+    
+    try:
+        # Retrieve article from db
+        article = Article.objects.get(id = id)
+        
+        # Retrieve author from CACHE / DATABASE
+        author = SharticleUser.objects.get(username = article.author)
+
+        # Generate response
+        response = render(request, 'articles/read_article.html', context = {'article': article, 'author': author}) 
+        return response
+
+    # If the article does not exist
+    except Article.DoesNotExist:
+        return HttpResponse("There is no article with id " + id + "!")
+    

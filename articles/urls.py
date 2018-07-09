@@ -32,5 +32,5 @@ urlpatterns = [
     path('test/', views.test_view),
 
     # GENERAL ARTICLES
-    #path('@<author>/<title>/', views.read_article, name="read_article"),
+    path('articles/<id>/', views.read_article, name="read_article"),
 ]

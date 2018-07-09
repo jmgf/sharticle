@@ -223,6 +223,10 @@
                 <li{% if not drafts %} class="active" {% endif %}><a data-toggle="pill" href="#published_articles" onclick="loadArticles(this, drafts = true, published = false)">Published <span class="badge" id="number_of_published">{{ user.number_of_articles }}</span></a></li>
                 
                 <script>
+                    function read_article_url(id){
+                        return '/articles/' + id + '/';
+                    }
+                    
                     function edit_article_url(id){
                         return '/articles/edit/' + id + '/';
                     }
@@ -323,7 +327,7 @@
                                                                             <span class="glyphicon glyphicon-trash delete-action-icon" title="Delete" data-toggle="modal" data-target="#delete_article_modal_${ article.id }"></span>
                                                                             ${published ? '<span class="glyphicon glyphicon-share publish-action-icon" title="Publish" onclick="publishArticle(' + article.id + ');"></span>' : ''}
                                                                             ${published ? '<a href="' + edit_article_url(article.id) + '"><span class="glyphicon glyphicon-pencil edit-action-icon" title="Edit"></span></a>' 
-                                                                            : '<a href="' + edit_article_url(article.id) + '"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>'}
+                                                                            : '<a href="' + read_article_url(article.id) + '"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>'}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -557,7 +561,7 @@
                                         <div class="article-box-controls-container">
                                             <p class="article-box-controls">
                                                 <span class="glyphicon glyphicon-trash delete-action-icon" title="Delete" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
-                                                <a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
+                                                <a href="{% url 'articles:read_article' article.id %}"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
                                                 <!--<span class="glyphicon glyphicon-share publish-action-icon" title="Publish" onclick="publishArticle({{ article.id }});"></span>-->
                                                 <!--<a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
                                             </p>
