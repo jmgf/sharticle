@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <title>Sharticle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    {% block styles %}
+    {% endblock %}
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>                        
+            </button>
+            <a class="navbar-brand" href="">
+              Sh<b>ar<span>ticl</span>e</b>
+            </a>
+          </div>
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>
+              <li {% block articles_active %}{% endblock %}><a class="text-center" href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-file"></span> &nbsp; <b>Articles</b></a></li>
+            </ul>
+
+            <ul id="user-info" class="nav navbar-nav navbar-right">
+                <script>
+                    var html;
+                    var element = document.getElementById('user-info');
+                    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                    
+                    if (cookieValue) {
+                        html = `
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown"  href="/login/">
+                                    <span class="glyphicon glyphicon-user"></span> &nbsp; ${ cookieValue } <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/profile/@${ cookieValue }/"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;My profile</a></li>
+                                    <li><a href="/profile/edit/"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Edit profile</a></li>
+                                    <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
+                                </ul>
+                            </li>
+                        `;
+                    }
+                    else {
+                        html = `
+                            <li><a id="login-btn" class="btn btn-success navbar-btn" href="/login/">Log in</a></li>
+                            <li><a class="text-center" href="/register/"><span class="glyphicon glyphicon-edit" ></span> &nbsp;Register </a></li>
+                        `;
+                    }
+                    
+                    element.innerHTML = html;
+                </script>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - -
+    - - Definir este bloco nos restantes templates - -
+    - - - - - - - - - - - - - - - - - - - - - - - - -->
+    {% block content %}
+    {% endblock %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    {% block scripts %}
+    {% endblock %}
+  </body>
+</html>

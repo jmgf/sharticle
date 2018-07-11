@@ -85,7 +85,9 @@ def login(request):
             auth_login(request, user)
             # SUBSTITUIR "request.user.username" POR "user.username" PARA EVITAR ACESSOS À BASE DE DADOS
             
-            return redirect('articles:edit_profile')
+            response = redirect('articles:edit_profile')
+            response.set_cookie('username', username)
+            return response
             # return HttpResponse("You have been successfully logged in, " + request.user.username  + "!")
 
         # If the user does not exist or the password is wrong
@@ -769,6 +771,7 @@ def read_article(request, id):
 
         # Generate response
         response = render(request, 'articles/read_article.html', context = {'article': article, 'author': author}) 
+        response['Cache-Control'] = 'max-age=1000'
         return response
 
     # If the article does not exist
