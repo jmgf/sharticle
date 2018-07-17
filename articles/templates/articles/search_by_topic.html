@@ -1,0 +1,363 @@
+{% extends "articles/base_public.html" %}
+
+{% load static %}
+
+{% block styles %}
+<style>
+    .badge {
+        /* color: green; */
+        background-color: lightgray;
+    }
+    .article-box {
+        overflow: hidden;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .article-box:hover{
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    .article-box:hover h3{
+        text-shadow: 1px 1px 1px rgb(128,128,128);
+    }
+
+    .article-box-title h3 {
+        margin-bottom: 0px;
+    }
+
+    .delete-action-icon {
+        color: #f45642;
+    }
+
+    .publish-action-icon {
+        color: #3a42e8;
+    }
+
+    .edit-action-icon {
+        color: green;
+    }
+
+
+    .ellipsed {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        /* number of lines to show */
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+    }
+
+    .article-box-content {
+        cursor: pointer;
+    }
+
+    .article-author {
+        border: 1px dotted gray;
+        border-radius: 5px;
+        color: gray;
+    }
+
+    .article-author:hover {
+        border: 1px solid gray;
+    }
+
+    .article-author img {
+        margin-right: 20px;
+        border-radius: 5px;
+    }
+
+    .article-author > span {
+        font-size: 65px;
+        margin-right: 20px;
+    }
+
+    @media screen and (max-width: 767px){
+        .article-box-content {
+            padding: 10px 20px 10px 20px;
+            max-height: 250px;
+        }
+    }
+    @media screen and (min-width: 768px){
+        .article-box-content {
+            padding: 10px 20px 10px 20px;
+            height: 250px;
+        }
+    }
+
+    .article-box-image {
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+        width: 100%;
+        height: 100%;
+        max-height: 250px;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
+        text-align: center;
+        font-size: 30px;
+        display: table;
+    }
+
+    .article-box-controls-container {
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        display: table;
+        font-size: 0px;
+    }
+
+    .article-box-controls-container:hover {
+        background-color: rgba(200,200,200,0.7); 
+        font-size: 40px;
+    }
+
+    .article-box-controls-container span:hover {
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .article-box-controls {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .col-sm-6 {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .jumbotron {
+        background: linear-gradient(to bottom,
+             lightgreen 0px,
+             lightgreen 50px,
+             white 100%);
+        text-align: center;
+    }
+
+    .jumbotron h1 {
+        padding-top: 50px;
+    }
+
+    .loader {
+        border: 8px solid lightgreen;
+        -webkit-animation: spin 1s linear infinite;
+        animation: spin 0.8s linear infinite;
+        border-top: 8px solid green;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        text-align: center;
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+
+    /* Safari loader */
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+
+</style>
+<link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
+{% endblock %}
+
+{% block topics_active %}class="active"{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 id="topic_description">{{ topic }}</h1>
+</div>
+
+
+<div class="container">
+    <!-- |  DRAFTS  |  PUBLISHED  |  NEW_DRAFT  | -->
+    <div>
+        <div>
+            <ul class="nav nav-tabs nav-justified">
+                {% for key, value in topics %}
+                    <li {% if topic_key == key %} class="active" {% endif %}>
+                        <a data-toggle="pill" href="#{{ key }}" onclick="loadArticles('{{ key }}', '{{ value }}')">{{ value }}</a>
+                    </li>
+                {% endfor %}
+                <!--<li class="active"><a data-toggle="pill" href="#draft_articles" onclick="loadArticles(this, drafts = false, published = true)">Artifical Intelligence </a></li>
+                <li><a data-toggle="pill" href="#published_articles" onclick="loadArticles(this, drafts = true, published = false)">Web Programming </a></li>
+                <li><a data-toggle="pill">Software Engineering</a></li>
+                <li><a data-toggle="pill">Data Science</a></li>
+                <li><a data-toggle="pill">Cryptography</a></li>-->
+                
+                <script>
+                    function read_article_url(id){
+                        return '/articles/' + id + '/';
+                    }
+
+                    function topic_articles_url(topic){
+                        return '/topic/' + topic + '/';
+                    }
+
+                    var already_loaded = false;
+                    var csrftok = "{% csrf_token %}";
+
+                    function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie !== '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = jQuery.trim(cookies[i]);
+                                // Does this cookie string begin with the name we want?
+                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+
+                    //var already_loaded = false;
+
+
+
+                    function loadArticles(topic_id, topic_description){
+
+                        // In case the action is legit (and not a random click)
+                        if (window.location.href != topic_articles_url(topic_id)){
+
+                            // Set the window location
+                            history.pushState(null, topic_id + '_articles', '/topic/' + topic_id + '/');
+
+                            // Set the main heading
+                            document.getElementById("topic_description").innerHTML = topic_description;
+                            
+                            // Load the articles
+                            url = '/topic/' + topic_id + '/json/';
+                            $.get(url, function(data, status){
+                                already_loaded = true;
+
+                                // Hide the loader circle
+                                document.getElementById(topic_id + "_loader").style.display = 'none';
+                                
+                                // Process data
+                                if (data!=null){
+                                    var user = data.author;
+                                    var html = '';
+                                    data.articles.forEach(article => {
+                                        user_image_html = '<span class="glyphicon glyphicon-user pull-left"></span>';
+                                        var article_image_url = (article.image_path != "" ? ('/static/articles/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
+                                        html += `
+                                            <div class="col-md-6" id="article_box_${ article.id }">
+                                                <div class="article-box">
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                            <div class="article-box-image" style="background-image: url('${article_image_url}');">
+                                                                <div class="article-box-controls-container">
+                                                                    <p class="article-box-controls">
+                                                                        <a href="${ read_article_url(article.id) }"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6" onclick="window.location.href = '${ read_article_url(article.id) }'">
+                                                            <div class="article-box-content">
+                                                                <div class="article-box-title">
+                                                                    <h3>${ article.title }</h3>
+                                                                    <p class="ellipsed">${ article.description }</p>
+                                                                </div>
+                                                                <div class="article-author">
+                                                                    ${user_image_html}
+                                                                    <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
+                                                                    <p>
+                                                                        <span class="glyphicon glyphicon-calendar"></span>&nbsp;
+                                                                        ${ article.last_modified_date.split('T')[0] }</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                    document.getElementById(topic_id + '_content').innerHTML = html;
+                                }
+                            });
+                        }
+                    }
+                </script>
+                
+            </ul>
+        </div>    
+    </div>
+
+
+    <!-- ARTICLES -->
+    <div class="tab-content">
+        {% for key, value in topics %}
+            <div id="{{ key }}" class="tab-pane fade in {% if topic_key == key %} active {% endif %}">
+                <br><br>
+                <div class="row" id="{{ key }}_content">
+                    {% if topic_key == key %}
+                        {% for article in articles %}
+                            <div class="col-md-6" id="article_box_{{ article.id }}" onclick="window.location.href = '{% url "articles:read_article" article.id %}'">
+                                <div class="article-box">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            {% if article.image_path != "" %}
+                                            <div class="article-box-image" style="background-image: url('/static/articles/{{ article.image_path }}');">
+                                            {% else %}
+                                            <div class="article-box-image" style="background-image: url('https://www.freeiconspng.com/uploads/no-image-icon-6.png');">
+                                            {% endif %}                                    
+                                                <div class="article-box-controls-container">
+                                                    <p class="article-box-controls">
+                                                        <a href="{% url 'articles:read_article' article.id %}"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
+                                                        <!--<span class="glyphicon glyphicon-share publish-action-icon" title="Publish" onclick="publishArticle({{ article.id }});"></span>-->
+                                                        <!--<a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--<div class="col-sm-6" onclick="window.location.href = '{% url "articles:edit_article" article.id %}'">-->
+                                        <div class="col-sm-6">
+                                            <div class="article-box-content">
+                                                <div class="article-box-title">
+                                                    <h3>{{ article.title }}</h3>
+                                                    <p class="ellipsed">{{ article.description }}</p>
+                                                </div>
+                                                <div class="article-author">
+                                                    {% if request.user.profileImagePath %}
+                                                    <img src="{{ request.user.profileImagePath }}" class="pull-left" height="68"></img>
+                                                    {% else %}
+                                                    <span class="glyphicon glyphicon-user pull-left"></span>
+                                                    {% endif %}
+                                                    <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
+                                                    <p><span class="glyphicon glyphicon-calendar"></span>&nbsp; {{ article.last_modified_date | date:"Y-m-d" }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div id="{{ key }}_loader" class="loader"></div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+</div>
+
+
+
+
+{% endblock %}

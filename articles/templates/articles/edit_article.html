@@ -373,10 +373,19 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3 class="modal-title text-primary"><span class="glyphicon glyphicon-share"></span> &nbsp;Publish article</h3>
+                    <h3 class="modal-title text-primary"><span class="glyphicon glyphicon-share"></span> &nbsp;Publish article <span class="label label-primary">{{ article.title }}</span></h3>
                 </div>
                 <div class="modal-body">
-                    <h4>Pick some tags for the article <span class="label label-primary">{{ article.title }}</span></h4>
+                    <h4>Pick a topic for the article.</h4>
+                    <hr>
+                    <h4 class="text-primary"><span class="glyphicon glyphicon-tag"></span> &nbsp;Choose a topic from the list:</h4>
+                    <select id="select2" name="topic" size="5" class="form-control text-center" required="true">
+                        {% for key, value in topics %}
+                            <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    <h4>Pick some tags for the article.</h4>
                     <hr>
                     <h4 class="text-primary"><span class="glyphicon glyphicon-tag"></span> &nbsp;Choose some tags from the list:</h4>
                     <select id="select1" multiple size="7" onselect="alert(this.option);" class="form-control text-center" >
@@ -394,7 +403,7 @@
                     <input id="custom_tags" type="text" class="form-control text-center" >
                     <br>
                     <div id="selected_tags"></div>
-                    <input id="tags" name="tags" type="hidden" required value="">
+                    <input id="tags" name="tags" type="hidden" required>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Publish</button>

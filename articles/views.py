@@ -121,7 +121,9 @@ def logout(request):
     print(1000*(end - start))
     
     # Redirect to login page
-    return redirect('articles:login')
+    response = redirect('articles:login')
+    response.delete_cookie('username')
+    return response
 
 
 
@@ -439,7 +441,7 @@ def create_article(request):
         user.save()
 
         # Return article editing view
-        response = render(request, 'articles/edit_article.html', context = {'article': article})
+        response = render(request, 'articles/edit_article.html', context = {'article': article, 'topics': dict(Article.TOPICS).items()})
         return response
 
 
@@ -477,7 +479,7 @@ def edit_article(request, id):
 
             # Check if user is the author and the article is a draft
             if user.username == article.author and not article.already_published:
-                response = render(request, 'articles/edit_article.html', context = {'article': article})    
+                response = render(request, 'articles/edit_article.html', context = {'article': article, 'topics': dict(Article.TOPICS).items()})    
             
             # If the user is not the article's author or the article is not a draft
             else:
@@ -629,6 +631,9 @@ def publish_article(request, id):
         if request.POST["tags"]:
             for tag in request.POST["tags"].split(","):
                 new_tags.append(Tag(tag = tag))
+        
+        if request.POST["topic"]:
+            topic = request.POST["topic"]
 
         # ===========================================================================================
         # article = Article.objects.filter(id = id)
@@ -640,7 +645,7 @@ def publish_article(request, id):
         current_date = datetime.now()
 
         # Update article in db      
-        number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(already_published = True, tags = new_tags, last_modified_date = current_date, pub_date = current_date)
+        number_of_updates = Article.objects.filter(id = id, author = user.username, already_published = False).update(already_published = True, tags = new_tags, topic = topic, last_modified_date = current_date, pub_date = current_date)
         
         # Check if user is the author and the article is a draft
         if number_of_updates == 1:
@@ -777,4 +782,73 @@ def read_article(request, id):
     # If the article does not exist
     except Article.DoesNotExist:
         return HttpResponse("There is no article with id " + id + "!")
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+# SEARCH BY TOPIC view ========================================================
+# =============================================================================
+
+
+def search_by_topic(request, topic = 'WP'):   
     
+    if topic in (
+        Article.ARTIFICIAL_INTELLIGENCE,
+        Article.WEB_PROGRAMMING,
+        Article.SOFTWARE_ENGINEERING,
+        Article.DATA_SCIENCE,
+        Article.CRYPTOGRAPHY,
+    ):
+        # Retrieve articles from db
+        articles = Article.objects.filter(topic = topic).all()
+
+        for article in articles:
+            if article.topic is not None:
+                print(article.topic)
+            else:
+                print(article.title)
+        
+        # Generate response
+        response = render(request, 'articles/search_by_topic.html', context = {'articles': articles, 'topic': dict(Article.TOPICS)[topic], 'topic_key': topic, 'topics': dict(Article.TOPICS).items()}) 
+        # response['Cache-Control'] = 'max-age=1000'
+        return response
+
+
+    # If the topic does not exist
+    else:
+        return HttpResponse("Topic " + topic + " does not exist!")
+    
+
+
+
+def json_search_by_topic(request, topic, range = 0):
+
+    # Check if the topic exists
+    if topic in (
+        Article.ARTIFICIAL_INTELLIGENCE,
+        Article.WEB_PROGRAMMING,
+        Article.SOFTWARE_ENGINEERING,
+        Article.DATA_SCIENCE,
+        Article.CRYPTOGRAPHY,
+    ):
+        # Retrieve articles from db
+        articles = Article.objects.filter(topic = topic).all()
+                
+        # Serialize response in JSON format
+        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date'))}
+        
+        response = JsonResponse(json_data)
+        response['Cache-Control'] = 'no-cache'
+        return response
+    
+    # If the topic does not exist
+    else:
+        # Return unsuccessful response
+        return JsonResponse({'success' : False})

@@ -33,4 +33,7 @@ urlpatterns = [
 
     # GENERAL ARTICLES
     path('articles/<id>/', views.read_article, name="read_article"),
+    path('topic/<slug:topic>/', views.search_by_topic, name="search_by_topic"),
+    path('topic/<slug:topic>/json/', views.json_search_by_topic, name="json_search_by_topic"),
+    path('topics/', views.search_by_topic, name="search_by_topic"),
 ]

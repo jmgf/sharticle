@@ -40,6 +40,21 @@ class TagForm(ModelForm):
 
 
 class Article(djongo_models.Model):
+
+    ARTIFICIAL_INTELLIGENCE = 'AI'
+    WEB_PROGRAMMING = 'WP'
+    SOFTWARE_ENGINEERING = 'SE'
+    DATA_SCIENCE = 'DS'
+    CRYPTOGRAPHY = 'C'
+
+    TOPICS = (
+        (ARTIFICIAL_INTELLIGENCE, 'Artifical Intelligence'),
+        (WEB_PROGRAMMING, 'Web Programming'),
+        (SOFTWARE_ENGINEERING, 'Software Engineering'),
+        (DATA_SCIENCE, 'Data Science'),
+        (CRYPTOGRAPHY, 'Cryptography'),
+    )
+
     title = djongo_models.CharField(max_length = 128)
     description = djongo_models.CharField(max_length = 512)
     author = djongo_models.CharField(max_length = 512)
@@ -50,6 +65,7 @@ class Article(djongo_models.Model):
     rating = djongo_models.FloatField(default = 0)
     content = djongo_models.CharField(max_length = 4096, default='')
     already_published = djongo_models.BooleanField(default = False)
+    topic = djongo_models.CharField(max_length = 2, null = True, blank = True, choices = TOPICS)
     tags = djongo_models.ArrayModelField(
         model_container = Tag,
         model_form_class = TagForm,
