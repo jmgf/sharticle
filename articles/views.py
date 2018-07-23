@@ -1,6 +1,6 @@
 
 # EXTERNAL LIBRARIES
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import json
 import uuid
@@ -11,6 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import last_modified
 from django.views.decorators.cache import cache_page, cache_control
 from django.core.cache import cache
+from django.core.paginator import Paginator, EmptyPage
 
 # from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -798,7 +799,7 @@ def read_article(request, id):
 
 
 def search_by_topic(request, topic = 'WP'):   
-    
+
     if topic in (
         Article.ARTIFICIAL_INTELLIGENCE,
         Article.WEB_PROGRAMMING,
@@ -806,18 +807,24 @@ def search_by_topic(request, topic = 'WP'):
         Article.DATA_SCIENCE,
         Article.CRYPTOGRAPHY,
     ):
+        '''
         # Retrieve articles from db
-        articles = Article.objects.filter(topic = topic).all()
+        qs = Article.objects.filter(topic = topic).order_by('pub_date').all()
+        paginator = Paginator(qs, 50)
+        articles = paginator.page(1).object_list
+        '''
 
-        for article in articles:
-            if article.topic is not None:
-                print(article.topic)
-            else:
-                print(article.title)
+        # Retrieve articles from cache
+        articles = cache.get(topic + '1')
         
         # Generate response
         response = render(request, 'articles/search_by_topic.html', context = {'articles': articles, 'topic': dict(Article.TOPICS)[topic], 'topic_key': topic, 'topics': dict(Article.TOPICS).items()}) 
-        # response['Cache-Control'] = 'max-age=1000'
+        
+        # Cache response for 30 minutes
+        if cache.get('topics_expiry_date') is None:
+            cache.set('topics_expiry_date', datetime.now() + timedelta(minutes = 30), None)
+        expiry_date = cache.get('topics_expiry_date')
+        response['Expires'] = expiry_date
         return response
 
 
@@ -828,7 +835,10 @@ def search_by_topic(request, topic = 'WP'):
 
 
 
-def json_search_by_topic(request, topic, range = 0):
+
+
+
+def json_search_by_topic(request, topic, page_number = 1):
 
     # Check if the topic exists
     if topic in (
@@ -838,14 +848,29 @@ def json_search_by_topic(request, topic, range = 0):
         Article.DATA_SCIENCE,
         Article.CRYPTOGRAPHY,
     ):
-        # Retrieve articles from db
-        articles = Article.objects.filter(topic = topic).all()
+        
+        '''
+        try:
+            # Retrieve articles from db
+            qs = Article.objects.filter(topic = topic).order_by('pub_date').all()
+            paginator = Paginator(qs, 50)
+            articles_list = paginator.page(page_number).object_list
+            articles = list(articles_list.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date'))
+        except EmptyPage:
+            articles = None
+        '''
+
+        # Retrieve articles from cache
+        articles = cache.get(topic + str(page_number))
                 
         # Serialize response in JSON format
-        json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date'))}
+        json_data = { 'articles': articles }
         
         response = JsonResponse(json_data)
-        response['Cache-Control'] = 'no-cache'
+
+        # Cache response for 30 minutes
+        expiry_date = cache.get('topics_expiry_date')
+        response['Expires'] = expiry_date
         return response
     
     # If the topic does not exist

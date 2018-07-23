@@ -136,11 +136,13 @@ AUTH_USER_MODEL = 'articles.SharticleUser'
 
 
 
-'''
+
+
+# Periodic Celery task
+# Generate lists of articles by topic
 CELERY_BEAT_SCHEDULE = {
     'some-task': {
-        'task': 'articles.tasks.example_task',
-        'schedule': 2
+        'task': 'articles.tasks.populate_search_by_topic',
+        'schedule': 30
     }
 }
-'''

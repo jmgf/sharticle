@@ -196,6 +196,7 @@
                 <li><a data-toggle="pill">Cryptography</a></li>-->
                 
                 <script>
+
                     function read_article_url(id){
                         return '/articles/' + id + '/';
                     }
@@ -203,10 +204,7 @@
                     function topic_articles_url(topic){
                         return '/topic/' + topic + '/';
                     }
-
-                    var already_loaded = false;
-                    var csrftok = "{% csrf_token %}";
-
+                    
                     function getCookie(name) {
                         var cookieValue = null;
                         if (document.cookie && document.cookie !== '') {
@@ -223,31 +221,60 @@
                         return cookieValue;
                     }
 
-                    //var already_loaded = false;
+
+
+
+
+
+                    var active_topic = '{{ topic_key }}';
+
+                    var active_page = [];
+                    active_page["AI"] = 1;
+                    active_page["WP"] = 1;
+                    active_page["SE"] = 1;
+                    active_page["DS"] = 1;
+                    active_page["C"] = 1;
+
+                    var already_loaded = [];
+                    already_loaded["AI"] = false;
+                    already_loaded["WP"] = false;
+                    already_loaded["SE"] = false;
+                    already_loaded["DS"] = false;
+                    already_loaded["C"] = false;
+
+                    already_loaded["{{ topic_key }}"] = true;
 
 
 
                     function loadArticles(topic_id, topic_description){
 
                         // In case the action is legit (and not a random click)
-                        if (window.location.href != topic_articles_url(topic_id)){
+                        if (active_topic != topic_id || already_loaded[topic_id]){
+
+                            active_topic = topic_id;
+
+                            if (topic_description != null && already_loaded[topic_id] == true) return;
+                            else already_loaded[topic_id] = true;
 
                             // Set the window location
                             history.pushState(null, topic_id + '_articles', '/topic/' + topic_id + '/');
 
-                            // Set the main heading
-                            document.getElementById("topic_description").innerHTML = topic_description;
-                            
+                            // Set main heading (1st time) or active page
+                            if (topic_description != null) 
+                                document.getElementById("topic_description").innerHTML = topic_description;
+                            else active_page[topic_id] = active_page[topic_id] + 1;
+
                             // Load the articles
-                            url = '/topic/' + topic_id + '/json/';
+                            url = '/topic/' + topic_id + '/json/' + active_page[topic_id];
                             $.get(url, function(data, status){
-                                already_loaded = true;
+                                
 
                                 // Hide the loader circle
-                                document.getElementById(topic_id + "_loader").style.display = 'none';
+                                if (document.getElementById(topic_id + "_loader") != null)
+                                    document.getElementById(topic_id + "_loader").style.display = 'none';
                                 
                                 // Process data
-                                if (data!=null){
+                                if (data.articles!=null){
                                     var user = data.author;
                                     var html = '';
                                     data.articles.forEach(article => {
@@ -286,7 +313,7 @@
                                             </div>
                                         `;
                                     });
-                                    document.getElementById(topic_id + '_content').innerHTML = html;
+                                    document.getElementById(topic_id + '_content').innerHTML += html;
                                 }
                             });
                         }
@@ -332,11 +359,7 @@
                                                     <p class="ellipsed">{{ article.description }}</p>
                                                 </div>
                                                 <div class="article-author">
-                                                    {% if request.user.profileImagePath %}
-                                                    <img src="{{ request.user.profileImagePath }}" class="pull-left" height="68"></img>
-                                                    {% else %}
                                                     <span class="glyphicon glyphicon-user pull-left"></span>
-                                                    {% endif %}
                                                     <h4><a href="/profile/@{{ article.author }}/">{{ article.author }}</a></h4>
                                                     <p><span class="glyphicon glyphicon-calendar"></span>&nbsp; {{ article.last_modified_date | date:"Y-m-d" }}</p>
                                                 </div>
@@ -346,13 +369,23 @@
                                 </div>
                             </div>
                         {% endfor %}
-                    {% else %}
-                        <div id="{{ key }}_loader" class="loader"></div>
                     {% endif %}
+                    <div id="{{ key }}_loader" class="loader" {% if topic_key == key %} style="display:none" {% endif %}></div>
                 </div>
             </div>
         {% endfor %}
     </div>
+
+
+
+    <script>
+        window.onscroll = function(ev) {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                // you're at the bottom of the page
+                loadArticles(active_topic, null);
+            }
+        };
+    </script>
 
 
 </div>
