@@ -32,9 +32,12 @@ def populate_search_by_topic():
         Article.CRYPTOGRAPHY,
     ):
     
+        #qs = Article.objects.filter(topic = topic, already_published = True).values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date').order_by('pub_date')
         qs = Article.objects.filter(topic = topic).values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date').order_by('pub_date')
         if qs:
-            paginator = Paginator(qs, 50)
+            pass
+            
+        paginator = Paginator(qs, 50)
 
         for i in range(1, paginator.num_pages+1):
             articles = paginator.page(i).object_list

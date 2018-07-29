@@ -12,6 +12,7 @@ from django.views.decorators.http import last_modified
 from django.views.decorators.cache import cache_page, cache_control
 from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Q
 
 # from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -877,3 +878,80 @@ def json_search_by_topic(request, topic, page_number = 1):
     else:
         # Return unsuccessful response
         return JsonResponse({'success' : False})
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+# SEARCH ARTICLES/PEOPLE view =================================================
+# =============================================================================
+
+
+def search(request):
+
+    '''
+    import string
+    import random
+    # Create some users
+    for i in range(100):
+        username = ''.join(random.choice(string.ascii_lowercase) for x in range(5 + i%2 + i%3))
+        user = SharticleUser.objects.create_user(username, username + '@domain.com', 'pass')
+    '''
+
+    # If the method is GET
+    if request.method == "GET":
+
+        # Search for articles
+        if request.GET.get("articles"):
+            keyword = request.GET["articles"].split(' ')[0]
+            page_number = int(request.GET["page"])
+
+            #users = SharticleUser.objects.raw('SELECT id FROM sharticle_user LIMIT 1')
+
+            q = Q(title__contains = keyword) | Q(description__contains = keyword)
+            
+            qs = Article.objects.filter(q).order_by('id')
+            #, already_published = True)
+
+            paginator = Paginator(qs, 5)
+            articles = paginator.page(page_number).object_list
+
+
+            # Serialize response in JSON format
+            if articles:
+                json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date')) }
+            else:
+                json_data = { 'articles': None }                
+            response = JsonResponse(json_data)
+            return response     
+
+
+        # Search for people
+        elif request.GET.get("people"):
+            keyword = request.GET["people"].split(' ')[0]
+            page_number = int(request.GET["page"])
+
+            q = Q(username__contains = keyword)
+            qs = SharticleUser.objects.filter(q).order_by('id')
+            #, already_published = True)
+
+            paginator = Paginator(qs, 5)
+            people = paginator.page(page_number).object_list
+
+            if people:
+                json_data = { 'people': list(people.values()) }
+            else:
+                json_data = { 'people': None }  
+            response = JsonResponse(json_data)
+            return response     
+
+        
+        # HTTP request
+        else:
+            return render(request, 'articles/search.html')

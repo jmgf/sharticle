@@ -21,7 +21,7 @@
 
     #cover-image {
         margin-top: 0px;
-        margin-bottom: 100px;
+        margin-bottom: 80px;
     }
 
     #action-buttons {
@@ -237,6 +237,13 @@
 
 
 
+{% if article.image_path != "" %}
+<img id="cover-image" src="/static/articles/{{article.image_path}}"></img>
+{% else %}
+<img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png"></img>
+{% endif %}  
+
+
 <!-- AUTHOR INFO -->
 <div class="text-center">
     <h1 class="text-center">    
@@ -245,16 +252,11 @@
             <span>{{ author.username }}</span>                
         </span>                        
     </h1>    
+
+    <!--<p><span class="glyphicon glyphicon-calendar"></span>&nbsp; {{ article.pub_date | date:"Y-m-d"  }} &nbsp;</p>-->
 </div>
     
-<br><br>
-
-
-{% if article.image_path != "" %}
-<img id="cover-image" src="/static/articles/{{article.image_path}}"></img>
-{% else %}
-<img src="https://www.freeiconspng.com/uploads/no-image-icon-6.png"></img>
-{% endif %}  
+<br><br><br>
 
 
 
@@ -288,10 +290,26 @@
         <!-- TAGS -->
         <div class="text-center">
             {% if article.tags %}
+                <b><span class="glyphicon glyphicon-tag"></span>&nbsp; Tags: &nbsp;</b>
                 {% for tag in article.tags %}
-                    <span class="label label-success">{{ tag.tag }}</span>
+                    <span class="label label-success" style="font-size:110%">{{ tag.tag }}</span>
                 {% endfor %}
             {% endif %}
+            <br><br>
+            
+            <p><span class="glyphicon glyphicon-calendar"></span>
+                <b>&nbsp;{{ article.pub_date | date:"Y-m-d"  }} &nbsp;</b> | &nbsp; 
+                <a><span class="label label-primary" style="font-size:110%">Data Science</span></a>
+            </p>
+
+            <!--<p><b>
+                <span class="glyphicon glyphicon-list"></span>&nbsp; Topic: &nbsp;
+                <a><span class="label label-primary" style="font-size:110%">Data Science</span></a>
+            </b></p>
+            <p><span class="glyphicon glyphicon-calendar"></span>
+                <b>&nbsp;{{ article.pub_date | date:"Y-m-d"  }} &nbsp;</b>
+            </p>-->
+            
         </div>
         <hr>
 

@@ -30,6 +30,7 @@
               <li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>
               <li {% block articles_active %}{% endblock %}><a class="text-center" href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-pencil"></span> &nbsp; <b>Articles</b></a></li>
               <li {% block topics_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search_by_topic' %}"><span class="glyphicon glyphicon-list"></span> &nbsp; <b>Topics</b></a></li>
+              <li {% block search_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search' %}"><span class="glyphicon glyphicon-search"></span> &nbsp; <b>Search</b></a></li>
             </ul>
 
             <ul id="user-info" class="nav navbar-nav navbar-right">

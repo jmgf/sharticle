@@ -248,6 +248,13 @@
 
                     function loadArticles(topic_id, topic_description){
 
+                        // Set the window location
+                        history.pushState(null, topic_id + '_articles', '/topic/' + topic_id + '/');
+
+                        // Set main heading (1st time) or active page
+                        if (topic_description != null) 
+                            document.getElementById("topic_description").innerHTML = topic_description;
+
                         // In case the action is legit (and not a random click)
                         if (active_topic != topic_id || already_loaded[topic_id]){
 
@@ -256,16 +263,12 @@
                             if (topic_description != null && already_loaded[topic_id] == true) return;
                             else already_loaded[topic_id] = true;
 
-                            // Set the window location
-                            history.pushState(null, topic_id + '_articles', '/topic/' + topic_id + '/');
-
                             // Set main heading (1st time) or active page
-                            if (topic_description != null) 
-                                document.getElementById("topic_description").innerHTML = topic_description;
-                            else active_page[topic_id] = active_page[topic_id] + 1;
+                            if (topic_description == null) 
+                                active_page[topic_id] = active_page[topic_id] + 1;
 
                             // Load the articles
-                            url = '/topic/' + topic_id + '/json/' + active_page[topic_id];
+                            url = '/topic/' + topic_id + '/json/' + active_page[topic_id] + '/';
                             $.get(url, function(data, status){
                                 
 
