@@ -296,37 +296,37 @@
                     console.log(data.people);
 
                     // List of articles
-                    if (data.articles != null){
+                    if (data.articles != null && data.articles.length > 0){
                         console.log('ARTICLES');
                         var html = '';
                         data.articles.forEach(article => {
                             user_image_html = '<span class="glyphicon glyphicon-user pull-left"></span>';
-                            var article_image_url = (article.image_path != "" ? ('/static/articles/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
+                            var article_image_url = (article[5] != "" ? ('/static/articles/' + article[5]) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
                             html += `
-                                <div class="col-md-6" id="article_box_${ article.id }">
+                                <div class="col-md-6" id="article_box_${ article[0] }">
                                     <div class="article-box">
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <div class="article-box-image" style="background-image: url('${article_image_url}');">
                                                     <div class="article-box-controls-container">
                                                         <p class="article-box-controls">
-                                                            <a href="${ read_article_url(article.id) }"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
+                                                            <a href="${ read_article_url(article[0]) }"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
                                                         </p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-6" onclick="window.location.href = '${ read_article_url(article.id) }'">
+                                            <div class="col-sm-6" onclick="window.location.href = '${ read_article_url(article[0]) }'">
                                                 <div class="article-box-content">
                                                     <div class="article-box-title">
-                                                        <h3>${ article.title }</h3>
-                                                        <p class="ellipsed">${ article.description }</p>
+                                                        <h3>${ article[1] }</h3>
+                                                        <p class="ellipsed">${ article[2] }</p>
                                                     </div>
                                                     <div class="article-author">
                                                         ${user_image_html}
-                                                        <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
+                                                        <h4><a href="/profile/@${ article[3] }/">${ article[3] }</a></h4>
                                                         <p>
                                                             <span class="glyphicon glyphicon-calendar"></span>&nbsp;
-                                                            ${ article.last_modified_date.split('T')[0] }</p>
+                                                            ${ article[6].split('T')[0] }</p>
                                                     </div>
                                                 </div>
                                             </div>

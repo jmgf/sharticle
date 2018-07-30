@@ -160,7 +160,21 @@ def last_modified_func(request, username):
 def profile(request, username):
     try:
         selected_user = SharticleUser.objects.get(username = username)
-        response = render(request, 'articles/profile.html', context = {'selected_user' : selected_user})
+
+        # Retrieve articles from cache
+        articles = cache.get(username + '_articles')
+        if articles is None:
+            print('from DATABASE')
+            # Retrieve articles from database
+            articles = Article.objects.filter(author = username, already_published = True)
+            # Update cache with articles list
+            cache.set(username + '_articles', articles, None)
+        else:
+            print('from CACHE')
+
+        context = {'selected_user' : selected_user, 'articles' : articles}
+        
+        response = render(request, 'articles/profile.html', context = context)
         response['Cache-Control'] = 'no-cache'
         return response
     # If the user does not exist
@@ -916,16 +930,26 @@ def search(request):
 
             q = Q(title__contains = keyword) | Q(description__contains = keyword)
             
-            qs = Article.objects.filter(q).order_by('id')
+            #qs = Article.objects.filter(q).order_by('id')
             #, already_published = True)
 
-            paginator = Paginator(qs, 5)
-            articles = paginator.page(page_number).object_list
+            #qs = Article.objects.raw('{$or: [{title:/1/}, {description:/ar/}]}')
+
+            articles = Article.objects.mongo_find({'$and': [{'$text': { '$search': keyword }}, {'already_published':True}]}, {'_id':0})
+            #.skip(page_number-1).limit(1)
+            print(Article.objects.filter(tags={'tag':'taggy'}))
+            
+            new_list = []
+            for article in articles:
+                new_list.append(list(article.values()))
+
+            #paginator = Paginator(articles, 5)
+            #articles = paginator.page(page_number).object_list
 
 
             # Serialize response in JSON format
             if articles:
-                json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date')) }
+                json_data = { 'articles': new_list }
             else:
                 json_data = { 'articles': None }                
             response = JsonResponse(json_data)
