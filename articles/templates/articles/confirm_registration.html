@@ -1,0 +1,92 @@
+{% extends 'articles/base.html' %}
+
+{% load static %}
+
+{% block styles %}
+    <style>      
+    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
+{% endblock %}
+
+{% block register_active %}class="active"{% endblock %}
+
+{% block content %}
+
+  <div class="container after-nav">
+    <br><br><br>
+    <div class="row">
+
+        {% if not success %}
+        <div class="col-lg-6 col-lg-offset-3 col-sm-6 col-sm-offset-3">
+            <div class="well">
+            <h1 class="text-center">Confirm registration</h1>
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                <h4 class="text-center">Insert the code we sent to your e-mail account</h4>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <br>
+            <span class="glyphicon glyphicon-lock auth-img"></span>
+            <br>
+
+            <form class="form-signin" method="POST" action="{% url 'articles:confirm_registration' %}">
+                {% csrf_token %}
+
+                {% if wrong_code %}
+                <p class="text-danger">The code you provided is incorrect!</p>
+                {% endif %}
+
+                <input type="text" name="code" class="form-control auth-form-control text-center" placeholder="code" required autofocus>
+                
+                <input type="hidden" name="username" value="{{ username }}" class="form-control auth-form-control text-center" required>
+                <input type="hidden" name="email_address" value="{{ email_address }}" class="form-control auth-form-control text-center" required>
+                <input type="hidden" name="password" value="{{ password }}" class="form-control auth-form-control text-center" required>
+
+                <button class="btn btn-lg btn-success btn-block" type="submit">Confirm</button>
+
+                <span class="clearfix"></span>
+            </form>
+            </div>
+        </div>
+        {% else %}
+            <h1 class="text-center">Your registration has been successfully confirmed, <b>{{ username }}</b>!</h1>
+        {% endif %}
+        
+    </div>
+  </div>
+
+  <script>
+      function doOnload() {
+          // Do the downloading awhile AFTER the onload.
+          setTimeout("downloadComponents()", 3000);
+      }
+      
+      window.onload = doOnload;
+
+      // Download external components dynamically using JavaScript.
+      function downloadComponents() {
+          downloadCSS("{% static 'articles/register_style.css' %}");
+      }
+      
+      // Download a stylesheet dynamically.
+      function downloadCSS(url) {
+          var elem = document.createElement("link");
+          elem.rel = "stylesheet";
+          elem.type = "text/css";
+          elem.href = url;
+          document.body.appendChild(elem);
+      }
+      
+      // Download a script dynamically.
+      function downloadJS(url) {
+          var elem = document.createElement("script");
+          elem.src = url;
+          document.body.appendChild(elem);
+      }
+      </script>
+
+{% endblock %}

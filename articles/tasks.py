@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from django.core.cache import cache
 from articles.models import Article
 from django.core.paginator import Paginator, EmptyPage
+from django.core.mail import EmailMessage
 
 
 @shared_task
@@ -12,6 +13,12 @@ def example_task():
     return str(datetime.now().second)
 
 
+@shared_task
+def send_confirmation_email(code, to):
+    subject = 'Sharticle registration'
+    body = 'Thank you for choosing Sharticle! \n Your verification code is ' + code + ' \n Please confirm your registration by accessing sharticle.ddns.net/login/'
+    email = EmailMessage(subject, body, to = [to])
+    email.send()
 
 
 @shared_task

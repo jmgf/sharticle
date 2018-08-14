@@ -27,7 +27,7 @@ SECRET_KEY = 'yhk=em)p%9-&$vvj22oma=-a0jsslgo4iyv2)5kbraj@&dow)n'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '2.81.216.98', 'sharticle.ddns.net']
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
@@ -37,6 +37,14 @@ CACHES = {
         'LOCATION': '127.0.0.1:11211',
     }
 }
+
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'sharticle.webapp@gmail.com'
+EMAIL_HOST_PASSWORD = 'Password1.1'
+
 
 # Application definition
 
@@ -143,6 +151,6 @@ AUTH_USER_MODEL = 'articles.SharticleUser'
 CELERY_BEAT_SCHEDULE = {
     'some-task': {
         'task': 'articles.tasks.populate_search_by_topic',
-        'schedule': 30
+        'schedule': 300
     }
 }

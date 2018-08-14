@@ -44,24 +44,97 @@ def register(request):
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password1"]
+        email_address = request.POST["email_address"]
 
         try:
+            q = Q(username = username) | Q(email = email_address)
+            user = SharticleUser.objects.get(q)
+
+
+            # If the user already exists
+            if (user.username == username):
+                context = { 'user_already_exists': True, 'username': username }
+
+            # If the email already exists
+            elif (user.email == email_address):
+                context = { 'email_already_exists': True, 'email': email_address }
+
+            return render(request, 'articles/register.html', context)
+            
+
+        # If the user still does not exist
+        except SharticleUser.DoesNotExist:     
+
+            # Generate confirmation code
+            code = str(uuid.uuid4())
+            print(code)
+
+            # Store confirmation code in cache for later verification
+            cache.set(username + '_registration_confirmation_code', code, None)
+
+            # Send confirmation email (asynchronous task)
+            tasks.send_confirmation_email.delay(code, email_address)
+
+            # Return confirmation template
+            context = { 'username': username, 'email_address': email_address, 'password': password }
+            return render(request, 'articles/confirm_registration.html', context)
+
+
+    # If the method is GET
+    return render(request, 'articles/register.html')
+
+
+
+
+
+
+
+
+
+
+
+def confirm_registration(request):
+
+    # If the method is POST
+    if request.method == "POST":
+        username = request.POST["username"]
+        email_address = request.POST["email_address"]
+        password = request.POST["password"]
+        code = request.POST["code"]
+
+        # Retrieve confirmation code from cache
+        stored_code = cache.get(username + '_registration_confirmation_code')
+
+        # If both codes are the same
+        if (code == stored_code):
+
             # Create a user and save it to the database
-            user = SharticleUser.objects.create_user(username, username + '@domain.com', password)
+            user = SharticleUser.objects.create_user(username, email_address, password)
+
+            # Update cache
+            cache.delete(username + '_registration_confirmation_code') 
 
             # Insert user object in the cache !!!
             # cache.set(username, user, None)
             
             #return HttpResponse("Your account has been created, " + user.username + ".")
-            return redirect('articles:login')
+            #return redirect('articles:login') 
+            context = { 'success': True, 'username': username } 
+            return render(request, 'articles/confirm_registration.html', context)
+        
+        # If the codes are different
+        else:
+            # Return confirmation template with error
+            context = { 'wrong_code': True, 'success': False } 
+            return render(request, 'articles/confirm_registration.html', context)
 
-        # If the user already exists
-        except IntegrityError:
-            context = { 'user_already_exists': True, 'username': username }
-            return render(request, 'articles/register.html', context)
 
-    # If the method is GET
-    return render(request, 'articles/register.html')
+
+
+
+
+
+
 
 
 
@@ -700,7 +773,7 @@ def publish_article(request, id):
 
 def unvariable_view(request):
     response = render(request, 'articles/unvariable.html', context = {'current_date' : datetime.now().second })
-    response["Cache-control"] = "max-age=30"
+    response["Cache-control"] = "max-age=30000"
     return response
 
 
@@ -933,14 +1006,38 @@ def search(request):
             #qs = Article.objects.filter(q).order_by('id')
             #, already_published = True)
 
-            #qs = Article.objects.raw('{$or: [{title:/1/}, {description:/ar/}]}')
 
+            # ====================================================================
+            start = time.time()
+            articles = Article.objects.filter(Q(description__contains = keyword))
+            if articles:
+                pass
+            end = time.time()
+            print('?slow? = ' + str(1000*(end - start)))
+            #print(articles)
+            # ====================================================================
+
+
+            # ====================================================================
+            start = time.time()
             articles = Article.objects.mongo_find({'$and': [{'$text': { '$search': keyword }}, {'already_published':True}]}, {'_id':0})
+            if articles:
+                pass
+            end = time.time()
+            print('INDEX = ' + str(1000*(end - start)))
             #.skip(page_number-1).limit(1)
-            print(Article.objects.filter(tags={'tag':'taggy'}))
+            # ====================================================================
+
+
+
+            # articles = Article.objects.raw('{$or: [{title:/1/}, {description:/ar/}]}')
+            # articles = Article.objects.mongo_find({'$or': [{'title': '1'}, {'description': '2'}]}, {'_id':0})
+            # print(list(articles))
+
             
             new_list = []
             for article in articles:
+                # print(article)
                 new_list.append(list(article.values()))
 
             #paginator = Paginator(articles, 5)
@@ -950,6 +1047,7 @@ def search(request):
             # Serialize response in JSON format
             if articles:
                 json_data = { 'articles': new_list }
+                # json_data = { 'articles': list(articles.values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date')) }
             else:
                 json_data = { 'articles': None }                
             response = JsonResponse(json_data)
@@ -979,3 +1077,9 @@ def search(request):
         # HTTP request
         else:
             return render(request, 'articles/search.html')
+
+
+
+
+
+#print(Article.objects.filter(tags={'tag':'taggy'}))
