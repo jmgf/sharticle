@@ -7,8 +7,9 @@ from . import views
 app_name = 'articles'
 
 urlpatterns = [
+    path('', views.search_by_topic, name="search_by_topic"),
     # BASE FEATURES
-    path('', views.login, name="default"),
+    path('csrf/', views.csrf_view, name="csrf"),
     path('register/', views.register, name="register"),
     path('login/', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
@@ -34,6 +35,7 @@ urlpatterns = [
 
     # GENERAL ARTICLES
     path('articles/<id>/', views.read_article, name="read_article"),
+    path('comments/<id>/', views.comments, name="comments"),
     path('topic/<slug:topic>/', views.search_by_topic, name="search_by_topic"),
     path('topic/<slug:topic>/json/<int:page_number>/', views.json_search_by_topic, name="json_search_by_topic"),
     path('topics/', views.search_by_topic, name="search_by_topic"),

@@ -21,14 +21,14 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>                        
             </button>
-            <a class="navbar-brand" href="">
+            <a class="navbar-brand" href="/">
               Sh<b>ar<span>ticl</span>e</b>
             </a>
           </div>
           <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-              <li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>
-              <li {% block articles_active %}{% endblock %}><a class="text-center" href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-file"></span> &nbsp; <b>Articles</b></a></li>
+              <!--<li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>-->
+              <li {% block articles_active %}{% endblock %}><a class="text-center" href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-pencil"></span> &nbsp; <b>Articles</b></a></li>
               <li {% block topics_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search_by_topic' %}"><span class="glyphicon glyphicon-list"></span> &nbsp; <b>Topics</b></a></li>
               <li {% block search_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search' %}"><span class="glyphicon glyphicon-search"></span> &nbsp; <b>Search</b></a></li>
             </ul>
@@ -39,11 +39,20 @@
             {% if request.user.is_authenticated %}
               <li class="dropdown {% block edit_profile_active %}{% endblock %}">
                 <a class="dropdown-toggle" data-toggle="dropdown"  href="{% url 'articles:login' %}">
-                  <span class="glyphicon glyphicon-user"></span> &nbsp; {{ request.user.username }} <span class="caret"></span>
+                  {% if request.user.profileImagePath %}
+                    <span><img src="{{ request.user.profileImagePath }}" style="float:left; width:20px; margin-top: 0px; border-radius: 40%"></span>
+                  {% else %}
+                    <span class="glyphicon glyphicon-user"></span>
+                  {% endif %} 
+                  &nbsp; {{ request.user.username }} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                   <li><a href="{% url 'articles:profile' request.user.username %}"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;My profile</a></li>
-                  <li><a href="{% url 'articles:edit_profile' %}"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Edit profile</a></li>
+                  <li><a href="{% url 'articles:edit_profile' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Edit profile</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;My drafts</a></li>
+                  <li><a href="{% url 'articles:published_articles_view' %}"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;My publications</a></li>
+                  <li role="separator" class="divider"></li>
                   <li><a href="{% url 'articles:logout' %}"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
                 </ul>
               </li>

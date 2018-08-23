@@ -398,6 +398,13 @@
             <br>
             <div class="row" id="draft_articles_content">
                 {% if drafts %}
+                    {% if  user.number_of_drafts == 0 %}
+                    <div>
+                        <br>
+                        <h3 class="text-center">There are no drafts.</h3>
+                    </div>
+                    {% endif %}
+                    
                     {% for article in articles %}
                         <div class="col-md-6" id="article_box_{{ article.id }}">
                             <div class="article-box">
@@ -548,6 +555,13 @@
             <br>
             <div class="row" id="published_articles_content">
             {% if published %}
+                {% if  user.number_of_articles == 0 %}
+                <div>
+                    <br>
+                    <h3 class="text-center">There are no publications.</h3>
+                </div>
+                {% endif %}
+                    
                 {% for article in articles %}
                     <div class="col-md-6" id="article_box_{{ article.id }}">
                         <div class="article-box">

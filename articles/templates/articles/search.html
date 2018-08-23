@@ -394,11 +394,13 @@
     </script>
 
     <script>
+        
         window.onscroll = function(ev) {
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
                 // you're at the bottom of the page
                 loadArticles(active_page++);
             }
         };
+        
     </script>
 {% endblock %}

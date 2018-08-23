@@ -76,3 +76,13 @@ class Article(djongo_models.Model):
 
     def __str__(self):
         return '"' + self.title + '" - '  + self.author + ' (' + str(self.pub_date) + ')'
+
+
+
+
+
+class Comment(djongo_models.Model):
+    article_id = models.IntegerField()
+    content = djongo_models.CharField(max_length = 512)
+    author = djongo_models.CharField(max_length = 512)
+    date = djongo_models.DateTimeField(auto_now_add = True)

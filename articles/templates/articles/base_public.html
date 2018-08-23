@@ -21,13 +21,13 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>                        
             </button>
-            <a class="navbar-brand" href="">
+            <a class="navbar-brand" href="/">
               Sh<b>ar<span>ticl</span>e</b>
             </a>
           </div>
           <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-              <li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>
+              <!--<li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>-->
               <li {% block articles_active %}{% endblock %}><a class="text-center" href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-pencil"></span> &nbsp; <b>Articles</b></a></li>
               <li {% block topics_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search_by_topic' %}"><span class="glyphicon glyphicon-list"></span> &nbsp; <b>Topics</b></a></li>
               <li {% block search_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search' %}"><span class="glyphicon glyphicon-search"></span> &nbsp; <b>Search</b></a></li>
@@ -38,16 +38,24 @@
                     var html;
                     var element = document.getElementById('user-info');
                     var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                    
+                    var profile_image = document.cookie.replace(/(?:(?:^|.*;\s*)profile_image\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                    if (profile_image != 'None') profile_image = profile_image.substring(1, profile_image.length-1);
+
+                    // If the user is (supposedly) logged in
                     if (cookieValue) {
                         html = `
                             <li class="dropdown">
                                 <a class="dropdown-toggle" data-toggle="dropdown"  href="/login/">
-                                    <span class="glyphicon glyphicon-user"></span> &nbsp; ${ cookieValue } <span class="caret"></span>
+                                    ${profile_image != 'None' ? '<img src="' + profile_image + '" style="float:left; width:20px; margin-top: 0px; border-radius: 40%">' : '<span class="glyphicon glyphicon-user"></span>'}
+                                    &nbsp; ${ cookieValue } <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a href="/profile/@${ cookieValue }/"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;My profile</a></li>
                                     <li><a href="/profile/edit/"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Edit profile</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="/articles/drafts/"><span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;My drafts</a></li>
+                                    <li><a href="/articles/published/"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;My publications</a></li>
+                                    <li role="separator" class="divider"></li>
                                     <li><a href="/logout/"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
                                 </ul>
                             </li>
