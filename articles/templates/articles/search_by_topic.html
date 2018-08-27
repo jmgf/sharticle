@@ -165,6 +165,9 @@
         100% { transform: rotate(360deg); }
     }
 
+    .invisible {
+        display: none;
+    }
 
 </style>
 <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
@@ -348,8 +351,6 @@
                                                 <div class="article-box-controls-container">
                                                     <p class="article-box-controls">
                                                         <a href="{% url 'articles:read_article' article.id %}"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
-                                                        <!--<span class="glyphicon glyphicon-share publish-action-icon" title="Publish" onclick="publishArticle({{ article.id }});"></span>-->
-                                                        <!--<a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
                                                     </p>
                                                 </div>
                                             </div>
@@ -373,7 +374,7 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    <div id="{{ key }}_loader" class="loader" {% if topic_key == key %} style="display:none" {% endif %}></div>
+                    <div id="{{ key }}_loader" class="loader {% if topic_key == key %} invisible {% endif %}"></div>
                 </div>
             </div>
         {% endfor %}

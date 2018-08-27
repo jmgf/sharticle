@@ -176,6 +176,10 @@
         padding-top: 50px;
     }
 
+    .article-label {
+        font-size: 110%;
+    }
+
 
 </style>
 
@@ -191,6 +195,38 @@
         border: 1px dotted lightgreen;
         background: rgb(240, 255, 240);
     }
+
+    .darkgreen {
+        color: darkgreen;
+    }
+
+    .comment-content {
+        margin-left: 20px;
+        font-size: 110%;
+    }
+
+    .comment-profile-image {
+        float: left; 
+        width: 30px; 
+        margin-top: 0px; 
+        margin-right: 10px; 
+        border-radius: 40%
+    }
+
+    #comment_area {
+        margin-left: 40px;
+        text-indent: 0%;
+        width: 90%;
+        cursor: auto;
+    }
+
+    .comment-glyph {
+        float: left;
+        font-size: 27px;
+        margin-top: 0px; 
+        margin-right: 10px;
+    }
+
 </style>
 
 <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
@@ -294,23 +330,16 @@
             {% if article.tags %}
                 <b><span class="glyphicon glyphicon-tag"></span>&nbsp; Tags: &nbsp;</b>
                 {% for tag in article.tags %}
-                    <span class="label label-success" style="font-size:110%">{{ tag.tag }}</span>
+                    <span class="label label-success article-label">{{ tag.tag }}</span>
                 {% endfor %}
             {% endif %}
             <br><br>
             
             <p><span class="glyphicon glyphicon-calendar"></span>
                 <b>&nbsp;{{ article.pub_date | date:"Y-m-d"  }} &nbsp;</b> | &nbsp; 
-                <a href="{% url 'articles:search_by_topic' article.topic %}"><span class="label label-primary" style="font-size:110%">{{ topic }}</span></a>
+                <a href="{% url 'articles:search_by_topic' article.topic %}"><span class="label label-primary article-label">{{ topic }}</span></a>
             </p>
 
-            <!--<p><b>
-                <span class="glyphicon glyphicon-list"></span>&nbsp; Topic: &nbsp;
-                <a><span class="label label-primary" style="font-size:110%">Data Science</span></a>
-            </b></p>
-            <p><span class="glyphicon glyphicon-calendar"></span>
-                <b>&nbsp;{{ article.pub_date | date:"Y-m-d"  }} &nbsp;</b>
-            </p>-->
             
         </div>
         <hr>
@@ -368,7 +397,7 @@
 
         <hr>
 
-        <h2 style="color: darkgreen">Comments<span id="number_of_comments"></span></h2>  
+        <h2 class="darkgreen">Comments<span id="number_of_comments"></span></h2>  
 
         <form id="comment_form" method="POST" action="{% url "articles:comments" article.id %}">
             <div id="comment_form_content" class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well form-group">
@@ -382,9 +411,9 @@
                     // If the user is (supposedly) logged in
                     if (cookieValue) {
                         html = `
-                        ${profile_image != 'None' ? '<img src="' + profile_image + '" style="float:left; width:30px; margin-top: 0px; margin-right: 10px; border-radius: 40%">' : '<span class="glyphicon glyphicon-user" style="float:left; font-size:30px; margin-top: 0px; margin-right: 10px;"></span>'}
+                        ${profile_image != 'None' ? '<img src="' + profile_image + '" class="comment-profile-image">' : '<span class="glyphicon glyphicon-user comment-glyph"></span>'}
                         <a href="/profile/@${ cookieValue }/">${ cookieValue }</a>
-                        <textarea id="comment_area" name="comment" rows="3" class="form-control" style="margin-left: 40px; text-indent: 0%; width:90%; cursor: auto"></textarea>
+                        <textarea id="comment_area" name="comment" rows="3" class="form-control"></textarea>
                         <br>
                         <div class="text-center">
                             <input type="submit" class="btn btn-success" value="Submit comment"/>
@@ -393,45 +422,21 @@
                     }
                     else {
                         html = `
-                            <h4 style="color:darkgreen" class="text-center">Please <a href="/login/">log in</a> before commenting</h4>
+                            <h4 class="text-center darkgreen">Please <a href="/login/">log in</a> before commenting</h4>
                         `;
                     }
                     
                     element.innerHTML = html;
                 </script>
-                <!--<label for="comment">Comment:</label>-->
-
-                <!--<img src="https://cdn-images-1.medium.com/fit/c/132/132/1*RzDIGPB3879XLEkvtnwoHA.jpeg" style="float:left; width:30px; margin-top: 0px; margin-right: 10px;">
-                <a href="/profile/@admin/">admin</a>
-                <textarea id="comment_area" name="comment" rows="3"
-                    class="form-control" value="Write your comment here..."
-                    style="margin-left: 40px; text-indent: 0px; width:90%;">
-                </textarea>-->
+                
             </div>
         </form>
 
         <div id="comments_container">
 
-            <!--
-            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well">
-                <span class="glyphicon glyphicon-user" style="float:left; font-size:30px; margin-top: 0px; margin-right: 10px;"></span>
-                <a href="/profile/@123/">123</a>
-                <p style="margin-left: 20px">This is the comment that someone posted and it can be very long, spanning over two lines of text, as ya'll can see in this example, made on purpose for testing</p>
-                <span style="float: right"><span class="glyphicon glyphicon-calendar"></span> 2017-04-11, 11h05</span>
-            </div>
-
-            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well">
-                <img src="https://www.w3schools.com/bootstrap/img_avatar1.png" style="float:left; width:30px; margin-top: 0px; margin-right: 10px;">
-                <a href="/profile/@123/">123</a>
-                <p style="margin-left: 20px">This is the comment that someone posted and it can be very long, spanning over two lines of text, as ya'll can see in this example, made on purpose for testing</p>
-                <span style="float: right"><span class="glyphicon glyphicon-calendar"></span> 2017-04-11, 10h42</span>
-            </div>
-            -->
-
         </div>
 
-        <div id="comments_loader" class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well text-center"
-            style="cursor: pointer; color:darkgreen">
+        <div id="comments_loader" class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well text-center">
             <h4 id="comments_loader_text" class="btn btn-success" onclick="loadComments({{ article.id }}, active_page++)">Load comments</h4>
         </div>
 
@@ -480,10 +485,10 @@
                 data.comments.forEach(comment => {
                     html += `
                     <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well">
-                        <span class="glyphicon glyphicon-user" style="float:left; font-size:30px; margin-top: 0px; margin-right: 10px;"></span>
+                        <span class="glyphicon glyphicon-user comment-glyph"></span>
                         <a href="/profile/@${ comment.author }/">${ comment.author }</a>
-                        <p style="margin-left: 20px">${ comment.content }</p>
-                        <span style="float: right"><span class="glyphicon glyphicon-calendar"></span> ${ comment.date.split('T')[0] } , ${ comment.date.split('T')[1].split('.')[0] }</span>
+                        <p class="comment-content">${ comment.content }</p>
+                        <span class="pull-right"><span class="glyphicon glyphicon-calendar"></span> ${ comment.date.split('T')[0] } , ${ comment.date.split('T')[1].split('.')[0] }</span>
                     </div>
                     `;
                 });
@@ -553,10 +558,10 @@
 
                         new_html = `
                             <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well">
-                                ${profile_image != 'None' ? '<img src="' + profile_image + '" style="float:left; width:30px; margin-top: 0px; margin-right: 10px; border-radius: 40%">' : '<span class="glyphicon glyphicon-user" style="float:left; font-size:30px; margin-top: 0px; margin-right: 10px;"></span>'}
+                                ${profile_image != 'None' ? '<img src="' + profile_image + '" class="comment-profile-image">' : '<span class="glyphicon glyphicon-user comment-glyph"></span>'}
                                 <a href="/profile/@${ cookieValue }/">${ cookieValue }</a>
-                                <p style="margin-left: 20px">${ data.comment }</p>
-                                <span style="float: right"><span class="glyphicon glyphicon-calendar"></span> ${ data.date.split('T')[0] } , ${ data.date.split('T')[1].split('.')[0] }</span>
+                                <p class="comment-content">${ data.comment }</p>
+                                <span class="pull-right"><span class="glyphicon glyphicon-calendar"></span> ${ data.date.split('T')[0] } , ${ data.date.split('T')[1].split('.')[0] }</span>
                             </div>
                         `;  
                         old_html = document.getElementById("comments_container").innerHTML;

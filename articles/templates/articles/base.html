@@ -40,7 +40,7 @@
               <li class="dropdown {% block edit_profile_active %}{% endblock %}">
                 <a class="dropdown-toggle" data-toggle="dropdown"  href="{% url 'articles:login' %}">
                   {% if request.user.profileImagePath %}
-                    <span><img src="{{ request.user.profileImagePath }}" style="float:left; width:20px; margin-top: 0px; border-radius: 40%"></span>
+                    <span><img src="{{ request.user.profileImagePath }}" class="navbar-profile-image"></span>
                   {% else %}
                     <span class="glyphicon glyphicon-user"></span>
                   {% endif %} 

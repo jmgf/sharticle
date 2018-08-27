@@ -469,82 +469,7 @@
                     <div id="draft_articles_loader" class="loader"></div>
                 {% endif %}
             </div>
-
-            <!--
-            <div class="row">
-                <br>
-                <div class="col-md-6">
-                    <div class="article-box" onclick="window.location.href='/article/edit/@why-are-beaches-all-around-us/'">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="article-box-image" style="background-image: url('https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg');">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="article-box-content">
-                                    <h3 style="margin-bottom:0px;">Beaches are all around us!</h3>
-                                    <p>A beach user guide for people who usually go to beaches and need a guide for it.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="article-box">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="article-box-image" style="background-image: url('https://www.gettyimages.ie/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg');">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="article-box-content">
-                                    <h3 style="margin-bottom:0px;">Article title 2</h3>
-                                    <p>Some small description 2</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="article-box">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="article-box-image" style="background-image: url('https://www.autocar.co.uk/sites/autocar.co.uk/files/styles/body-image/public/mclaren-720s_0.jpg?itok=wZbSZ3FZ');">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="article-box-content">
-                                    <h3 style="margin-bottom:0px;">Article title 3</h3>
-                                    <p>Some small description 3, which shall span more than one line</p>
-                                    <br><br>
-                                    <span class="glyphicon glyphicon-user pull-left" style="font-size:55px; margin-right: 20px;"></span>
-                                    <h4><a href="/profile/@jmgf/">jmgf</a></h4>
-                                    <p><span class="glyphicon glyphicon-calendar" style="color:gray"></span>&nbsp; 12 March 2018</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="article-box">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="article-box-image" style="background-image: url('https://robbreportedit.files.wordpress.com/2017/12/crn-86m-explorer-yacht.jpg');">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="article-box-content">
-                                    <h3 style="margin-bottom:0px;">Article title 4</h3>
-                                    <p>Some small description 4</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>       
-            -->     
+   
         </div>
 
 
@@ -576,8 +501,6 @@
                                             <p class="article-box-controls">
                                                 <span class="glyphicon glyphicon-trash delete-action-icon" title="Delete" data-toggle="modal" data-target="#delete_article_modal_{{ article.id }}"></span>
                                                 <a href="{% url 'articles:read_article' article.id %}"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
-                                                <!--<span class="glyphicon glyphicon-share publish-action-icon" title="Publish" onclick="publishArticle({{ article.id }});"></span>-->
-                                                <!--<a href="{% url 'articles:edit_article' article.id %}"><span class="glyphicon glyphicon-pencil" title="Edit" style="color: green"></span></a>-->
                                             </p>
                                         </div>
                                     </div>
@@ -636,26 +559,4 @@
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 
-<!--
-
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-
-<div class="container">
-    {% for article in articles %}
-    <div class="col-sm-4 text-center" style="margin-bottom:50px; padding: 10px;">
-        <h2>{{ article.title }}</h2>
-        <h4>By @{{ article.author }} ({{ article.pub_date }})</h4>
-        <hr>
-        <p>@{{ article.only_comment.author }}<b> : {{ article.only_comment.text }} (</b>{{ article.only_comment.date }})</p>
-    </div>
-    {% endfor %}
-    <a href="/articles/">ARTICLES</a>
-    awfjoafnwa
-    <a onclick="history.pushState({'foo':'bar'}, 'second_div', './login/');">ARTICLES</a>
-    <form>
-
-    </form>
-</div>
--->
 {% endblock %}

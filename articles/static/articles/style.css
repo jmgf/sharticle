@@ -1,4 +1,11 @@
+
+
+
+
+
+/*****************/
 /* NAVBAR STYLES */
+/*****************/
 
 .navbar-inverse .navbar-nav>li>a{
     color: lightgreen;
@@ -22,59 +29,61 @@ nav span.glyphicon{
     padding: 6px 15px 6px 15px;
     color:white;
 }
-  
+.navbar-profile-image {
+    float: left;
+    width: 20px;
+    margin-top: 0px;
+    border-radius: 40%;
+}
 
 
 
 
+
+/******************/
 /* GENERAL STYLES */
+/******************/
 
 .after-nav {
     margin-top: 50px;
 }
-
 .row{
     margin-left: 0px;
     margin-right: 0px;
 }
-
 /* Track */
 ::-webkit-scrollbar-track {
     background: rgba(5,30,20,0.9); 
 }
- 
 /* Handle */
 ::-webkit-scrollbar-thumb {
     background: #888; 
 }
-
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #555; 
 }
+
+
+
+
   
-
-
-
-  
-
+/*************************/
 /* AUTHENTICATION STYLES */
+/*************************/
 
 button a:link {
     text-decoration: none;
 }
-.form-signin
-{
+.form-signin {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
 }
-.form-signin .form-signin-heading, .form-signin .checkbox
-{
+.form-signin .form-signin-heading, .form-signin .checkbox {
     margin-bottom: 10px;
 }
-.form-signin .auth-form-control 
-{
+.form-signin .auth-form-control {
     position: relative;
     font-size: 16px;
     height: auto;
@@ -83,30 +92,25 @@ button a:link {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-.form-signin .auth-form-control :focus
-{
+.form-signin .auth-form-control :focus {
     z-index: 0;
 }
-.form-signin input[type="text"]
-{
+.form-signin input[type="text"] {
     margin-bottom: 10px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
-.form-signin input[type="email"]
-{
+.form-signin input[type="email"] {
     margin-bottom: 10px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
-.form-signin input[type="password"]
-{
+.form-signin input[type="password"] {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
-.auth-img
-{
+.auth-img {
     color:#5cb85c;
     font-size:100px;
     width: 96px;
@@ -117,8 +121,7 @@ button a:link {
     -webkit-border-radius: 50%;
     border-radius: 50%;
 }
-#different_passwords_error
-{
+#different_passwords_error {
     display: none;
 }
 
@@ -126,7 +129,9 @@ button a:link {
 
 
 
+/******************/
 /* PROFILE STYLES */
+/******************/
 
 .profile-header {
     background: linear-gradient(to bottom,
@@ -134,11 +139,9 @@ button a:link {
              lightgreen 50px,
              white 100%);
 }
-
 .jumbotron h1 {
     padding-top: 50px;
 }
-
 .heavy {
     font-weight: 750;
 }
@@ -156,11 +159,9 @@ h3 i{
     -webkit-border-radius: 40%;
     border-radius: 40%;
 }
-
 .profile-edit-img {
     cursor: pointer;
 }
-
 @media only screen and (max-width:767px){
     .profile-img{
         display: block;
