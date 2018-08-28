@@ -3,9 +3,9 @@
 
 
 
-/*****************/
-/* NAVBAR STYLES */
-/*****************/
+/****************/
+/***  NAVBAR  ***/
+/****************/
 
 .navbar-inverse .navbar-nav>li>a{
     color: lightgreen;
@@ -40,9 +40,14 @@ nav span.glyphicon{
 
 
 
-/******************/
-/* GENERAL STYLES */
-/******************/
+
+
+
+
+
+/*****************/
+/***  GENERAL  ***/
+/*****************/
 
 .after-nav {
     margin-top: 50px;
@@ -67,10 +72,15 @@ nav span.glyphicon{
 
 
 
-  
-/*************************/
-/* AUTHENTICATION STYLES */
-/*************************/
+
+
+
+
+
+
+/************************/
+/***  AUTHENTICATION  ***/
+/************************/
 
 button a:link {
     text-decoration: none;
@@ -129,9 +139,14 @@ button a:link {
 
 
 
-/******************/
-/* PROFILE STYLES */
-/******************/
+
+
+
+
+
+/*****************/
+/***  PROFILE  ***/
+/*****************/
 
 .profile-header {
     background: linear-gradient(to bottom,
@@ -187,3 +202,545 @@ h3 i{
 #resume_content:focus{
     cursor: text;
 }
+
+.divider {
+    margin-top: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+/**********************/
+/***  OWN ARTICLES  ***/
+/**********************/
+
+.badge {
+    /* color: green; */
+    background-color: lightgray;
+}
+.article-box {
+    overflow: hidden;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.article-box:hover{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.article-box:hover h3{
+    text-shadow: 1px 1px 1px rgb(128,128,128);
+}
+
+.article-box-title h3 {
+    margin-bottom: 0px;
+}
+
+.delete-action-icon {
+    color: #f45642;
+}
+
+.publish-action-icon {
+    color: #3a42e8;
+}
+
+.edit-action-icon {
+    color: green;
+}
+
+
+.ellipsed {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    /* number of lines to show */
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+
+.article-box-content {
+    cursor: pointer;
+}
+
+.article-author {
+    border: 1px dotted gray;
+    border-radius: 5px;
+    color: gray;
+}
+
+.article-author:hover {
+    border: 1px solid gray;
+}
+
+.article-author img {
+    margin-right: 20px;
+    border-radius: 5px;
+}
+
+.article-author > span {
+    font-size: 65px;
+    margin-right: 20px;
+}
+
+@media screen and (max-width: 767px){
+    .article-box-content {
+        padding: 10px 20px 10px 20px;
+        max-height: 250px;
+    }
+}
+@media screen and (min-width: 768px){
+    .article-box-content {
+        padding: 10px 20px 10px 20px;
+        height: 250px;
+    }
+}
+
+.article-box-image {
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    width: 100%;
+    height: 100%;
+    max-height: 250px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    text-align: center;
+    font-size: 30px;
+    display: table;
+}
+
+.article-box-controls-container {
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: table;
+    font-size: 0px;
+}
+
+.article-box-controls-container:hover {
+    background-color: rgba(200,200,200,0.7); 
+    font-size: 40px;
+}
+
+.article-box-controls-container span:hover {
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.article-box-controls {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.col-sm-6 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.jumbotron {
+    background: linear-gradient(to bottom,
+         lightgreen 0px,
+         lightgreen 50px,
+         white 100%);
+    text-align: center;
+}
+
+.jumbotron h1 {
+    padding-top: 50px;
+}
+
+.loader {
+    border: 8px solid lightgreen;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite;
+    border-top: 8px solid green;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    margin: auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+/* Safari loader */
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+
+
+
+
+
+
+
+
+/**********************/
+/***  EDIT ARTICLE  ***/
+/**********************/
+
+
+#cover-image {
+    margin-top: 0px;
+    margin-bottom: 100px;
+    max-width:60%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#action-buttons {
+    display: none;
+    height: 10px;
+    margin-top: 20vh;
+}
+
+#select1 {
+    width: 100%;
+    font-size: 110%;
+}
+
+.image-caption{
+    text-align: center;
+    font-size: 80%;
+    margin-bottom: 80px;
+}
+
+.actions-menu {
+    position: fixed;
+    left: 0px;
+    top: 50px;
+    height: 100%;
+    width: 100px;
+    /* background-color: lightgreen; */
+    font-size: 200%;
+    text-align: center;
+}
+
+.action-button {
+    margin: 10px 5px 0px 10px;
+    padding: 10px 10px 10px 10px;
+    border-radius: 100px;        
+    text-indent: 0px;   
+    border:2px solid green;
+    background-color: white;
+    cursor: pointer;
+    color: green;
+}
+.action-button:hover {
+    color: white;
+    background-color: green;
+    border-color: white;
+    text-shadow: 2px 2px 20px lightgreen;
+
+}
+.row {
+    margin: 0px;
+}
+
+#article_content {
+    font-size: 1.6em;
+}
+
+#article_content ul {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: 10%;
+}
+
+.article-title {
+    text-shadow: 1px 1px 2px #333;
+}
+
+
+/*
+[contenteditable="true"]{
+    border: 2px solid white;
+}
+
+[contenteditable="true"]:focus {
+    padding: 10px;
+    border: 2px solid green;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+}
+*/
+
+/*===============================*/
+/*============  DnD  ============*/
+/*===============================*/
+
+[draggable] {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* Required to make elements draggable in old WebKit */
+    -khtml-user-drag: element;
+    -webkit-user-drag: element;
+}
+
+#columns {
+    list-style-type: none;
+}
+
+#columns p, textarea {
+    cursor: move;
+    text-indent: 5%;
+    padding: 0% 5% 0% 5%;
+    /* margin-bottom: 10px; */
+}
+#columns img {
+    max-width:60%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-top: 80px;
+    margin-bottom: 20px;
+}
+
+#columns textarea {
+    width: 100%;
+    border: 0px;
+}
+
+#columns h2 {
+    margin-top: 60px;
+    margin-bottom: 40px;
+    padding: 0% 5% 0% 5%;
+    font-weight: 550;
+}
+
+.column header {
+    height: 20px;
+    width: 150px;
+    color: black;
+    background-color: #ccc;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+    border-radius: 10px;
+    border: 2px solid #666666;
+}
+
+.dragElem {
+    opacity: 0.4;
+}
+.over {
+    border-top: 2px solid lightgreen;
+}
+
+.label {
+    font-size: 100%;
+    margin-right: 5px;
+}
+
+.label-info {        
+    cursor: pointer;
+}
+
+/*
+body {
+    word-wrap: break-word;
+    text-overflow: elipsis;
+}
+*/
+
+.jumbotron {
+    background: linear-gradient(to bottom,
+         lightgreen 0px,
+         lightgreen 50px,
+         white 100%);
+    text-align: center;
+}
+
+.jumbotron h1 {
+    padding-top: 50px;
+}
+
+
+
+
+
+
+
+
+
+
+/**********************/
+/***  READ ARTICLE  ***/
+/**********************/
+
+.article-label {
+    font-size: 110%;
+}
+.article-page-author-info {
+    border-radius: 1px;
+    border-radius: 10px;
+    padding: 30px 20px 30px 20px;
+    cursor: pointer;
+}
+
+.article-page-author-info:hover {
+    border: 1px dotted lightgreen;
+    background: rgb(240, 255, 240);
+}
+
+.darkgreen {
+    color: darkgreen;
+}
+
+.comment-content {
+    margin-left: 20px;
+    font-size: 110%;
+}
+
+.comment-profile-image {
+    float: left; 
+    width: 30px; 
+    margin-top: 0px; 
+    margin-right: 10px; 
+    border-radius: 40%
+}
+
+#comment_area {
+    margin-left: 40px;
+    text-indent: 0%;
+    width: 90%;
+    cursor: auto;
+}
+
+.comment-glyph {
+    float: left;
+    font-size: 27px;
+    margin-top: 0px; 
+    margin-right: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+/*************************/
+/***  SEARCH by TOPIC  ***/
+/*************************/
+
+.invisible {
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+/****************/
+/***  SEARCH  ***/
+/****************/
+
+
+#search_box{
+    height: 60px;
+    font-size: 40px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+    color: rgba(0, 0, 0, 1.0);
+}
+#search_glyph {
+    vertical-align: middle;
+    margin-bottom: 10px;
+    color: green;
+}
+.picker {
+    vertical-align: middle;
+    cursor:pointer;
+    font-size: 50%; 
+}
+
+.green {
+    color: green;
+}
+.lightgreen {
+    color: lightgreen;
+}
+
+.search-user-glyph {
+    font-size: 90px;
+    vertical-align: middle;
+    color: #5cb85c;
+}
+
+.search-user-info {
+    margin-left: 120px;
+}
+
+.user-search-box {
+    border: 1px solid transparent;
+    cursor: pointer;
+    min-height: 90px;
+    /*width: 80%;
+    margin: auto;*/
+}
+
+.user-search-box a {
+    color: #333;
+    text-decoration: none;
+}
+
+.user-search-box a:hover {
+    color: green;
+    text-decoration: none;
+}
+
+.user-search-box:hover {
+    background-color: rgba(0,255,0,0.1);
+    /*color: green;*/
+}
+
+
+
+
+
+
+
+
+
+
+/******************************/
+/***  CONFIRM REGISTRATION  ***/
+/******************************/
+
+/* */
+
+
+
+
+
+
+
+
+
