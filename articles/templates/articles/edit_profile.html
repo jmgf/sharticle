@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
 {% endblock %}
 
 {% block edit_profile_active %}active{% endblock %}
@@ -159,18 +158,15 @@
 </div>
 {% endif %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script>
-  $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-  });
-  var resume = '{{ request.user.resume }}';
-  function checkChanges(){
-    if (document.getElementById('resume_content').value != resume) 
-      document.getElementById('save_profile_button').disabled = false;
-    else
-      document.getElementById('save_profile_button').disabled = true;
-  }
-</script>
+{% endblock %}
 
+
+
+
+{% block scripts %}
+    <script>        
+        var resume = '{{ request.user.resume }}';
+        var is_edit_profile_template = true;
+    </script>
+    <script src="{% static 'articles/edit_profile.js' %}"></script>
 {% endblock %}

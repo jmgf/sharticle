@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
 {% endblock %}
 
 {% block topics_active %}class="active"{% endblock %}
@@ -22,142 +21,15 @@
             <ul class="nav nav-tabs nav-justified">
                 {% for key, value in topics %}
                     <li {% if topic_key == key %} class="active" {% endif %}>
-                        <a data-toggle="pill" href="#{{ key }}" onclick="loadArticles('{{ key }}', '{{ value }}')">{{ value }}</a>
+                        <a data-toggle="pill" href="#{{ key }}" onclick="loadTopicArticles('{{ key }}', '{{ value }}')">{{ value }}</a>
                     </li>
                 {% endfor %}
-                <!--<li class="active"><a data-toggle="pill" href="#draft_articles" onclick="loadArticles(this, drafts = false, published = true)">Artifical Intelligence </a></li>
-                <li><a data-toggle="pill" href="#published_articles" onclick="loadArticles(this, drafts = true, published = false)">Web Programming </a></li>
+                <!--<li class="active"><a data-toggle="pill" href="#draft_articles" onclick="loadTopicArticles(this, drafts = false, published = true)">Artifical Intelligence </a></li>
+                <li><a data-toggle="pill" href="#published_articles" onclick="loadTopicArticles(this, drafts = true, published = false)">Web Programming </a></li>
                 <li><a data-toggle="pill">Software Engineering</a></li>
                 <li><a data-toggle="pill">Data Science</a></li>
                 <li><a data-toggle="pill">Cryptography</a></li>-->
                 
-                <script>
-
-                    function read_article_url(id){
-                        return '/articles/' + id + '/';
-                    }
-
-                    function topic_articles_url(topic){
-                        return '/topic/' + topic + '/';
-                    }
-                    
-                    function getCookie(name) {
-                        var cookieValue = null;
-                        if (document.cookie && document.cookie !== '') {
-                            var cookies = document.cookie.split(';');
-                            for (var i = 0; i < cookies.length; i++) {
-                                var cookie = jQuery.trim(cookies[i]);
-                                // Does this cookie string begin with the name we want?
-                                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                    break;
-                                }
-                            }
-                        }
-                        return cookieValue;
-                    }
-
-
-
-
-
-
-                    var active_topic = '{{ topic_key }}';
-
-                    var active_page = [];
-                    active_page["AI"] = 1;
-                    active_page["WP"] = 1;
-                    active_page["SE"] = 1;
-                    active_page["DS"] = 1;
-                    active_page["C"] = 1;
-
-                    var already_loaded = [];
-                    already_loaded["AI"] = false;
-                    already_loaded["WP"] = false;
-                    already_loaded["SE"] = false;
-                    already_loaded["DS"] = false;
-                    already_loaded["C"] = false;
-
-                    already_loaded["{{ topic_key }}"] = true;
-
-
-
-                    function loadArticles(topic_id, topic_description){
-
-                        // Set the window location
-                        history.pushState(null, topic_id + '_articles', '/topic/' + topic_id + '/');
-
-                        // Set main heading (1st time) or active page
-                        if (topic_description != null) 
-                            document.getElementById("topic_description").innerHTML = topic_description;
-
-                        // In case the action is legit (and not a random click)
-                        if (active_topic != topic_id || already_loaded[topic_id]){
-
-                            active_topic = topic_id;
-
-                            if (topic_description != null && already_loaded[topic_id] == true) return;
-                            else already_loaded[topic_id] = true;
-
-                            // Set main heading (1st time) or active page
-                            if (topic_description == null) 
-                                active_page[topic_id] = active_page[topic_id] + 1;
-
-                            // Load the articles
-                            url = '/topic/' + topic_id + '/json/' + active_page[topic_id] + '/';
-                            $.get(url, function(data, status){
-                                
-
-                                // Hide the loader circle
-                                if (document.getElementById(topic_id + "_loader") != null)
-                                    document.getElementById(topic_id + "_loader").style.display = 'none';
-                                
-                                // Process data
-                                if (data.articles!=null){
-                                    var user = data.author;
-                                    var html = '';
-                                    data.articles.forEach(article => {
-                                        user_image_html = '<span class="glyphicon glyphicon-user pull-left"></span>';
-                                        var article_image_url = (article.image_path != "" ? ('/static/articles/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
-                                        html += `
-                                            <div class="col-md-6" id="article_box_${ article.id }">
-                                                <div class="article-box">
-                                                    <div class="row">
-                                                        <div class="col-sm-6">
-                                                            <div class="article-box-image" style="background-image: url('${article_image_url}');">
-                                                                <div class="article-box-controls-container">
-                                                                    <p class="article-box-controls">
-                                                                        <a href="${ read_article_url(article.id) }"><span class="glyphicon glyphicon-eye-open edit-action-icon" title="Read"></span></a>
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-6" onclick="window.location.href = '${ read_article_url(article.id) }'">
-                                                            <div class="article-box-content">
-                                                                <div class="article-box-title">
-                                                                    <h3>${ article.title }</h3>
-                                                                    <p class="ellipsed">${ article.description }</p>
-                                                                </div>
-                                                                <div class="article-author">
-                                                                    ${user_image_html}
-                                                                    <h4><a href="/profile/@${ article.author }/">${ article.author }</a></h4>
-                                                                    <p>
-                                                                        <span class="glyphicon glyphicon-calendar"></span>&nbsp;
-                                                                        ${ article.last_modified_date.split('T')[0] }</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        `;
-                                    });
-                                    document.getElementById(topic_id + '_content').innerHTML += html;
-                                }
-                            });
-                        }
-                    }
-                </script>
                 
             </ul>
         </div>    
@@ -213,21 +85,20 @@
         {% endfor %}
     </div>
 
-
-
-    <script>
-        window.onscroll = function(ev) {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
-                // you're at the bottom of the page
-                loadArticles(active_topic, null);
-            }
-        };
-    </script>
-
-
 </div>
 
 
 
+{% endblock %}
 
+
+
+
+
+{% block scripts %}
+    <script>        
+        var is_search_by_topic_template = true;
+        var topic_key = '{{ topic_key }}';
+    </script>
+    <script src="{% static 'articles/search_by_topic.js' %}"></script>
 {% endblock %}

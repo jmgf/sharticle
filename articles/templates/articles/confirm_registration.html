@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
 {% endblock %}
 
 {% block register_active %}class="active"{% endblock %}
@@ -56,35 +55,5 @@
         
     </div>
   </div>
-
-  <script>
-      function doOnload() {
-          // Do the downloading awhile AFTER the onload.
-          setTimeout("downloadComponents()", 3000);
-      }
-      
-      window.onload = doOnload;
-
-      // Download external components dynamically using JavaScript.
-      function downloadComponents() {
-          downloadCSS("{% static 'articles/register_style.css' %}");
-      }
-      
-      // Download a stylesheet dynamically.
-      function downloadCSS(url) {
-          var elem = document.createElement("link");
-          elem.rel = "stylesheet";
-          elem.type = "text/css";
-          elem.href = url;
-          document.body.appendChild(elem);
-      }
-      
-      // Download a script dynamically.
-      function downloadJS(url) {
-          var elem = document.createElement("script");
-          elem.src = url;
-          document.body.appendChild(elem);
-      }
-      </script>
 
 {% endblock %}
