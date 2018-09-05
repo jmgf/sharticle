@@ -838,9 +838,10 @@ def upload_article_image(request):
 # =============================================================================
 
 def test_view(request):
-    from .tests import nosql_testing
-    nosql_testing()
-    return HttpResponse("Done")
+    from .tests import topics_pagination_testing, db_index_testing
+    # test_results = topics_pagination_testing()
+    test_results = db_index_testing()
+    return HttpResponse(test_results)
 
 
 

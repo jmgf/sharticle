@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from djongo import models as djongo_models
 from django.forms import ModelForm
+from django.core.paginator import Paginator
 
 from .models import SharticleUser, Article, Tag
 
@@ -45,6 +46,92 @@ class TestArticle(models.Model):
 # #######################################################################
 
 
+
+
+def topics_pagination_testing():
+
+    paginated = []
+    not_paginated = []
+
+    for i in range(10):        
+        ###############################################
+        start = time.time()  
+        
+        qs = Article.objects.filter(topic = 'SE')
+        paginator = Paginator(qs, 50)
+        if paginator.page(10).object_list:
+            pass  
+        
+        paginated.append(1000*(time.time() - start))
+        ###############################################
+
+    for i in range(10):
+        ###############################################
+        start = time.time()    
+        
+        if Article.objects.filter(topic = 'SE'):
+            pass
+        
+        not_paginated.append(1000*(time.time() - start))
+        ###############################################
+
+
+    print(','.join(map(str, paginated)))
+    print(','.join(map(str, not_paginated)))
+    
+    print("Paginated: " + str(sum(paginated) / float(len(paginated))))
+    print("NOT paginated: " + str(sum(not_paginated) / float(len(not_paginated))))
+
+
+    return "Paginated: " + str(sum(paginated) / float(len(paginated))) + "<br>NOT paginated: " + str(sum(not_paginated) / float(len(not_paginated)))
+
+
+
+
+
+
+def full_pagination_testing():
+
+    paginated = []
+    not_paginated = []
+
+    for i in range(10):        
+        ###############################################
+        start = time.time()  
+        
+        qs = Article.objects.all()
+        paginator = Paginator(qs, 50)
+        if paginator.page(1).object_list:
+            pass  
+        
+        paginated.append(1000*(time.time() - start))
+        ###############################################
+
+    for i in range(10):
+        ###############################################
+        start = time.time()    
+        
+        if Article.objects.all():
+            pass
+        
+        not_paginated.append(1000*(time.time() - start))
+        ###############################################
+
+
+    print(','.join(map(str, paginated)))
+    print(','.join(map(str, not_paginated)))
+    
+    print("Paginated: " + str(sum(paginated) / float(len(paginated))))
+    print("NOT paginated: " + str(sum(not_paginated) / float(len(not_paginated))))
+
+
+    return "Paginated: " + str(sum(paginated) / float(len(paginated))) + "<br>NOT paginated: " + str(sum(not_paginated) / float(len(not_paginated)))
+
+
+
+
+
+
 def db_index_testing():
 
     '''
@@ -63,14 +150,19 @@ def db_index_testing():
     for i in range(10):        
         ###############################################
         start = time.time()    
-        a = Article.objects.filter(author = 'ZZZ').all()
+        # a = Article.objects.filter(author = 'ZZZ')
+        a = Article.objects.filter(topic='AI')
+        if a:
+            pass
         set1.append(1000*(time.time() - start))
         ###############################################
 
     for i in range(10):
         ###############################################
         start = time.time()    
-        Article.objects.get(id = 5)        
+        a = Article.objects.get(id = 102712)        
+        if a:
+            pass
         set2.append(1000*(time.time() - start))
         ###############################################
 
@@ -78,8 +170,11 @@ def db_index_testing():
     print(','.join(map(str, set1)))
     print(','.join(map(str, set2)))
     
-    print("SELECT ARTICLE(author): " + str(sum(set1) / float(len(set1))))
+    print("SELECT ARTICLE(topic): " + str(sum(set1) / float(len(set1))))
     print("SELECT ARTICLE(id): " + str(sum(set2) / float(len(set2))))
+
+
+    return "SELECT ARTICLE(author): " + str(sum(set1) / float(len(set1))) + "<br>SELECT ARTICLE(id): " + str(sum(set2) / float(len(set2)))
 
 
 
