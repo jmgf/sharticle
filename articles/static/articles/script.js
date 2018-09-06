@@ -7,7 +7,7 @@
 /***  GENERAL  ***/
 /*****************/
 
-if (is_base_public_template == true){
+if (typeof is_base_public_template !== 'undefined' && is_base_public_template == true){
 
     var html = '';
     var element = document.getElementById('user-info');
@@ -85,7 +85,7 @@ function blinkRegister(){
 
 
 
-if (is_register_template == true){
+if (typeof is_register_template !== 'undefined'){
 
     // -------------------------------------------------------------
     // Alterar as chamadas ao DOM pela sintaxe do jQuery...
@@ -136,7 +136,7 @@ function checkChanges(){
 
 
 
-if (is_edit_profile_template == true){
+if (typeof is_edit_profile_template !== 'undefined'){
     /*
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
@@ -494,7 +494,7 @@ function addImage(imageSrc){
 
 var edit_article_map = {};
 
-if (is_edit_article_template == true){
+if (typeof is_edit_article_template !== 'undefined'){
 
     document.onkeydown = function (e) {
         /* edit_article_map[e.keyCode] = e.type == 'keydown'; */
@@ -786,7 +786,7 @@ function blinkComment(){
 
 
 
-if (is_read_article_template == true){
+if (typeof is_read_article_template !== 'undefined'){
     
     var html = '';
     var element = document.getElementById('comment_form_content');
@@ -875,7 +875,27 @@ if (is_read_article_template == true){
 /*************************/
 
 
-if (is_search_by_topic_template == true){
+if (typeof is_search_by_topic_template !== 'undefined'){
+
+    var active_topic = topic_key;
+
+    var topics_active_page = [];
+    topics_active_page["AI"] = 1;
+    topics_active_page["WP"] = 1;
+    topics_active_page["SE"] = 1;
+    topics_active_page["DS"] = 1;
+    topics_active_page["C"] = 1;
+
+    var topics_already_loaded = [];
+    topics_already_loaded["AI"] = false;
+    topics_already_loaded["WP"] = false;
+    topics_already_loaded["SE"] = false;
+    topics_already_loaded["DS"] = false;
+    topics_already_loaded["C"] = false;
+
+    topics_already_loaded[topic_key] = true;
+
+
 
     window.onscroll = function(ev) {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
@@ -914,27 +934,6 @@ function getCookie(name) {
 }
 
 
-
-
-
-
-var active_topic = topic_key;
-
-var topics_active_page = [];
-topics_active_page["AI"] = 1;
-topics_active_page["WP"] = 1;
-topics_active_page["SE"] = 1;
-topics_active_page["DS"] = 1;
-topics_active_page["C"] = 1;
-
-var topics_already_loaded = [];
-topics_already_loaded["AI"] = false;
-topics_already_loaded["WP"] = false;
-topics_already_loaded["SE"] = false;
-topics_already_loaded["DS"] = false;
-topics_already_loaded["C"] = false;
-
-topics_already_loaded[topic_key] = true;
 
 
 
@@ -1149,7 +1148,7 @@ function loadSearchResults(page){
 
 
 
-if (is_search_template == true) {
+if (typeof is_search_template !== 'undefined') {
 
 
     $("#search_form").submit(function(e) {
