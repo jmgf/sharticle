@@ -119,23 +119,24 @@ function loadSearchResults(page){
 }
 
 
-$("#search_form").submit(function(e) {
 
-    search_active_page = 1;
-
-    e.preventDefault();    
-    var formData = new FormData(this);
-    
-    loadSearchResults(search_active_page++);
-});
+if (is_search_template == true) {
 
 
-
-
-
-window.onscroll = function(ev) {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
-        // you're at the bottom of the page
+    $("#search_form").submit(function(e) {
+        search_active_page = 1;    
+        e.preventDefault();    
+        var formData = new FormData(this);
         loadSearchResults(search_active_page++);
-    }
-};
+    });
+    
+        
+    
+    window.onscroll = function(ev) {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+            // you're at the bottom of the page
+            loadSearchResults(search_active_page++);
+        }
+    };
+    
+}

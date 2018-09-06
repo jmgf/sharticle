@@ -285,6 +285,10 @@ if (is_edit_article_template == true){
         });
     });
 
+
+    var cols = document.querySelectorAll('#columns p');
+    [].forEach.call(cols, addDnDHandlers);
+
 }
 
 function handleDragStart(e) {
@@ -345,5 +349,3 @@ function addDnDHandlers(elem) {
     elem.addEventListener('drop', handleDrop, false);
     elem.addEventListener('dragend', handleDragEnd, false);
 }
-var cols = document.querySelectorAll('#columns p');
-[].forEach.call(cols, addDnDHandlers);

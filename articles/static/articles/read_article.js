@@ -75,44 +75,7 @@ function blinkComment(){
 }
 
 
-$("#comment_form").submit(function(e) {
 
-    e.preventDefault();    
-    var formData = new FormData(this);
-
-    $.ajax({
-            url: comments_url(article_id),
-            type: 'POST',
-            data: $("#comment_form").serialize(),
-            success: function (data) {
-
-                if (data.success){
-                    //new_element = document.createElement()
-                    //document.getElementById("comments_container").insertBefore(new_element, document.getElementById("comments_container").firstElementChild)
-
-                    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                    var profile_image = document.cookie.replace(/(?:(?:^|.*;\s*)profile_image\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                    if (profile_image != 'None') profile_image = profile_image.substring(1, profile_image.length-1);
-
-                    new_html = `
-                        <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well">
-                            ${profile_image != 'None' ? '<img src="' + profile_image + '" class="comment-profile-image">' : '<span class="glyphicon glyphicon-user comment-glyph"></span>'}
-                            <a href="/profile/@${ cookieValue }/">${ cookieValue }</a>
-                            <p class="comment-content">${ data.comment }</p>
-                            <span class="pull-right"><span class="glyphicon glyphicon-calendar"></span> ${ data.date.split('T')[0] } , ${ data.date.split('T')[1].split('.')[0] }</span>
-                        </div>
-                    `;  
-                    old_html = document.getElementById("comments_container").innerHTML;
-                    document.getElementById("comments_container").innerHTML = new_html + old_html;
-
-                    document.getElementById("comment_area").value = '';
-                    blinkComment();
-                }
-
-            }
-        });
-    
-});
 
 
 
@@ -148,5 +111,45 @@ if (is_read_article_template == true){
 
     $.get("/csrf/", function( data ) {
         $("form").append(data);
+    });
+
+    
+    $("#comment_form").submit(function(e) {
+
+        e.preventDefault();    
+        var formData = new FormData(this);
+    
+        $.ajax({
+                url: comments_url(article_id),
+                type: 'POST',
+                data: $("#comment_form").serialize(),
+                success: function (data) {
+    
+                    if (data.success){
+                        //new_element = document.createElement()
+                        //document.getElementById("comments_container").insertBefore(new_element, document.getElementById("comments_container").firstElementChild)
+    
+                        var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                        var profile_image = document.cookie.replace(/(?:(?:^|.*;\s*)profile_image\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                        if (profile_image != 'None') profile_image = profile_image.substring(1, profile_image.length-1);
+    
+                        new_html = `
+                            <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 well">
+                                ${profile_image != 'None' ? '<img src="' + profile_image + '" class="comment-profile-image">' : '<span class="glyphicon glyphicon-user comment-glyph"></span>'}
+                                <a href="/profile/@${ cookieValue }/">${ cookieValue }</a>
+                                <p class="comment-content">${ data.comment }</p>
+                                <span class="pull-right"><span class="glyphicon glyphicon-calendar"></span> ${ data.date.split('T')[0] } , ${ data.date.split('T')[1].split('.')[0] }</span>
+                            </div>
+                        `;  
+                        old_html = document.getElementById("comments_container").innerHTML;
+                        document.getElementById("comments_container").innerHTML = new_html + old_html;
+    
+                        document.getElementById("comment_area").value = '';
+                        blinkComment();
+                    }
+    
+                }
+            });
+        
     });
 }
