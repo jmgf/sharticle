@@ -135,7 +135,7 @@ function addTitle(srcElement){
 
 function addImage(imageSrc){
     var new_image = document.createElement("img");
-    var IMAGE_PREFIX = '/static/articles/';
+    var IMAGE_PREFIX = 'http://p7g5g3g9.hostrycdn.com/';
     new_image.src = IMAGE_PREFIX + imageSrc;
     new_image.contentEditable = 'true';
 

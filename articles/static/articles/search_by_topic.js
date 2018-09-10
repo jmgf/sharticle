@@ -98,7 +98,7 @@ function loadTopicArticles(topic_id, topic_description){
                 var html = '';
                 data.articles.forEach(article => {
                     user_image_html = '<span class="glyphicon glyphicon-user pull-left"></span>';
-                    var article_image_url = (article.image_path != "" ? ('/static/articles/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
+                    var article_image_url = (article.image_path != "" ? ('http://p7g5g3g9.hostrycdn.com/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
                     html += `
                         <div class="col-md-6" id="article_box_${ article.id }">
                             <div class="article-box">

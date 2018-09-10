@@ -38,7 +38,7 @@ function loadSearchResults(page){
                 var html = '';
                 data.articles.forEach(article => {
                     user_image_html = '<span class="glyphicon glyphicon-user pull-left"></span>';
-                    var article_image_url = (article[5] != "" ? ('/static/articles/' + article[5]) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
+                    var article_image_url = (article[5] != "" ? ('http://p7g5g3g9.hostrycdn.com/' + article[5]) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
                     html += `
                         <div class="col-md-6" id="article_box_${ article[0] }">
                             <div class="article-box">

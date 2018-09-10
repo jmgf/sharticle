@@ -97,7 +97,7 @@ function loadArticles(element, drafts = false, published = false){
                     data.articles.forEach(article => {
                         if (user.profileImagePath) user_image_html = '<img src="' + user.profileImagePath + '" class="pull-left" height="68"></img>';
                         else user_image_html = '<span class="glyphicon glyphicon-user pull-left"></span>';
-                        var article_image_url = (article.image_path != "" ? ('/static/articles/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
+                        var article_image_url = (article.image_path != "" ? ('http://p7g5g3g9.hostrycdn.com/' + article.image_path) : "https://www.freeiconspng.com/uploads/no-image-icon-6.png")
                         html += `
                             <div class="col-md-6" id="article_box_${ article.id }">
                                 <div class="article-box">
