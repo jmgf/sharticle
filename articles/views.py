@@ -75,6 +75,13 @@ def register(request):
             # Send confirmation email (asynchronous task)
             tasks.send_confirmation_email.delay(code, email_address)
 
+            '''
+            for i in range(1,10):
+                start = time.time()
+                # tasks.send_confirmation_email.delay(code, email_address)
+                tasks.send_confirmation_email(code, email_address)
+                print(1000 * (time.time() - start))
+            '''
             # Return confirmation template
             context = { 'username': username, 'email_address': email_address, 'password': password }
             return render(request, 'articles/confirm_registration.html', context)
@@ -890,7 +897,7 @@ def comments(request, id):
 
         page_number = int(request.GET["page"])
         qs = Comment.objects.filter(article_id = id).order_by('-date')
-        paginator = Paginator(qs, 2)
+        paginator = Paginator(qs, 10)
         try:
             comments = paginator.page(page_number).object_list
             json_data = { 'comments': list(comments.values()) } 
