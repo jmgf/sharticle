@@ -115,7 +115,7 @@
     <div class="form-group">
       <label class="control-label col-sm-2" for="email">Email:</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control profile-form-control" id="email" name="email" placeholder="Enter e-mail" value="{{ request.user.email }}" size="{{ request.user.email | length }}">
+        <input disabled type="text" class="form-control profile-form-control" id="email" name="email" placeholder="Enter e-mail" value="{{ request.user.email }}" size="{{ request.user.email | length }}">
       </div>
     </div>
 

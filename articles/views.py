@@ -309,8 +309,8 @@ def edit_profile(request):
                 theUser.last_name = request.POST['last_name']
             
             # Update user's email
-            if request.POST['email']:
-                theUser.email = request.POST['email']
+            #if request.POST['email']:
+            #    theUser.email = request.POST['email']
             
             # Update user's profile last modified date
             theUser.profile_last_modified_date = datetime.now()
