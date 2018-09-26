@@ -26,6 +26,7 @@ python3 manage.py runserver &
 
 
 # Web/application servers
+sudo service varnish restart
 sudo service gunicorn restart
 sudo service nginx restart
 

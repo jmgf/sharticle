@@ -57,11 +57,14 @@ def topics_pagination_testing():
         ###############################################
         start = time.time()  
         
-        qs = Article.objects.filter(topic = 'SE')
+        #qs = Article.objects.filter(topic = 'SE')
+        qs = Article.objects.filter(topic = 'AI').order_by('pub_date')
         paginator = Paginator(qs, 50)
         if paginator.page(10).object_list:
             pass  
-        
+        #from django.core.cache import cache
+        #start = time.time()  
+        #a = cache.get('AI1')  
         paginated.append(1000*(time.time() - start))
         ###############################################
 
@@ -69,7 +72,8 @@ def topics_pagination_testing():
         ###############################################
         start = time.time()    
         
-        if Article.objects.filter(topic = 'SE'):
+        #if Article.objects.filter(topic = 'SE'):
+        if Article.objects.filter(topic = 'AI').order_by('pub_date'):
             pass
         
         not_paginated.append(1000*(time.time() - start))

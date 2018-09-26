@@ -250,7 +250,8 @@ def profile(request, username):
             # Retrieve articles from database
             articles = Article.objects.filter(author = username, already_published = True)
             # Update cache with articles list
-            cache.set(username + '_articles', articles, None)
+            if (len(articles)>0):
+                cache.set(username + '_articles', articles, None)
         else:
             print('from CACHE')
 
@@ -849,6 +850,19 @@ def test_view(request):
     # test_results = topics_pagination_testing()
     test_results = db_index_testing()
     return HttpResponse(test_results)
+
+    '''
+    start = time.time()
+    qs = Article.objects.filter(topic = 'AI').values('id', 'title', 'description', 'author', 'image_path', 'last_modified_date').order_by('pub_date')
+    paginator = Paginator(qs, 50)
+    articles = paginator.page(1).object_list
+    if articles:
+        pass
+        
+    res = 1000*(time.time()-start)
+    print(res)
+    return HttpResponse(res)
+    '''
 
 
 
