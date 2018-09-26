@@ -1,0 +1,311 @@
+<html>
+  <head>
+    <title>Sharticle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- STYLESHEETS -->
+    {% load static %}
+    <style>
+        /*! CSS Used from: https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css */
+        body{margin:0;}
+        nav{display:block;}
+        a{background-color:transparent;}
+        a:active,a:hover{outline:0;}
+        b{font-weight:700;}
+        h1{margin:.67em 0;font-size:2em;}
+        button,input{margin:0;font:inherit;color:inherit;}
+        button{overflow:visible;}
+        button{text-transform:none;}
+        button{-webkit-appearance:button;cursor:pointer;}
+        button::-moz-focus-inner,input::-moz-focus-inner{padding:0;border:0;}
+        input{line-height:normal;}
+        @media print{
+        *,:after,:before{color:#000!important;text-shadow:none!important;background:0 0!important;-webkit-box-shadow:none!important;box-shadow:none!important;}
+        a,a:visited{text-decoration:underline;}
+        a[href]:after{content:" (" attr(href) ")";}
+        p{orphans:3;widows:3;}
+        .navbar{display:none;}
+        }
+        .glyphicon{position:relative;top:1px;display:inline-block;font-family:'Glyphicons Halflings';font-style:normal;font-weight:400;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+        .glyphicon-pencil:before{content:"\270f";}
+        .glyphicon-search:before{content:"\e003";}
+        .glyphicon-user:before{content:"\e008";}
+        .glyphicon-list:before{content:"\e056";}
+        .glyphicon-edit:before{content:"\e065";}
+        *{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
+        :after,:before{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
+        body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.42857143;color:#333;background-color:#fff;}
+        button,input{font-family:inherit;font-size:inherit;line-height:inherit;}
+        a{color:#337ab7;text-decoration:none;}
+        a:focus,a:hover{color:#23527c;text-decoration:underline;}
+        a:focus{outline:5px auto -webkit-focus-ring-color;outline-offset:-2px;}
+        h1,h4{font-family:inherit;font-weight:500;line-height:1.1;color:inherit;}
+        h1{margin-top:20px;margin-bottom:10px;}
+        h4{margin-top:10px;margin-bottom:10px;}
+        h1{font-size:36px;}
+        h4{font-size:18px;}
+        p{margin:0 0 10px;}
+        .text-center{text-align:center;}
+        .text-danger{color:#a94442;}
+        ul{margin-top:0;margin-bottom:10px;}
+        .container{padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto;}
+        @media (min-width:768px){
+        .container{width:750px;}
+        }
+        @media (min-width:992px){
+        .container{width:970px;}
+        }
+        @media (min-width:1200px){
+        .container{width:1170px;}
+        }
+        .container-fluid{padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto;}
+        .row{margin-right:-15px;margin-left:-15px;}
+        .col-lg-4,.col-sm-2,.col-sm-6,.col-sm-8{position:relative;min-height:1px;padding-right:15px;padding-left:15px;}
+        @media (min-width:768px){
+        .col-sm-2,.col-sm-6,.col-sm-8{float:left;}
+        .col-sm-8{width:66.66666667%;}
+        .col-sm-6{width:50%;}
+        .col-sm-2{width:16.66666667%;}
+        .col-sm-offset-3{margin-left:25%;}
+        }
+        @media (min-width:1200px){
+        .col-lg-4{float:left;}
+        .col-lg-4{width:33.33333333%;}
+        .col-lg-offset-4{margin-left:33.33333333%;}
+        }
+        .form-control{display:block;width:100%;height:34px;padding:6px 12px;font-size:14px;line-height:1.42857143;color:#555;background-color:#fff;background-image:none;border:1px solid #ccc;border-radius:4px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.075);box-shadow:inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition:border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition:border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition:border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+        .form-control:focus{border-color:#66afe9;outline:0;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);}
+        .form-control::-moz-placeholder{color:#999;opacity:1;}
+        .form-control:-ms-input-placeholder{color:#999;}
+        .form-control::-webkit-input-placeholder{color:#999;}
+        .form-control::-ms-expand{background-color:transparent;border:0;}
+        .btn{display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;-ms-touch-action:manipulation;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-image:none;border:1px solid transparent;border-radius:4px;}
+        .btn:active:focus,.btn:focus{outline:5px auto -webkit-focus-ring-color;outline-offset:-2px;}
+        .btn:focus,.btn:hover{color:#333;text-decoration:none;}
+        .btn:active{background-image:none;outline:0;-webkit-box-shadow:inset 0 3px 5px rgba(0,0,0,.125);box-shadow:inset 0 3px 5px rgba(0,0,0,.125);}
+        .btn-success{color:#fff;background-color:#5cb85c;border-color:#4cae4c;}
+        .btn-success:focus{color:#fff;background-color:#449d44;border-color:#255625;}
+        .btn-success:hover{color:#fff;background-color:#449d44;border-color:#398439;}
+        .btn-success:active{color:#fff;background-color:#449d44;border-color:#398439;}
+        .btn-success:active:focus,.btn-success:active:hover{color:#fff;background-color:#398439;border-color:#255625;}
+        .btn-success:active{background-image:none;}
+        .btn-lg{padding:10px 16px;font-size:18px;line-height:1.3333333;border-radius:6px;}
+        .btn-block{display:block;width:100%;}
+        .collapse{display:none;}
+        .nav{padding-left:0;margin-bottom:0;list-style:none;}
+        .nav>li{position:relative;display:block;}
+        .nav>li>a{position:relative;display:block;padding:10px 15px;}
+        .nav>li>a:focus,.nav>li>a:hover{text-decoration:none;background-color:#eee;}
+        .navbar{position:relative;min-height:50px;margin-bottom:20px;border:1px solid transparent;}
+        @media (min-width:768px){
+        .navbar{border-radius:4px;}
+        }
+        @media (min-width:768px){
+        .navbar-header{float:left;}
+        }
+        .navbar-collapse{padding-right:15px;padding-left:15px;overflow-x:visible;-webkit-overflow-scrolling:touch;border-top:1px solid transparent;-webkit-box-shadow:inset 0 1px 0 rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.1);}
+        @media (min-width:768px){
+        .navbar-collapse{width:auto;border-top:0;-webkit-box-shadow:none;box-shadow:none;}
+        .navbar-collapse.collapse{display:block!important;height:auto!important;padding-bottom:0;overflow:visible!important;}
+        .navbar-fixed-top .navbar-collapse{padding-right:0;padding-left:0;}
+        }
+        .navbar-fixed-top .navbar-collapse{max-height:340px;}
+        @media (max-device-width:480px) and (orientation:landscape){
+        .navbar-fixed-top .navbar-collapse{max-height:200px;}
+        }
+        .container-fluid>.navbar-collapse,.container-fluid>.navbar-header{margin-right:-15px;margin-left:-15px;}
+        @media (min-width:768px){
+        .container-fluid>.navbar-collapse,.container-fluid>.navbar-header{margin-right:0;margin-left:0;}
+        }
+        .navbar-fixed-top{position:fixed;right:0;left:0;z-index:1030;}
+        @media (min-width:768px){
+        .navbar-fixed-top{border-radius:0;}
+        }
+        .navbar-fixed-top{top:0;border-width:0 0 1px;}
+        .navbar-brand{float:left;height:50px;padding:15px 15px;font-size:18px;line-height:20px;}
+        .navbar-brand:focus,.navbar-brand:hover{text-decoration:none;}
+        @media (min-width:768px){
+        .navbar>.container .navbar-brand{margin-left:-15px;}
+        }
+        .navbar-toggle{position:relative;float:right;padding:9px 10px;margin-top:8px;margin-right:15px;margin-bottom:8px;background-color:transparent;background-image:none;border:1px solid transparent;border-radius:4px;}
+        .navbar-toggle:focus{outline:0;}
+        .navbar-toggle .icon-bar{display:block;width:22px;height:2px;border-radius:1px;}
+        .navbar-toggle .icon-bar+.icon-bar{margin-top:4px;}
+        @media (min-width:768px){
+        .navbar-toggle{display:none;}
+        }
+        .navbar-nav{margin:7.5px -15px;}
+        .navbar-nav>li>a{padding-top:10px;padding-bottom:10px;line-height:20px;}
+        @media (min-width:768px){
+        .navbar-nav{float:left;margin:0;}
+        .navbar-nav>li{float:left;}
+        .navbar-nav>li>a{padding-top:15px;padding-bottom:15px;}
+        }
+        .navbar-btn{margin-top:8px;margin-bottom:8px;}
+        @media (min-width:768px){
+        .navbar-right{float:right!important;margin-right:-15px;}
+        }
+        .navbar-inverse{background-color:#222;border-color:#080808;}
+        .navbar-inverse .navbar-brand{color:#9d9d9d;}
+        .navbar-inverse .navbar-brand:focus,.navbar-inverse .navbar-brand:hover{color:#fff;background-color:transparent;}
+        .navbar-inverse .navbar-nav>li>a{color:#9d9d9d;}
+        .navbar-inverse .navbar-nav>li>a:focus,.navbar-inverse .navbar-nav>li>a:hover{color:#fff;background-color:transparent;}
+        .navbar-inverse .navbar-toggle{border-color:#333;}
+        .navbar-inverse .navbar-toggle:focus,.navbar-inverse .navbar-toggle:hover{background-color:#333;}
+        .navbar-inverse .navbar-toggle .icon-bar{background-color:#fff;}
+        .navbar-inverse .navbar-collapse{border-color:#101010;}
+        .well{min-height:20px;padding:19px;margin-bottom:20px;background-color:#f5f5f5;border:1px solid #e3e3e3;border-radius:4px;-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.05);box-shadow:inset 0 1px 1px rgba(0,0,0,.05);}
+        .clearfix:after,.clearfix:before,.container-fluid:after,.container-fluid:before,.container:after,.container:before,.nav:after,.nav:before,.navbar-collapse:after,.navbar-collapse:before,.navbar-header:after,.navbar-header:before,.navbar:after,.navbar:before,.row:after,.row:before{display:table;content:" ";}
+        .clearfix:after,.container-fluid:after,.container:after,.nav:after,.navbar-collapse:after,.navbar-header:after,.navbar:after,.row:after{clear:both;}
+        /*! CSS Used from: http://p7g5g3g9.hostrycdn.com/style.css */
+        .navbar-inverse .navbar-nav>li>a{color:lightgreen;}
+        .navbar{background-color:rgba(5,30,20,0.9);}
+        .navbar-inverse .navbar-brand{color:lightgreen;}
+        .navbar-inverse .navbar-brand b{font-size:25px;}
+        .navbar-inverse .navbar-brand span{color:rgb(0,180,0);}
+        nav span.glyphicon{color:green;}
+        #login-btn{padding:6px 15px 6px 15px;color:white;}
+        .after-nav{margin-top:50px;}
+        .row{margin-left:0px;margin-right:0px;}
+        ::-webkit-scrollbar-track{background:rgba(5,30,20,0.9);}
+        ::-webkit-scrollbar-thumb{background:#888;}
+        ::-webkit-scrollbar-thumb:hover{background:#555;}
+        .form-signin{max-width:330px;padding:15px;margin:0 auto;}
+        .form-signin .auth-form-control{position:relative;font-size:16px;height:auto;padding:10px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
+        .form-signin input[type="text"]{margin-bottom:10px;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+        .form-signin input[type="email"]{margin-bottom:10px;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+        .form-signin input[type="password"]{margin-bottom:10px;border-top-left-radius:0;border-top-right-radius:0;}
+        .auth-img{color:#5cb85c;font-size:100px;width:96px;height:96px;margin:0 auto 10px;display:block;-moz-border-radius:50%;-webkit-border-radius:50%;border-radius:50%;}
+        #different_passwords_error{display:none;}
+        .col-sm-6{padding-left:0px;padding-right:0px;}
+        .row{margin:0px;}
+        /*! CSS Used fontfaces */
+        @font-face{font-family:'Glyphicons Halflings';src:url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot);src:url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.eot#iefix) format('embedded-opentype'),url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff2) format('woff2'),url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.woff) format('woff'),url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.ttf) format('truetype'),url(https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg');}
+    </style>
+    <!-- END stylesheets -->
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>                        
+            </button>
+            <a class="navbar-brand" href="/">
+              Sh<b>ar<span>ticl</span>e</b>
+            </a>
+          </div>
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <!--<li><a class="text-center" href=""><span class="glyphicon glyphicon-home"></span> &nbsp; <b>Home</b></a></li>-->
+              <li {% block articles_active %}{% endblock %}><a class="text-center" href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-pencil"></span> &nbsp; <b>Articles</b></a></li>
+              <li {% block topics_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search_by_topic' %}"><span class="glyphicon glyphicon-list"></span> &nbsp; <b>Topics</b></a></li>
+              <li {% block search_active %}{% endblock %}><a class="text-center" href="{% url 'articles:search' %}"><span class="glyphicon glyphicon-search"></span> &nbsp; <b>Search</b></a></li>
+            </ul>
+
+
+            <ul class="nav navbar-nav navbar-right">
+
+            {% if request.user.is_authenticated %}
+              <li class="dropdown {% block edit_profile_active %}{% endblock %}">
+                <a class="dropdown-toggle" data-toggle="dropdown"  href="{% url 'articles:login' %}">
+                  {% if request.user.profileImagePath %}
+                    <span><img src="{{ request.user.profileImagePath }}" class="navbar-profile-image"></span>
+                  {% else %}
+                    <span class="glyphicon glyphicon-user"></span>
+                  {% endif %} 
+                  &nbsp; {{ request.user.username }} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url 'articles:profile' request.user.username %}"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;&nbsp;My profile</a></li>
+                  <li><a href="{% url 'articles:edit_profile' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Edit profile</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url 'articles:draft_articles_view' %}"><span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;My drafts</a></li>
+                  <li><a href="{% url 'articles:published_articles_view' %}"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;My publications</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url 'articles:logout' %}"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
+                </ul>
+              </li>
+            {% else %}
+            <li {% block login_active %}{% endblock %}><a id="login-btn" class="btn btn-success navbar-btn" href="{% url 'articles:login' %}">Log in</a></li>
+            <!--<li><button type="button" class="btn btn-success navbar-btn" onclick="window.location.href='{% url 'articles:login' %}'">Log in</button></li>-->
+            <!--
+            <li ><a href="{% url 'articles:login' %}"><span class="glyphicon glyphicon-user" ></span> &nbsp;Log in </a></li>
+            -->
+            <li {% block register_active %}{% endblock %}><a class="text-center" href="{% url 'articles:register' %}"><span class="glyphicon glyphicon-edit" ></span> &nbsp;Register </a></li>
+            {% endif %}
+          </ul>
+        </div>
+        </div>
+      </div>
+    </nav>
+
+    
+    <div class="container after-nav">
+        <br><br><br>
+        <div class="row">
+        <div class="col-lg-4 col-lg-offset-4 col-sm-6 col-sm-offset-3">
+            <div class="well">
+            <h1 class="text-center">Register</h1>
+
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-8">
+                <h4 class="text-center">Insert your data to get started with your registration</h4>
+                </div>
+                <div class="col-sm-2"></div>
+            </div>
+
+            <br>
+            <span class="glyphicon glyphicon-user auth-img"></span>
+            <br>
+
+            <form class="form-signin" method="POST" action="{% url 'articles:register' %}">
+                {% csrf_token %}
+
+                <input type="text" name="username" class="form-control auth-form-control text-center" placeholder="username" required autofocus>
+                {% if user_already_exists %}
+                <p class="text-danger">Username <b>{{ username }}</b> already exists!</p>
+                {% endif %}
+
+                <input type="email" name="email_address"  id="email" class="form-control auth-form-control text-center" placeholder="email" required>
+                {% if email_already_exists %}
+                <p class="text-danger">The email address <b>{{ email }}</b> is already being used!</p>
+                {% endif %}
+
+                <input type="password" name="password1"  id="password1" class="form-control auth-form-control text-center" placeholder="password" required>
+                <input type="password" name="password2"  id="password2" class="form-control auth-form-control text-center" placeholder="confirm password" required>
+                <p id="different_passwords_error" class="text-danger">Make sure both passwords are the same.</p>
+
+                <button class="btn btn-lg btn-success btn-block" type="submit">Register</buttson>
+
+                <span class="clearfix"></span>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+    <!-- SCRIPTS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>        
+        var is_register_template = true;
+        // Asynchronous download of the website's stylesheet
+        window.onload = function(){
+            var elem = document.createElement("link");
+            elem.rel = "stylesheet";
+            elem.type = "text/css";
+            elem.href = "http://p7g5g3g9.hostrycdn.com/style.css";
+            document.body.appendChild(elem);
+        }
+    </script>
+    <script src="{% static 'script.min.js' %}"></script>
+    <!-- END scripts -->
+  </body>
+</html>

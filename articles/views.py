@@ -88,7 +88,14 @@ def register(request):
 
 
     # If the method is GET
-    return render(request, 'articles/register.html')
+
+    # If there are cookies, return template with external stylesheets reference
+    if len(request.COOKIES) > 0:
+        return render(request, 'articles/register.html')    
+        
+    # If no cookies are present, return template with inline styles
+    else:
+        return render(request, 'articles/new_register.html')
 
 
 
