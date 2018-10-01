@@ -296,13 +296,19 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>        
         var is_register_template = true;
+
+        function downloadCSS(url){
+          var elem = document.createElement("link");
+          elem.rel = "stylesheet";
+          elem.type = "text/css";
+          elem.href = url;
+          document.body.appendChild(elem);
+        }
+
         // Asynchronous download of the website's stylesheet
         window.onload = function(){
-            var elem = document.createElement("link");
-            elem.rel = "stylesheet";
-            elem.type = "text/css";
-            elem.href = "http://p7g5g3g9.hostrycdn.com/style.css";
-            document.body.appendChild(elem);
+            downloadCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css");
+            downloadCSS("http://p7g5g3g9.hostrycdn.com/style.min.css");
         }
     </script>
     <script src="{% static 'script.min.js' %}"></script>
